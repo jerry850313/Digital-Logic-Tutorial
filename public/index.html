@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Logic Design</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        #waveform {
+            width: 100%;
+            height: 600px;
+            margin-top: 20px;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        .details {
+            display: none;
+        }
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <a class="navbar-brand" href="#" data-target="home">Digital Logic Tutorial</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-target="home">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-target="courses">Courses</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-target="verilog">Verilog</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container" style="margin-top: 70px;">
+        <!-- Home Section -->
+        <div id="home" class="section active">
+            <h1>Welcome to Digital Logic Design</h1>
+            <nav class="nav">
+                <a class="nav-link" href="#" data-target="courses">Courses</a>
+                <a class="nav-link" href="#" data-target="verilog">Verilog Editor</a>
+            </nav>
+            <div id="content">
+                <table>
+                    <tr>
+                        <th>空間</th>
+                        <th>指南</th>
+                    </tr>
+                    <tr>
+                        <td><a class="nav-link" href="#" data-target="courses">Courses</a></td>
+                        <td>放了一堆可能會用到的講義 <BR><span class="details">可以補充更多相關知識。</span></td>
+                    </tr>
+                    <tr>
+                        <td><a class="nav-link" href="#" data-target="verilog">Verilog Editor</a></td>
+                        <td>總之就是個神奇的地方，可以生成波形圖 <BR><span class="details">If you want to use this function, make sure you have iverilog and "pip install json".Good luck and have a great time!</span></td>
+                    </tr>
+                </table>
+                <BR>
+                <hr>
+                <BR>
+                <table>
+                    <tr>
+                        <th>電路分類</th>
+                        <th>說明</th>
+                    </tr>
+                    <tr>
+                        <td>數位</td>
+                        <td>簡單講就是0和1組成的世界 <BR><span class="details">還需要更多資訊嗎?才不告訴你!。</span></td>
+                    </tr>
+                    <tr>
+                        <td>類比</td>
+                        <td>在巨觀世界觀測到的東西都是類比的 <BR><span class="details">巨觀就是肉眼能見的範圍；微觀就是需要工具輔助才能觀察的世界，量子力學這種令人頭痛的存在就在這裡發生的。</span></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Courses Section -->
+        <div id="courses" class="section">
+            <h1>Courses</h1>
+            <nav class="nav">
+                <a class="nav-link" href="#" data-target="courses">Courses</a>
+                <a class="nav-link" href="#" data-target="verilog">Verilog Editor</a>
+            </nav>
+            <ul id="course-list" class="list-group">
+                <!-- Courses will be loaded here dynamically -->
+            </ul>
+        </div>
+
+        <!-- Verilog Section -->
+        <div id="verilog" class="section">
+            <h1>Verilog Editor</h1>
+            <nav class="nav">
+                <a class="nav-link" href="#" data-target="courses">Courses</a>
+                <a class="nav-link" href="#" data-target="verilog">Verilog Editor</a>
+            </nav>
+            <h2>Enter Verilog Code</h2>
+            <h4>Use 1-bit input and output, make sure you can achieve a better user experience in this website</h4>
+            <div class="form-group">
+                <textarea id="verilogCode" class="form-control" rows="10" placeholder="Enter your Verilog code here..."></textarea>
+            </div>
+            <button id="generateButton" class="btn btn-primary">Generate Testbench and Waveform</button>
+            <div id="waveform"></div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Show the clicked section and hide others
+            $('a.nav-link').click(function(event) {
+                event.preventDefault();
+                const target = $(this).data('target');
+                $('.section').removeClass('active');
+                $('#' + target).addClass('active');
+                $('html, body').scrollTop(0); // Scroll to top
+            });
+
+            // Navigation details on hover
+            $("tr").hover(
+                function() {
+                    $(this).find(".details").slideDown();
+                },
+                function() {
+                    $(this).find(".details").slideUp();
+                }
+            );
+
+            $("#content").hide().fadeIn(2000);
+
+            // Handle Verilog generation button click
+            $('#generateButton').click(function() {
+                const verilogCode = $('#verilogCode').val();
+                $.ajax({
+                    url: '/verilog/generate',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ code: verilogCode }),
+                    success: function(response) {
+                        fetch(response.jsonFile)
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                const traces = [];
+                                for (const signal in data.signals) {
+                                    if (data.signals.hasOwnProperty(signal)) {
+                                        const signalData = data.signals[signal];
+                                        const values = signalData.values;
+                                        const trace = {
+                                            x: values.map(v => v.time),
+                                            y: values.map(v => v.value),
+                                            type: 'scatter',
+                                            mode: 'lines+markers',
+                                            name: signalData.name,
+                                            line: { shape: 'hv' }
+                                        };
+                                        traces.push(trace);
+                                    }
+                                }
+                                Plotly.newPlot('waveform', traces, {
+                                    title: 'VCD Waveform',
+                                    xaxis: { title: 'Time(ns)' },
+                                    yaxis: { title: 'Signal' }
+                                });
+                            })
+                            .catch(error => console.error('Error loading waveform data:', error));
+                    },
+                    error: function(error) {
+                        alert('Error generating testbench and waveform.');
+                        console.error('Error:', error);
+                    }
+                });
+            });
+
+            // Load courses dynamically
+            $.ajax({
+                url: '/courses/api/courses',
+                method: 'GET',
+                success: function(courses) {
+                    courses.forEach(course => {
+                        $('#course-list').append('<li class="list-group-item"><a href="'+course.url+'" target="_blank">'+course.name+'</a></li>');
+                    });
+                },
+                error: function(err) {
+                    console.error('Failed to fetch courses', err);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
