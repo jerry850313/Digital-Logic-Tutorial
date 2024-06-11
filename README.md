@@ -2,10 +2,6 @@
 <HR>
 This is a simple website to learn verilog and do some simple verilog on this website<BR>
 Use "npm start" in CMD of this floder<BR>
-<BR>
-<BR>
-<BR>
-<BR>
 <table>
   <tr><th>space</th><th>instruction</th></tr>
   <tr><td>Courses</td><td>Some handouts here</td></tr>
