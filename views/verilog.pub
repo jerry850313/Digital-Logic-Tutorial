@@ -1,0 +1,12 @@
+//- Verilog Section
+#verilog.section
+  h1 Verilog Editor
+  nav.nav
+    a.nav-link(href="#", data-target="courses") Courses
+    a.nav-link(href="#", data-target="verilog") Verilog Editor
+  h2 Enter Verilog Code
+  h4 Use 1-bit input and output, make sure you can achieve a better user experience in this website
+  .form-group
+    textarea#verilogCode.form-control(rows="10", placeholder="Enter your Verilog code here...")
+  button#generateButton.btn.btn-primary Generate Testbench and Waveform
+  #waveform

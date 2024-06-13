@@ -1,20 +1,18 @@
 `timescale 1ns/1ps
 
-module top_module_tb;
+module and2_tb;
 
-    reg [3:0] inputs;
-    wire Q;
-    top_module uut (
-        .clk(inputs[0]),
-        .L(inputs[1]),
-        .r_in(inputs[2]),
-        .q_in(inputs[3]),
-        .Q(Q)
+    reg [1:0] inputs;
+    wire c;
+    and2 uut (
+        .a(inputs[0]),
+        .b(inputs[1]),
+        .c(c)
     );
 
     initial begin
         // Generate all possible input combinations
-        for (integer i = 0; i < (1 << 4); i = i + 1) begin
+        for (integer i = 0; i < (1 << 2); i = i + 1) begin
             inputs = i;
             #10;
         end
@@ -22,6 +20,6 @@ module top_module_tb;
     end
     initial begin
         $dumpfile("output.vcd");
-        $dumpvars(0, top_module_tb);
+        $dumpvars(0, and2_tb);
     end
 endmodule

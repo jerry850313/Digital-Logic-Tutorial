@@ -1,5 +1,134 @@
-extends layout
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title Digital Logic Design
+    link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
+    script(src="https://cdn.plot.ly/plotly-latest.min.js")
+    script(src="https://code.jquery.com/jquery-3.6.0.min.js")
+    style.
+      #waveform {
+          width: 100%;
+          height: 600px;
+          margin-top: 20px;
+      }
+      html {
+          scroll-behavior: smooth;
+      }
+      .details {
+          display: none;
+      }
+      .section {
+          display: none;
+      }
+      .section.active {
+          display: block;
+      }
 
-block content
-  h1= title
-  p Welcome to #{title}
+  body
+    //- Navigation Bar
+    nav.navbar.navbar-expand-lg.navbar-light.bg-light.fixed-top
+      a.navbar-brand(href="#", data-target="home") Digital Logic Tutorial
+      button.navbar-toggler(type="button", data-toggle="collapse", data-target="#navbarNav", aria-controls="navbarNav", aria-expanded="false", aria-label="Toggle navigation")
+        span.navbar-toggler-icon
+      .collapse.navbar-collapse(id="navbarNav")
+        ul.navbar-nav
+          li.nav-item
+            a.nav-link(href="#", data-target="home") Home
+          li.nav-item
+            a.nav-link(href="#", data-target="courses") Courses
+          li.nav-item
+            a.nav-link(href="#", data-target="verilog") Verilog
+
+    .container(style="margin-top: 70px;")
+      //- Include sections
+      include home
+      include courses
+      include verilog
+
+    script.
+      $(document).ready(function() {
+          // Show the clicked section and hide others
+          $('a.nav-link').click(function(event) {
+              event.preventDefault();
+              const target = $(this).data('target');
+              $('.section').removeClass('active');
+              $('#' + target).addClass('active');
+              $('html, body').scrollTop(0); // Scroll to top
+          });
+
+          // Navigation details on hover
+          $("tr").hover(
+              function() {
+                  $(this).find(".details").slideDown();
+              },
+              function() {
+                  $(this).find(".details").slideUp();
+              }
+          );
+
+          $("#content").hide().fadeIn(2000);
+
+          // Handle Verilog generation button click
+          $('#generateButton').click(function() {
+              const verilogCode = $('#verilogCode').val();
+              $.ajax({
+                  url: '/verilog/generate',
+                  type: 'POST',
+                  contentType: 'application/json',
+                  data: JSON.stringify({ code: verilogCode }),
+                  success: function(response) {
+                      fetch(response.jsonFile)
+                          .then(response => {
+                              if (!response.ok) {
+                                  throw new Error('Network response was not ok');
+                              }
+                              return response.json();
+                          })
+                          .then(data => {
+                              const traces = [];
+                              for (const signal in data.signals) {
+                                  if (data.signals.hasOwnProperty(signal)) {
+                                      const signalData = data.signals[signal];
+                                      const values = signalData.values;
+                                      const trace = {
+                                          x: values.map(v => v.time),
+                                          y: values.map(v => v.value),
+                                          type: 'scatter',
+                                          mode: 'lines+markers',
+                                          name: signalData.name,
+                                          line: { shape: 'hv' }
+                                      };
+                                      traces.push(trace);
+                                  }
+                              }
+                              Plotly.newPlot('waveform', traces, {
+                                  title: 'VCD Waveform',
+                                  xaxis: { title: 'Time(ns)' },
+                                  yaxis: { title: 'Signal' }
+                              });
+                          })
+                          .catch(error => console.error('Error loading waveform data:', error));
+                  },
+                  error: function(error) {
+                      alert('Error generating testbench and waveform.');
+                      console.error('Error:', error);
+                  }
+              });
+          });
+
+          // Load courses dynamically
+          $.ajax({
+              url: '/courses/api/courses',
+              method: 'GET',
+              success: function(courses) {
+                  courses.forEach(course => {
+                      $('#course-list').append('<li class="list-group-item"><a href="'+course.url+'" target="_blank">'+course.name+'</a></li>');
+                  });
+              },
+              error: function(err) {
+                  console.error('Failed to fetch courses', err);
+              }
+          });
+      });

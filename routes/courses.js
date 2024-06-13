@@ -3,8 +3,8 @@ const path = require('path');
 const router = express.Router();
 
 router.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/index.html'));
-});
+    res.render('courses');
+  });
 
 router.get('/api/courses', (req, res) => {
     // 假設這些資料從資料庫獲取

@@ -12,15 +12,6 @@ function checkCommand(command, callback) {
 }
 
 function installDependencies() {
-  // 安裝 Python 包
-  exec('pip install -r requirements.txt', (error, stdout, stderr) => {
-    if (error) {
-      console.error(`Error installing Python packages: ${error.message}`);
-      console.error(`Stderr: ${stderr}`);
-    } else {
-      console.log(`Python packages installed successfully: ${stdout}`);
-    }
-  });
   // 安裝 iverilog
   const iverilogInstallerPath = path.join(__dirname, '..', 'iverilog-v12-20220611-x64_setup.exe');
   exec(iverilogInstallerPath, (error, stdout, stderr) => {
@@ -44,13 +35,12 @@ checkCommand('iverilog', (iverilogInstalled) => {
 });
 
 /* GET verilog page. */
-router.get('/', function(req, res, next) {
-  const htmlContent = fs.readFileSync(path.join(__dirname, '..', 'public', 'index.html'), 'utf-8');
-  res.send(htmlContent);
+router.get('/', (req, res) => {
+  res.render('verilog');
 });
 
 /* POST verilog code. */
-router.post('/generate', function(req, res, next) {
+router.post('/generate', (req, res) => {
   const verilogCode = req.body.code;
   const verilogDir = path.join(__dirname, '..', 'public', 'verilog');
   const filePath = path.join(verilogDir, 'verilog_code.v');
@@ -62,7 +52,7 @@ router.post('/generate', function(req, res, next) {
     fs.mkdirSync(verilogDir, { recursive: true });
   }
 
-  fs.writeFile(filePath, verilogCode, function(err) {
+  fs.writeFile(filePath, verilogCode, (err) => {
     if (err) {
       console.error('Error writing file:', err);
       return res.status(500).send('Error writing file.');
@@ -109,3 +99,4 @@ router.post('/generate', function(req, res, next) {
 });
 
 module.exports = router;
+
