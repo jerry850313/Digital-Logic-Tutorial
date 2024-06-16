@@ -2,7 +2,7 @@
 <HR>
 This is a simple website to learn verilog and do some simple verilog on this website<BR>
   > 
-  Insatll [nodejs](https://nodejs.org/en/download/package-manager) first<BR>
+  Insatll [nodejs](https://nodejs.org/en/download/package-manager) first;
   Use "npm start" in CMD of this floder<BR>;
 <table>
   <tr><th>space</th><th>instruction</th></tr>
