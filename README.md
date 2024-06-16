@@ -1,7 +1,8 @@
 # Digital-Logic-Tutorial
 <HR>
 This is a simple website to learn verilog and do some simple verilog on this website<BR>
-Use "npm start" in CMD of this floder<BR>
+<li>Insatll nodejs first</li>
+<li>Use "npm start" in CMD of this floder</li>
 <table>
   <tr><th>space</th><th>instruction</th></tr>
   <tr><td>Courses</td><td>Some handouts here</td></tr>
