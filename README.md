@@ -11,3 +11,5 @@ This is a simple website to learn verilog and do some simple verilog on this web
   <tr><td>Courses</td><td>Some handouts here</td></tr>
   <tr><td>Verilog</td><td>Can edit verilog code here</td></tr>
 </table>
+<HR>
+Handouts are all from NCU EE Prof. E-Ray Hsieh
