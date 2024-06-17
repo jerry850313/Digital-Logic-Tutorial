@@ -7,7 +7,6 @@ router.get('/', (req, res) => {
   });
 
 router.get('/api/courses', (req, res) => {
-    // 假設這些資料從資料庫獲取
     const courses = [
         { name: "Course 01", url: "https://drive.google.com/file/d/1WLDWfqX90e_flawFNvrxYUemDz-uG3Zg/view?usp=drive_link" },
         { name: "Course 02", url: "https://drive.google.com/file/d/1Xi12JoXvTU0huwL6CRp7HsKhjnDvXFhQ/view?usp=drive_link" },
