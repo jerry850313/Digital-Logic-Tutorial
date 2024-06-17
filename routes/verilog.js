@@ -4,7 +4,6 @@ const { exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-// 檢查命令是否存在的輔助函數
 function checkCommand(command, callback) {
   exec(`${command} --version`, (error, stdout, stderr) => {
     callback(!error);
