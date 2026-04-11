@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>考場儀表板 - 數位邏輯設計</title>
+    <!-- 引入 Tailwind CSS 進行快速排版 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 FontAwesome 圖示 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 引入 Google 字體 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #0f172a; 
+            color: #f8fafc;
+            overflow: hidden; 
+        }
+        .clock-font {
+            font-family: 'Share Tech Mono', monospace;
+            font-variant-numeric: tabular-nums;
+        }
+        .glow-text {
+            text-shadow: 0 0 30px rgba(59, 130, 246, 0.6);
+        }
+        .glow-text-danger {
+            text-shadow: 0 0 30px rgba(239, 68, 68, 0.6);
+        }
+        .glow-text-warning {
+            text-shadow: 0 0 30px rgba(245, 158, 11, 0.6);
+        }
+        #settings-modal {
+            transition: opacity 0.3s ease-in-out;
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: rgba(71, 85, 105, 0.8); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(100, 116, 139, 1); }
+    </style>
+</head>
+<body class="h-screen w-screen flex flex-col">
+
+    <header class="bg-slate-800 border-b border-slate-700 p-4 flex justify-between items-center shadow-lg shrink-0 z-10">
+        <div class="flex items-center gap-4">
+            <i class="fa-solid fa-microchip text-blue-400 text-5xl"></i>
+            <div class="flex flex-col">
+                <h1 class="text-4xl font-bold text-slate-100 tracking-wider">數位邏輯設計 <span class="text-2xl text-slate-400 ml-2">Digital Logic Design</span></h1>
+                <div class="flex items-center mt-2">
+                    <h2 id="display-exam-name" class="text-2xl text-blue-300 font-medium">載入中 / Loading...</h2>
+                    <span class="mx-4 text-slate-600 font-bold">|</span>
+                    <div class="flex items-center text-slate-300 bg-slate-900/60 px-3 py-1 rounded-lg border border-slate-700 shadow-inner">
+                        <i class="fa-regular fa-clock mr-2 text-blue-400"></i>
+                        <span id="header-time" class="clock-font text-2xl font-bold tracking-wider">00:00:00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-right flex flex-col items-end justify-center">
+            <div id="sync-status" class="text-lg text-green-400 bg-slate-900/50 px-4 py-2 rounded-xl border border-slate-700 shadow-inner">
+                <i class="fa-solid fa-cloud-arrow-down mr-2"></i>已同步 Sync OK
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 flex p-6 gap-6 h-full overflow-hidden">
+        
+        <!-- 左側：時間資訊區 -->
+        <div class="w-[40%] flex flex-col items-center justify-start pt-8 bg-slate-900/50 rounded-3xl border border-slate-700/50 shadow-2xl relative p-6 h-full overflow-y-auto gap-8">
+            <div class="flex flex-col items-center bg-slate-800/80 px-8 py-6 rounded-3xl border border-slate-600 shadow-lg w-[90%] max-w-[600px] shrink-0">
+                <div class="text-2xl text-slate-400 mb-2 font-bold tracking-widest">現在時間 / Current Time</div>
+                <div id="current-time" class="clock-font text-6xl font-bold text-slate-200">00:00:00</div>
+            </div>
+
+            <div class="flex flex-col items-center w-full shrink-0">
+                <h3 class="text-3xl xl:text-4xl font-bold text-slate-400 mb-2 tracking-widest text-center">
+                    距離考試結束還有<br>
+                    <span class="text-xl xl:text-2xl text-slate-500">Time Remaining</span>
+                </h3>
+                <div id="countdown-timer" class="clock-font text-[8vw] leading-none font-bold glow-text tracking-tight transition-colors duration-500 mt-4">
+                    --:--:--
+                </div>
+                <div id="time-status" class="mt-6 text-3xl xl:text-4xl font-bold text-blue-400 animate-pulse text-center">
+                    等待伺服器資料...<br>
+                    <span class="text-xl xl:text-2xl">Waiting for server...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右側：公告與規則區 -->
+        <div class="w-[60%] flex flex-col gap-6 h-full">
+            <div class="bg-blue-900/30 border border-blue-500/30 rounded-2xl p-6 shadow-lg flex flex-col min-h-[250px] shrink-0">
+                <div class="flex justify-between items-center mb-4 border-b border-blue-500/30 pb-3">
+                    <div class="flex items-center gap-3 text-blue-400">
+                        <i class="fa-solid fa-bullhorn text-4xl"></i>
+                        <h3 class="text-3xl font-bold">考場公告 <span class="text-xl text-blue-300 ml-2">Announcements</span></h3>
+                    </div>
+                </div>
+                <div id="display-announcement" class="text-2xl leading-relaxed text-slate-100 whitespace-pre-wrap overflow-y-auto flex-1 font-medium">
+                    正在同步最新公告...
+                </div>
+            </div>
+
+            <div class="bg-slate-800/80 border border-slate-600 rounded-2xl p-6 shadow-lg flex flex-col flex-1 overflow-y-auto">
+                <div class="flex items-center gap-3 mb-4 text-red-400 border-b border-slate-600 pb-3 shrink-0">
+                    <i class="fa-solid fa-triangle-exclamation text-4xl"></i>
+                    <h3 class="text-3xl font-bold">重要規則提醒 <span class="text-xl text-red-300 ml-2">Exam Rules</span></h3>
+                </div>
+                <ul class="text-2xl text-slate-200 space-y-6">
+                    <li class="flex gap-4 items-start">
+                        <i class="fa-solid fa-ban text-red-400 text-3xl mt-2"></i>
+                        <div>
+                            手機、手錶請關機收進書包，<strong class="text-red-400">發出聲響考卷 0 分</strong>。<br>
+                            <span class="text-slate-400 text-xl">Turn off phones/smartwatches. Ringing = Score of 0.</span>
+                        </div>
+                    </li>
+                    <li class="flex gap-4 items-start">
+                        <i class="fa-solid fa-pen text-slate-400 text-3xl mt-2"></i>
+                        <div>
+                            作答時請務必將題號、答案及單位標示清楚。<br>
+                            <span class="text-slate-400 text-xl">Clearly mark question numbers, answers, and units.</span>
+                        </div>
+                    </li>
+                    <li class="flex gap-4 items-start">
+                        <i class="fa-solid fa-share-nodes text-slate-400 text-3xl mt-2"></i>
+                        <div>
+                            畫圖題遇線路相接點，請務必於交界處打點。<br>
+                            <span class="text-slate-400 text-xl">Mark connection points with a dot in circuit diagrams.</span>
+                        </div>
+                    </li>
+                    <li class="flex gap-4 items-start">
+                        <i class="fa-solid fa-compress text-slate-400 text-3xl mt-2"></i>
+                        <div>
+                            布林代數請化簡至最簡式（除非題目另有要求）。<br>
+                            <span class="text-slate-400 text-xl">Simplify Boolean algebra to the simplest form.</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <!-- TA 設定按鈕 -->
+    <button onclick="toggleSettings()" class="fixed bottom-6 right-6 bg-slate-700 hover:bg-slate-600 text-slate-300 p-5 rounded-full shadow-lg transition-colors border border-slate-500 opacity-30 hover:opacity-100 z-40">
+        <i class="fa-solid fa-gear text-3xl"></i>
+    </button>
+
+    <!-- 設定面板 Modal -->
+    <div id="settings-modal" class="fixed inset-0 bg-black/80 flex justify-center items-center z-50 hidden opacity-0 pointer-events-none">
+        <div class="bg-slate-800 border border-slate-600 rounded-2xl p-8 w-[700px] shadow-2xl transform scale-100 transition-transform pointer-events-auto">
+            <h2 class="text-3xl font-bold text-white mb-6 border-b border-slate-600 pb-3">TA 控制面板 / Control Panel</h2>
+            
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-lg font-medium text-slate-300 mb-1">考試名稱 (Exam Name)</label>
+                    <input type="text" id="input-exam-name" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-3 text-white text-lg focus:outline-none focus:border-blue-500" placeholder="例如：第一次期中考 / Midterm Exam 1">
+                </div>
+                
+                <div>
+                    <label class="block text-lg font-medium text-slate-300 mb-1">考試結束時間 (End Time) <span class="text-red-400">*必填</span></label>
+                    <input type="datetime-local" id="input-end-time" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-3 text-white text-lg focus:outline-none focus:border-blue-500 color-scheme-dark" style="color-scheme: dark;">
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-end mb-1">
+                        <label class="block text-lg font-medium text-slate-300">即時考場公告 (Live Announcements)</label>
+                        <div class="flex gap-2 items-center text-sm text-purple-400">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> 存檔時自動 AI 雙語翻譯
+                        </div>
+                    </div>
+                    <textarea id="input-announcement" rows="5" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-3 text-white text-lg focus:outline-none focus:border-blue-500" placeholder="只需輸入中文即可..."></textarea>
+                    
+                    <div class="flex justify-between items-center mt-2">
+                        <p class="text-xs text-slate-500">※ 內容將自動保存至伺服器 txt 檔中。</p>
+                        <select id="ollama-model" class="bg-slate-900 border border-slate-600 text-slate-300 rounded p-1 text-sm outline-none">
+                            <option value="gemma3:1b">翻譯模型：gemma3:1b</option>
+                            <option value="gemma4:e4b">翻譯模型：gemma4:e4b</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 flex justify-end gap-4">
+                <button onclick="toggleSettings()" class="px-6 py-3 rounded-lg text-slate-300 text-lg hover:bg-slate-700 transition-colors">取消 Cancel</button>
+                <button onclick="saveSettings()" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-lg font-bold transition-colors shadow-lg shadow-blue-500/30 flex items-center" id="btn-save">
+                    <i class="fa-solid fa-language mr-2 text-xl"></i>
+                    <span>儲存並發布公告 (Save & Sync)</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let examData = { name: "", endTime: "", announcement: "" };
+        const elCurrentTime = document.getElementById('current-time');
+        const elHeaderTime = document.getElementById('header-time');
+        const elCountdown = document.getElementById('countdown-timer');
+        const elDisplayExamName = document.getElementById('display-exam-name');
+        const elDisplayAnnouncement = document.getElementById('display-announcement');
+        const elTimeStatus = document.getElementById('time-status');
+        const elSyncStatus = document.getElementById('sync-status');
+        const modal = document.getElementById('settings-modal');
+
+        // 向 Server 拿最新資料
+        async function fetchState() {
+            try {
+                const res = await fetch('/exam/api/state?t=' + new Date().getTime());
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                
+                // 若內容與畫面不符才更新，避免 TA 在看的時候突然跳動
+                if (examData.announcement !== data.announcement || examData.name !== data.name) {
+                    examData = data;
+                    updateDisplay();
+                } else {
+                    examData = data;
+                }
+                
+                elSyncStatus.innerHTML = '<i class="fa-solid fa-cloud-arrow-down mr-2"></i>已同步 Sync OK';
+                elSyncStatus.className = 'text-lg text-green-400 bg-slate-900/50 px-4 py-2 rounded-xl border border-slate-700 shadow-inner';
+            } catch (e) {
+                console.error("連線錯誤", e);
+                elSyncStatus.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-2"></i>斷線 Offline';
+                elSyncStatus.className = 'text-lg text-red-400 bg-slate-900/50 px-4 py-2 rounded-xl border border-red-900/50 shadow-inner font-bold';
+            }
+        }
+
+        function init() {
+            fetchState();
+            setInterval(fetchState, 3000); 
+            setInterval(updateClocks, 1000); 
+        }
+
+        function updateDisplay() {
+            elDisplayExamName.innerText = examData.name || "考試未命名 / Unnamed Exam";
+            elDisplayAnnouncement.innerText = examData.announcement || "目前無特殊公告。\nNo special announcements currently.";
+            
+            if (modal.classList.contains('hidden')) {
+                document.getElementById('input-exam-name').value = examData.name;
+                document.getElementById('input-end-time').value = examData.endTime;
+                
+                // 設定面板只需顯示原始中文（我們假設原始中文總在雙語公告的前半段，這裡簡單起見如果 TA 重新編輯，會看到上一版的結果，為確保順暢，我們只在載入時更新）
+            }
+        }
+
+        function toggleSettings() {
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden', 'pointer-events-none');
+                setTimeout(() => modal.classList.remove('opacity-0'), 10);
+                
+                // 點開設定時，清空原本的翻譯紀錄讓 TA 輸入新中文
+                document.getElementById('input-announcement').value = "";
+            } else {
+                modal.classList.add('opacity-0');
+                setTimeout(() => modal.classList.add('hidden', 'pointer-events-none'), 300);
+            }
+        }
+
+        // 儲存並透過 Server 呼叫 Ollama
+        async function saveSettings() {
+            const btn = document.getElementById('btn-save');
+            const originalContent = btn.innerHTML;
+            
+            // 變更按鈕狀態為處理中 (因為 Ollama 需要幾秒鐘)
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2 text-xl"></i><span>AI 處理與同步中...</span>';
+            btn.disabled = true;
+            btn.classList.add('opacity-70');
+            
+            const newSettings = {
+                name: document.getElementById('input-exam-name').value,
+                endTime: document.getElementById('input-end-time').value,
+                announcement: document.getElementById('input-announcement').value,
+                modelName: document.getElementById('ollama-model').value
+            };
+            
+            try {
+                const res = await fetch('/exam/api/state', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newSettings)
+                });
+                
+                if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+                
+                const data = await res.json();
+                examData = data.examData; // Server 已經翻好並把雙語結果存好了
+                
+                updateDisplay();
+                updateClocks();
+                toggleSettings();
+            } catch (e) {
+                alert("儲存失敗！請確認 Server 與 Ollama 是否正常運作。");
+            } finally {
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+                btn.classList.remove('opacity-70');
+            }
+        }
+
+        function padNum(num) {
+            return num.toString().padStart(2, '0');
+        }
+
+        function updateClocks() {
+            const now = new Date();
+            const timeString = `${padNum(now.getHours())}:${padNum(now.getMinutes())}:${padNum(now.getSeconds())}`;
+            
+            if (elCurrentTime) elCurrentTime.innerText = timeString;
+            if (elHeaderTime) elHeaderTime.innerText = timeString;
+
+            if (!examData.endTime) return;
+            
+            const targetTime = new Date(examData.endTime);
+            const diff = targetTime - now;
+
+            elCountdown.classList.remove('text-red-500', 'text-amber-400', 'text-slate-100', 'glow-text', 'glow-text-danger', 'glow-text-warning');
+
+            if (diff <= 0) {
+                elCountdown.innerText = "00:00:00";
+                elCountdown.classList.add('text-red-500', 'glow-text-danger');
+                elTimeStatus.innerHTML = "考試結束，請立即停筆！<br><span class='text-2xl'>Time's up! Stop writing immediately.</span>";
+                elTimeStatus.className = "mt-4 text-4xl font-bold text-red-500 text-center";
+                return;
+            }
+
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+            elCountdown.innerText = `${padNum(hours)}:${padNum(mins)}:${padNum(secs)}`;
+
+            const totalMinsLeft = hours * 60 + mins;
+
+            if (totalMinsLeft < 5) {
+                elCountdown.classList.add('text-red-500', 'glow-text-danger');
+                elTimeStatus.innerHTML = "考試即將結束，請準備交卷！<br><span class='text-2xl'>Exam is ending soon. Prepare to submit.</span>";
+                elTimeStatus.className = "mt-4 text-4xl font-bold text-red-500 text-center animate-pulse";
+            } else if (totalMinsLeft < 15) {
+                elCountdown.classList.add('text-amber-400', 'glow-text-warning');
+                elTimeStatus.innerHTML = "考試進行中，請注意剩餘時間。<br><span class='text-2xl'>Exam in progress. Note the remaining time.</span>";
+                elTimeStatus.className = "mt-4 text-4xl font-bold text-amber-400 text-center";
+            } else {
+                elCountdown.classList.add('text-slate-100', 'glow-text');
+                elTimeStatus.innerHTML = "考試進行中...<br><span class='text-2xl'>Exam in progress...</span>";
+                elTimeStatus.className = "mt-4 text-4xl font-bold text-blue-400 text-center";
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

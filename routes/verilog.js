@@ -4,92 +4,59 @@ const { exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-function checkCommand(command, callback) {
-  exec(`${command} --version`, (error, stdout, stderr) => {
-    callback(!error);
-  });
-}
-
-function installDependencies() {
-  // 安裝 iverilog
-  const iverilogInstallerPath = path.join(__dirname, '..', 'iverilog-v12-20220611-x64_setup.exe');
-  exec(iverilogInstallerPath, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`Error installing iverilog: ${error.message}`);
-      console.error(`Stderr: ${stderr}`);
-    } else {
-      console.log(`iverilog and GTKWave installed successfully: ${stdout}`);
-    }
-  });
-}
-
-// 檢查和安裝依賴項
-checkCommand('iverilog', (iverilogInstalled) => {
-  if (iverilogInstalled) {
-    console.log('iverilog not found. Installing dependencies...');
-    installDependencies();
-  } else {
-    console.log('iverilog is already installed.');
-  }
-});
-
 /* GET verilog page. */
 router.get('/', (req, res) => {
-  res.render('verilog');
+  res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 /* POST verilog code. */
 router.post('/generate', (req, res) => {
   const verilogCode = req.body.code;
-  const verilogDir = path.join(__dirname, '..', 'public', 'verilog');
-  const filePath = path.join(verilogDir, 'verilog_code.v');
-  const scriptPath = path.join(__dirname, '..', 'scripts', 'generate_testbench.py');
-  const convertScriptPath = path.join(__dirname, '..', 'scripts', 'convert_vcd_to_json.py');
-
-  // Ensure the directory exists
+  const publicDir = path.join(__dirname, '..', 'public');
+  const verilogDir = path.join(publicDir, 'verilog');
+  
   if (!fs.existsSync(verilogDir)){
     fs.mkdirSync(verilogDir, { recursive: true });
   }
 
+  const filePath = path.join(verilogDir, 'verilog_code.v');
+  const scriptPath = path.join(__dirname, '..', 'scripts', 'generate_testbench.py');
+  const convertScriptPath = path.join(__dirname, '..', 'scripts', 'convert_vcd_to_json.py');
+
+  // 安全性檢查
+  const dangerousKeywords = ['$system', '$readmem', '$writemem', '$fopen', '$fdisplay'];
+  if (dangerousKeywords.some(keyword => verilogCode.includes(keyword))) {
+    return res.status(403).send('Security Error');
+  }
+
   fs.writeFile(filePath, verilogCode, (err) => {
-    if (err) {
-      console.error('Error writing file:', err);
-      return res.status(500).send('Error writing file.');
-    }
+    if (err) return res.status(500).send('File Error');
 
-    exec(`python ${scriptPath} ${filePath}`, (err, stdout, stderr) => {
-      if (err) {
-        console.error('Error generating testbench:', stderr);
-        return res.status(500).send(`Error generating testbench: ${stderr}`);
-      }
+    // 1. 產生 Testbench (因為調用 Ollama 較花時間，建議將 timeout 拉長到 15000)
+    exec(`python3 ${scriptPath} ${filePath}`, { timeout: 15000 }, (err, stdout, stderr) => {
+      if (err) return res.status(500).send(`TB Error: ${stderr || stdout}`);
       
-      // Compile the testbench
-      const tbFilePath = filePath.replace('.v', '_tb.v');
-      exec(`iverilog -o ${path.join(verilogDir, 'simulation')} ${tbFilePath} ${filePath}`, (err, stdout, stderr) => {
-        if (err) {
-          console.error('Error compiling testbench:', stderr);
-          return res.status(500).send(`Error compiling testbench: ${stderr}`);
-        }
+      const tbFile = 'verilog_code_tb.v';
+      const tbFilePath = path.join(verilogDir, tbFile);
+      const simFile = 'simulation';
+      
+      // 🌟 新增：將 Python 印在 stdout 的 Testbench 程式碼寫入實體檔案 🌟
+      fs.writeFile(tbFilePath, stdout, (err) => {
+        if (err) return res.status(500).send('Save TB Error');
 
-        // Run the simulation
-        exec(`vvp ${path.join(verilogDir, 'simulation')}`, (err, stdout, stderr) => {
-          if (err) {
-            console.error('Error running simulation:', stderr);
-            return res.status(500).send(`Error running simulation: ${stderr}`);
-          }
+        // 2. 編譯 (在 verilogDir 執行)
+        exec(`iverilog -o ${simFile} ${tbFile} verilog_code.v`, { cwd: verilogDir, timeout: 5000 }, (err, stdout, stderr) => {
+          if (err) return res.status(500).send(`Compile Error: ${stderr}`);
 
-          // Convert VCD to JSON
-          const vcdFilePath = path.join(__dirname, '..', 'output.vcd');
-          const jsonFilePath = path.join(verilogDir, 'waveform.json');
+          // 3. 執行模擬
+          exec(`vvp ${simFile}`, { cwd: verilogDir, timeout: 5000 }, (err, stdout, stderr) => {
+            if (err) return res.status(500).send(`Sim Error: ${stderr}`);
 
-          exec(`python ${convertScriptPath} ${vcdFilePath} ${jsonFilePath}`, (err, stdout, stderr) => {
-            if (err) {
-              console.error('Error converting VCD to JSON:', stderr);
-              return res.status(500).send(`Error converting VCD to JSON: ${stderr}`);
-            }
-
-            // Send the JSON file path to the client
-            res.json({ message: 'Testbench and VCD generated', jsonFile: '/verilog/waveform.json' });
+            // 4. VCD 轉 JSON
+            exec(`python3 ${convertScriptPath} output.vcd waveform.json`, { cwd: verilogDir, timeout: 5000 }, (err, stdout, stderr) => {
+              if (err) return res.status(500).send(`JSON Error: ${stderr}`);
+              res.json({ message: 'Success', jsonFile: '/verilog_files/waveform.json' }); // 這裡的路徑可能要確認是否與前端匹配
+            });
           });
         });
       });
@@ -98,4 +65,3 @@ router.post('/generate', (req, res) => {
 });
 
 module.exports = router;
-

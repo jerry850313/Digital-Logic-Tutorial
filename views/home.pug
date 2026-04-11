@@ -1,44 +1,59 @@
 //- Home Section
 #home.section.active
-  h1 Welcome to Digital Logic Design
-  nav.nav
-    a.nav-link(href="#", data-target="courses") Courses
-    a.nav-link(href="#", data-target="verilog") Verilog Editor
-  #content
-    table
-      tr
-        th 空間
-        th 指南
-      tr
-        td
-          a.nav-link(href="#", data-target="courses") Courses
-        td
-          | 放了一堆可能會用到的講義 
-          br
-          span.details 可以補充更多相關知識。
-      tr
-        td
-          a.nav-link(href="#", data-target="verilog") Verilog Editor
-        td
-          | 總之就是個神奇的地方，可以生成波形圖 
-          br
-          span.details If you want to use this function, make sure you have iverilog and "pip install json".Good luck and have a great time!
-    br
-    hr
-    br
-    table
-      tr
-        th 電路分類
-        th 說明
-      tr
-        td 數位
-        td
-          | 簡單講就是0和1組成的世界 
-          br
-          span.details 還需要更多資訊嗎?才不告訴你!。
-      tr
-        td 類比
-        td
-          | 在巨觀世界觀測到的東西都是類比的 
-          br
-          span.details 巨觀就是肉眼能見的範圍；微觀就是需要工具輔助才能觀察的世界，量子力學這種令人頭痛的存在就在這裡發生的。
+  .container.py-4
+    header.pb-3.mb-4.border-bottom
+      span.fs-4.font-weight-bold 📑 數位邏輯設計：核心筆記
+    
+    .p-5.mb-4.bg-dark.text-white.rounded-3
+      .container-fluid.py-5
+        h1.display-5.fw-bold Digital Logic Study Notes
+        p.col-md-8.fs-4 
+          | 本筆記整理了數位電路設計的關鍵知識，從最基礎的邏輯門到複雜的有限狀態機 (FSM)，
+          | 配合右方的 Verilog Editor 實驗室，可以即時驗證理論。
+        a.btn.btn-outline-light.btn-lg(href="#", data-target="courses") 進入講義庫
+        a.btn.btn-outline-success.btn-lg.ml-3(href="#", data-target="verilog") 開啟實驗室
+
+    .row.align-items-md-stretch
+      .col-md-6.mb-4
+        .h-100.p-5.text-white.bg-primary.rounded-3
+          h2 1. 基礎門電路 (Basic Gates)
+          p 數位邏輯的原子：
+          ul
+            li <strong>NOT, AND, OR</strong>：最基本的邏輯運算。
+            li <strong>NAND, NOR</strong>：萬用邏輯閘，可用來組合出任何電路。
+            li <strong>XOR, XNOR</strong>：用於半加器、同位檢查與比較電路。
+          p.small.text-white-50 💡 提示：Boolean 代數與 DeMorgan 定理是化簡電路的必備工具。
+
+      .col-md-6.mb-4
+        .h-100.p-5.bg-light.border.rounded-3
+          h2 2. 組合邏輯 (Combinational)
+          p 輸出僅由目前的輸入決定，無記憶性：
+          ul
+            li <strong>加法器 (Adders)</strong>：半加器 (HA) 與全加器 (FA)。
+            li <strong>選擇器 (Mux)</strong>：多個輸入中選擇一個輸出。
+            li <strong>解碼器 (Decoder)</strong>：n 對 2^n 的映射。
+          p.small.text-muted 💡 常用於算術運算與控制單元。
+
+    .row.align-items-md-stretch
+      .col-md-6.mb-4
+        .h-100.p-5.bg-light.border.rounded-3
+          h2 3. 循序邏輯 (Sequential)
+          p 具備「狀態」或「記憶」功能的電路：
+          ul
+            li <strong>正反器 (Flip-Flops)</strong>：D-FF, JK-FF 等儲存 1-bit。
+            li <strong>暫存器 (Registers)</strong>：儲存與平移資料。
+            li <strong>計數器 (Counters)</strong>：同步與非同步設計。
+          p.small.text-muted 💡 時鐘訊號 (Clock) 是循序電路的心臟。
+
+      .col-md-6.mb-4
+        .h-100.p-5.text-white.bg-success.rounded-3
+          h2 4. Verilog / RTL 設計
+          p 用程式碼「描述」硬體行為：
+          ul
+            li <strong>Assign</strong>：用於描述連續分配（組合電路）。
+            li <strong>Always Block</strong>：描述電位的變化或時鐘觸發。
+            li <strong>Blocking (=) vs Non-blocking (<=)</strong>：組合與循序電路的關鍵區別。
+          p.small.text-white-50 💡 實作建議：在實驗室嘗試寫一個 4-bit Counter 並觀察波形。
+
+    footer.pt-3.mt-4.text-muted.border-top
+      | © 2026 數位邏輯設計教學筆記 - 保持學習，精進實作。

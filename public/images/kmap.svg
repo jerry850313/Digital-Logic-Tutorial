@@ -1,0 +1,59 @@
+<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="400" height="400" fill="#fff"/>
+  
+  <!-- 標題與化簡結果 -->
+  <text x="200" y="30" font-family="Arial" font-size="18" font-weight="bold" text-anchor="middle" fill="#2a5298">4-Variable K-Map Minimization</text>
+  <text x="200" y="380" font-family="monospace" font-size="20" font-weight="bold" text-anchor="middle" fill="#d9534f">Result: F = A'B' + CD</text>
+
+  <!-- K-Map 核心格線 (AB\CD) -->
+  <g transform="translate(80, 80)">
+    <!-- 外框 -->
+    <rect x="0" y="0" width="240" height="240" fill="none" stroke="#333" stroke-width="2"/>
+    
+    <!-- 垂直線 -->
+    <line x1="60" y1="0" x2="60" y2="240" stroke="#333" stroke-width="1"/>
+    <line x1="120" y1="0" x2="120" y2="240" stroke="#333" stroke-width="1"/>
+    <line x1="180" y1="0" x2="180" y2="240" stroke="#333" stroke-width="1"/>
+    
+    <!-- 水平線 -->
+    <line x1="0" y1="60" x2="240" y2="60" stroke="#333" stroke-width="1"/>
+    <line x1="0" y1="120" x2="240" y2="120" stroke="#333" stroke-width="1"/>
+    <line x1="0" y1="180" x2="240" y2="180" stroke="#333" stroke-width="1"/>
+
+    <!-- 對角線標籤 -->
+    <line x1="-50" y1="-50" x2="0" y2="0" stroke="#333" stroke-width="2"/>
+    <text x="-15" y="-30" font-family="Arial" font-size="16" font-weight="bold">CD</text>
+    <text x="-45" y="-5" font-family="Arial" font-size="16" font-weight="bold">AB</text>
+
+    <!-- CD 標籤 (00, 01, 11, 10) -->
+    <text x="30" y="-15" text-anchor="middle">00</text>
+    <text x="90" y="-15" text-anchor="middle">01</text>
+    <text x="150" y="-15" text-anchor="middle">11</text>
+    <text x="210" y="-15" text-anchor="middle">10</text>
+
+    <!-- AB 標籤 -->
+    <text x="-25" y="35" text-anchor="middle">00</text>
+    <text x="-25" y="95" text-anchor="middle">01</text>
+    <text x="-25" y="155" text-anchor="middle">11</text>
+    <text x="-25" y="215" text-anchor="middle">10</text>
+
+    <!-- 填入數值 (1) -->
+    <text x="30" y="35" text-anchor="middle" font-size="18" font-weight="bold">1</text>
+    <text x="90" y="35" text-anchor="middle" font-size="18" font-weight="bold">1</text>
+    <text x="150" y="35" text-anchor="middle" font-size="18" font-weight="bold">1</text>
+    <text x="210" y="35" text-anchor="middle" font-size="18" font-weight="bold">1</text>
+    
+    <text x="150" y="95" text-anchor="middle" font-size="18" font-weight="bold">1</text>
+    <text x="150" y="155" text-anchor="middle" font-size="18" font-weight="bold">1</text>
+    <text x="150" y="215" text-anchor="middle" font-size="18" font-weight="bold">1</text>
+    
+    <!-- 圈選效果 (Circles/Groups) -->
+    <!-- Group 1: 第一列 (A'B') -->
+    <rect x="5" y="5" width="230" height="50" rx="25" fill="none" stroke="blue" stroke-width="3" stroke-dasharray="5,3" opacity="0.6"/>
+    <text x="245" y="35" fill="blue" font-size="12">Group: A'B'</text>
+    
+    <!-- Group 2: 第三行 (CD) -->
+    <rect x="125" y="5" width="50" height="230" rx="25" fill="none" stroke="green" stroke-width="3" stroke-dasharray="5,3" opacity="0.6"/>
+    <text x="150" y="255" fill="green" font-size="12" text-anchor="middle">Group: CD</text>
+  </g>
+</svg>

@@ -50,7 +50,7 @@ html(lang="en")
     script.
       $(document).ready(function() {
           // Show the clicked section and hide others
-          $('a.nav-link').click(function(event) {
+          $('a[data-target]').click(function(event) {
               event.preventDefault();
               const target = $(this).data('target');
               $('.section').removeClass('active');
@@ -118,13 +118,26 @@ html(lang="en")
               });
           });
 
-          // Load courses dynamically
+          // Load courses dynamically with categorization
           $.ajax({
               url: '/courses/api/courses',
               method: 'GET',
-              success: function(courses) {
-                  courses.forEach(course => {
-                      $('#course-list').append('<li class="list-group-item"><a href="'+course.url+'" target="_blank">'+course.name+'</a></li>');
+              success: function(categories) {
+                  console.log("Received categories:", categories); // Debugging
+                  if (!categories || !Array.isArray(categories)) {
+                      console.error("Data is not an array");
+                      return;
+                  }
+                  $('#course-list').empty(); // Clear current list
+                  categories.forEach(item => {
+                      if (item.category && item.lessons) {
+                          // Append category header
+                          $('#course-list').append('<li class="list-group-item list-group-item-secondary"><strong>' + item.category + '</strong></li>');
+                          // Append lessons under this category
+                          item.lessons.forEach(lesson => {
+                              $('#course-list').append('<li class="list-group-item"><a href="' + lesson.url + '" target="_blank">' + lesson.name + '</a></li>');
+                          });
+                      }
                   });
               },
               error: function(err) {

@@ -1,91 +1,137 @@
 import re
 import sys
+import json
+import requests
 
 def parse_verilog(file_path):
-    with open(file_path, 'r') as file:
+    """
+    使用 Ollama 取代原本脆弱的正則表達式來解析 Verilog 模組。
+    不管使用者用 1995 還是 2001 語法，LLM 都能看懂。
+    """
+    with open(file_path, 'r', encoding='utf-8') as file:
         content = file.read()
 
-    module_pattern = r"module\s+(\w+)\s*\(([^)]*)\);"
-    port_pattern = r"(input|output|inout)\s+(wire|reg)?\s*(\[.*?\])?\s*(\w+)"
-
-    module_match = re.search(module_pattern, content)
-    if not module_match:
-        raise ValueError("No module definition found")
-
-    module_name = module_match.group(1)
-    ports = module_match.group(2)
-
-    port_list = re.findall(port_pattern, ports)
-    port_info = [{"type": p[0], "name": p[3], "width": p[2]} for p in port_list]
-
-    return module_name, port_info
-
-def generate_testbench(module_name, ports):
-    tb_lines = []
-    tb_lines.append("`timescale 1ns/1ps")
-    tb_lines.append("")
-    tb_lines.append(f"module {module_name}_tb;")
-    tb_lines.append("")
-
-    # Declare variables
-    input_ports = [port for port in ports if port['type'] == 'input']
-    output_ports = [port for port in ports if port['type'] == 'output']
-
-    input_width = sum([(int(port['width'][1:-1].split(':')[0]) + 1) if port['width'] else 1 for port in input_ports])
-
-    tb_lines.append(f"    reg [{input_width - 1}:0] inputs;")
+    # 設計給 Ollama 的 System Prompt，嚴格要求只吐出 JSON
+    prompt = f"""
+    你是一個 Verilog 語法解析器。請分析以下的 Verilog 程式碼，並找出模組名稱、所有輸入 (input) 與輸出 (output) 端口。
     
-    for port in output_ports:
-        tb_lines.append(f"    wire {port['name']};")
+    請嚴格遵守以下 JSON 格式輸出，絕對不要包含任何其他文字或 Markdown 標記：
+    {{
+        "module_name": "你的模組名稱",
+        "inputs": [
+            {{"name": "端口名稱", "width": "[3:0] 或空字串"}}
+        ],
+        "outputs": [
+            {{"name": "端口名稱", "width": "如果是一般 1-bit 請留空字串"}}
+        ]
+    }}
 
-    # Instantiate the module under test
-    tb_lines.append(f"    {module_name} uut (")
-    bit_index = 0
-    port_lines = []
-    for port in input_ports:
-        width = int(port['width'][1:-1].split(':')[0]) + 1 if port['width'] else 1
-        if width == 1:
-            port_lines.append(f"        .{port['name']}(inputs[{bit_index}]),")
+    程式碼如下：
+    {content}
+    """
+
+    try:
+        # 呼叫本地端的 Ollama API (預設 port 為 11434)
+        # 你可以把 'llama3' 換成你實際在跑的模型，例如 'mistral' 或 'gemma'
+        response = requests.post("http://localhost:11434/api/generate", 
+                                 json={
+                                     "model": "gemma4:e4b", 
+                                     "prompt": prompt,
+                                     "stream": False,
+                                     "format": "json" # 強制要求 Ollama 盡可能回傳 JSON 格式
+                                 })
+        response.raise_for_status()
+        result_text = response.json()['response']
+        
+        # 為了防止 LLM 偶爾包裝在 ```json ``` 裡面，我們用正則抓出大括號的範圍
+        json_match = re.search(r'\{.*\}', result_text, re.DOTALL)
+        if not json_match:
+            raise ValueError("Ollama 回傳的資料找不到合法的 JSON 結構。")
+            
+        parsed_data = json.loads(json_match.group(0))
+        
+        return parsed_data["module_name"], parsed_data["inputs"], parsed_data["outputs"]
+
+    except Exception as e:
+        print(f"Ollama 解析失敗: {e}")
+        sys.exit(1)
+
+
+def generate_testbench(module_name, input_ports, output_ports):
+    # ==========================================
+    # 以下保留你原本寫得非常好的 Testbench 生成邏輯
+    # ==========================================
+    total_input_bits = 0
+    for p in input_ports:
+        w = p.get('width', '')
+        bits = 1
+        if w:
+            match = re.search(r'\[\s*(\d+)\s*:\s*(\d+)\s*\]', w)
+            if match:
+                msb, lsb = int(match.group(1)), int(match.group(2))
+                bits = abs(msb - lsb) + 1
+            else:
+                bits = 1 
+        p['bits'] = bits
+        p['width'] = w # 確保 width 鍵存在
+        total_input_bits += bits
+
+    tb = [
+        "`timescale 1ns/1ps",
+        f"module {module_name}_tb;"
+    ]
+
+    if total_input_bits > 0:
+        tb.append(f"    reg [{total_input_bits-1}:0] test_bits;")
+        tb.append("    integer i;  // 移出迴圈外，修正標準 Verilog 相容性")
+
+    tb.append("\n    // 解析與宣告接線")
+    
+    current_bit_idx = 0
+    for p in input_ports:
+        name, w, bits = p['name'], p['width'], p['bits']
+        if bits == 1:
+            tb.append(f"    wire {w} {name} = test_bits[{current_bit_idx}];")
         else:
-            port_lines.append(f"        .{port['name']}(inputs[{bit_index + width - 1}:{bit_index}]),")
-        bit_index += width
+            tb.append(f"    wire {w} {name} = test_bits[{current_bit_idx + bits - 1}:{current_bit_idx}];")
+        current_bit_idx += bits
 
-    for port in output_ports:
-        port_lines.append(f"        .{port['name']}({port['name']}),")
+    for p in output_ports:
+        tb.append(f"    wire {p.get('width', '')} {p['name']};")
+
+    tb.append(f"\n    {module_name} uut (")
+    all_conns = [f"        .{p['name']}({p['name']})" for p in (input_ports + output_ports)]
+    tb.append(",\n".join(all_conns))
+    tb.append("    );")
+
+    tb.append("\n    initial begin")
+    tb.append('        $dumpfile("output.vcd");')
+    tb.append(f"        $dumpvars(0, {module_name}_tb);")
     
-    tb_lines.extend(port_lines)
-    tb_lines[-1] = tb_lines[-1][:-1]  # Remove the comma from the last port connection
-    tb_lines.append("    );")
-    tb_lines.append("")
+    if total_input_bits > 0 and total_input_bits <= 20: 
+        tb.append(f"        for (i = 0; i < {1 << total_input_bits}; i = i + 1) begin")
+        tb.append("            test_bits = i;")
+        tb.append("            #10;")
+        tb.append("        end")
+    elif total_input_bits > 20:
+        tb.append("        // 警告：輸入位元總數過大，已取消全排列窮舉，請自行添加測試向量")
+        tb.append("        test_bits = 0;")
+        tb.append("        #10;")
+    else:
+        tb.append("        // 無輸入引腳")
+        tb.append("        #10;")
+
+    tb.append("        $finish;")
+    tb.append("    end")
+    tb.append("endmodule")
     
-    # Initial block to generate all possible input combinations
-    tb_lines.append("    initial begin")
-    tb_lines.append("        // Generate all possible input combinations")
-    tb_lines.append(f"        for (integer i = 0; i < (1 << {input_width}); i = i + 1) begin")
-    tb_lines.append("            inputs = i;")
-    tb_lines.append("            #10;")
-    tb_lines.append("        end")
-    tb_lines.append("        $finish;")
-    tb_lines.append("    end")
+    return "\n".join(tb)
 
-    # Initial block to dump variables
-    tb_lines.append("    initial begin")
-    tb_lines.append("        $dumpfile(\"output.vcd\");")
-    tb_lines.append(f"        $dumpvars(0, {module_name}_tb);")
-    tb_lines.append("    end")
-
-    tb_lines.append("endmodule")
-
-    return "\n".join(tb_lines)
-
-# Main code
 if __name__ == "__main__":
-    verilog_file_path = sys.argv[1]
-    module_name, ports = parse_verilog(verilog_file_path)
-    testbench_code = generate_testbench(module_name, ports)
-
-    tb_file_path = verilog_file_path.replace('.v', '_tb.v')
-    with open(tb_file_path, 'w') as tb_file:
-        tb_file.write(testbench_code)
-
-    print(f"Testbench for {module_name} generated successfully.")
+    if len(sys.argv) < 2:
+        print("請提供 Verilog 檔案路徑。例如：python gen_tb.py design.v")
+        sys.exit(1)
+        
+    file_path = sys.argv[1]
+    name, ins, outs = parse_verilog(file_path)
+    print(generate_testbench(name, ins, outs))
