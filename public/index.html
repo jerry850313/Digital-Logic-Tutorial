@@ -32,6 +32,7 @@
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item"><a class="nav-link" href="/" data-target="home">首頁課程介紹</a></li>
                     <li class="nav-item"><a class="nav-link" href="/courses" data-target="courses">課程講義下載</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/ans" data-target="ans">考試與解答</a></li>
                     <li class="nav-item"><a class="nav-link" href="/verilog" data-target="verilog">Verilog 在線模擬</a></li>
                 </ul>
             </div>
@@ -127,6 +128,14 @@
         </div>
     </div>
 
+    <!-- Ans Section -->
+    <div id="ans" class="section container" style="margin-top: 80px;">
+        <h2 class="mb-4 text-danger font-weight-bold">考試與解答專區</h2>
+        <div class="row" id="ans-list">
+            <!-- Dynamic Content -->
+        </div>
+    </div>
+
     <!-- Verilog Section -->
     <div id="verilog" class="section container" style="margin-top: 80px;">
         <div class="row">
@@ -171,6 +180,7 @@
 
             const path = window.location.pathname;
             if (path === '/courses') showSection('courses', false);
+            else if (path === '/ans') showSection('ans', false);
             else if (path === '/verilog') showSection('verilog', false);
             else showSection('home', false);
 
@@ -230,6 +240,31 @@
                                         <div class="card-body">
                                             <h6>${lesson.name}</h6>
                                             <a href="${lesson.url}" class="btn btn-sm btn-outline-primary" target="_blank">下載 PDF</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            `);
+                        });
+                    });
+                }
+            });
+            // 加載考試與解答
+            $.ajax({
+                url: '/ans/api/list',
+                method: 'GET',
+                success: function(categories) {
+                    const list = $('#ans-list');
+                    list.empty();
+                    categories.forEach(cat => {
+                        list.append(`<div class="col-12 mt-4"><h3>${cat.category}</h3></div>`);
+                        cat.items.forEach(item => {
+                            list.append(`
+                                <div class="col-md-4 mb-3">
+                                    <div class="card bg-white shadow-sm h-100 border-danger">
+                                        <div class="card-body">
+                                            <h6>${item.name}</h6>
+                                            <p class="small text-muted">日期: ${item.date}</p>
+                                            <a href="${item.url}" class="btn btn-sm btn-outline-danger" target="_blank">查看解答</a>
                                         </div>
                                     </div>
                                 </div>
