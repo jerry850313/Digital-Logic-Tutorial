@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Marked.js for Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         body { font-family: "Microsoft JhengHei", "PingFang TC", sans-serif; background-color: #f4f7f6; }
         #waveform { width: 100%; height: 600px; margin-top: 20px; background: white; }
@@ -24,29 +28,69 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow">
         <div class="container">
-            <a class="navbar-brand font-weight-bold" href="/" data-target="home">Digital Logic Design</a>
+            <a class="navbar-brand font-weight-bold" href="/" data-target="home" data-i18n="nav_brand">Digital Logic Design</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item"><a class="nav-link" href="/" data-target="home">首頁課程介紹</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/courses" data-target="courses">課程講義下載</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/ans" data-target="ans">考試與解答</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/verilog" data-target="verilog">Verilog 在線模擬</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/" data-target="home" data-i18n="nav_home">首頁課程介紹</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/courses" data-target="courses" data-i18n="nav_courses">課程講義下載</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/ans" data-target="ans" data-i18n="nav_ans">考試與解答</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/verilog" data-target="verilog" data-i18n="nav_verilog">Verilog 在線模擬</a></li>
+                    <li class="nav-item"><a class="nav-link text-warning font-weight-bold" href="/gate" data-i18n="nav_gate">邏輯閘模擬器 (Quartus)</a></li>
+                    
+                    <!-- 語言切換選單 -->
+                    <li class="nav-item dropdown ml-lg-3">
+                        <a class="nav-link dropdown-toggle btn btn-outline-light btn-sm px-3" href="#" id="langDropdown" role="button" data-toggle="dropdown">
+                            🌐 <span id="currentLang">中文</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow">
+                            <a class="dropdown-item" href="#" onclick="changeLang('zh-TW')">繁體中文</a>
+                            <a class="dropdown-item" href="#" onclick="changeLang('en')">English</a>
+                            <a class="dropdown-item" href="#" onclick="changeLang('ja')">日本語</a>
+                            <a class="dropdown-item" href="#" onclick="changeLang('it')">Italiano</a>
+                            <a class="dropdown-item" href="#" onclick="changeLang('vi')">Tiếng Việt</a>
+                        </div>
+                    </li>
+                    <!-- 使用說明按鈕 -->
+                    <li class="nav-item ml-lg-2">
+                        <button class="btn btn-info btn-sm px-3" data-toggle="modal" data-target="#guideModal">
+                            ❓ <span data-i18n="nav_help">使用說明</span>
+                        </button>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
 
+    <!-- 使用說明 Modal -->
+    <div class="modal fade" id="guideModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title font-weight-bold" data-i18n="guide_title">系統使用說明 / User Guide</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+                <div class="modal-body p-4" id="guideContent" style="max-height: 70vh; overflow-y: auto;">
+                    <!-- Markdown Rendered Here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" data-i18n="guide_close">關閉</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="home" class="section active" style="margin-top: 56px;">
         <div class="hero-section text-center">
             <div class="container">
-                <h1 class="display-3 font-weight-bold">數位邏輯設計</h1>
-                <p class="lead">Fundamentals of Digital Logic and Microprocessor Design</p>
+                <h1 class="display-3 font-weight-bold" data-i18n="hero_title">數位邏輯設計</h1>
+                <p class="lead" data-i18n="hero_subtitle">Fundamentals of Digital Logic and Microprocessor Design</p>
                 <div class="mt-4">
-                    <a href="/courses" data-target="courses" class="btn btn-warning btn-lg px-5 mx-2 shadow">開始學習</a>
-                    <a href="/verilog" data-target="verilog" class="btn btn-outline-light btn-lg px-5 mx-2">Verilog 實作</a>
+                    <a href="/courses" data-target="courses" class="btn btn-warning btn-lg px-5 mx-2 shadow" data-i18n="hero_start">開始學習</a>
+                    <a href="/gate" class="btn btn-primary btn-lg px-5 mx-2 shadow" data-i18n="hero_quartus">Quartus 模擬器</a>
+                    <a href="/verilog" data-target="verilog" class="btn btn-outline-light btn-lg px-5 mx-2" data-i18n="hero_verilog">Verilog 實作</a>
                 </div>
             </div>
         </div>
@@ -55,47 +99,47 @@
             <div class="row">
                 <div class="col-lg-8">
                     <section class="mb-5">
-                        <h2 class="concept-title">1. 布林代數與邏輯閘 (Boolean Algebra & Logic Gates)</h2>
-                        <p>數位電路的基礎建立在二進位運算（0 與 1）。透過布林代數，我們可以將複雜的邏輯問題轉化為數學運算式。</p>
+                        <h2 class="concept-title" data-i18n="section1_title">1. 布林代數與邏輯閘 (Boolean Algebra & Logic Gates)</h2>
+                        <p data-i18n="section1_p">數位電路的基礎建立在二進位運算（0 與 1）。透過布林代數，我們可以將複雜的邏輯問題轉化為數學運算式。</p>
                         <div class="row text-center">
                             <div class="col-12">
                                 <img src="/images/logic_gates.png" alt="Logic Gates" class="img-fluid shadow rounded mb-4" style="max-height: 500px; width: auto;">
-                                <p class="small text-muted">ANSI/IEEE 標準邏輯閘符號與真值表</p>
+                                <p class="small text-muted" data-i18n="section1_img_caption">ANSI/IEEE 標準邏輯閘符號與真值表</p>
                             </div>
                             <div class="col-12 text-left">
                                 <ul class="list-group list-group-flush bg-transparent">
-                                    <li class="list-group-item bg-transparent"><strong>公理與定理：</strong> 交換律、結合律、分配律以及最重要的 <strong>狄摩根定律 (De Morgan's Laws)</strong>。</li>
-                                    <li class="list-group-item bg-transparent"><strong>萬用邏輯閘：</strong> NAND 與 NOR 閘可以建構出任何其他的邏輯功能。</li>
+                                    <li class="list-group-item bg-transparent" data-i18n="section1_li1"><strong>公理與定理：</strong> 交換律、結合律、分配律以及最重要的 <strong>狄摩根定律 (De Morgan's Laws)</strong>。</li>
+                                    <li class="list-group-item bg-transparent" data-i18n="section1_li2"><strong>萬用邏輯閘：</strong> NAND 與 NOR 閘可以建構出任何其他的邏輯功能。</li>
                                 </ul>
                             </div>
                         </div>
                     </section>
 
                     <section class="mb-5">
-                        <h2 class="concept-title">2. 卡諾圖化簡 (Karnaugh Map Minimization)</h2>
-                        <p>在設計電路時，減少邏輯閘的使用數量是核心目標。透過「圈選」相鄰的 1（Groupings），可以找出最簡的積之和 (SOP) 表示式。</p>
+                        <h2 class="concept-title" data-i18n="section2_title">2. 卡諾圖化簡 (Karnaugh Map Minimization)</h2>
+                        <p data-i18n="section2_p">在設計電路時，減少邏輯閘的使用數量是核心目標。透過「圈選」相鄰的 1（Groupings），可以找出最簡的積之和 (SOP) 表示式。</p>
                         <div class="text-center bg-white p-4 border rounded shadow-sm">
                             <img src="/images/kmap.svg" alt="K-Map" class="img-fluid mx-auto d-block mb-3" style="max-width: 450px;">
-                            <p class="small text-muted font-italic">範例：透過 4x4 卡諾圖化簡布林函數</p>
+                            <p class="small text-muted font-italic" data-i18n="section2_img_caption">範例：透過 4x4 卡諾圖化簡布林函數</p>
                         </div>
                     </section>
 
                     <section class="mb-5">
-                        <h2 class="concept-title">3. 組合邏輯 (Combinational Logic)</h2>
-                        <p>這類電路的輸出「僅」與目前的輸入有關。常見模組包括：</p>
+                        <h2 class="concept-title" data-i18n="section3_title">3. 組合邏輯 (Combinational Logic)</h2>
+                        <p data-i18n="section3_p">這類電路的輸出「僅」與目前的輸入有關。常見模組包括：</p>
                         <div class="card-group">
-                            <div class="card bg-light mx-1"><div class="card-body"><h5>加法器 (Adders)</h5><p class="small">半加器與全加器是 CPU 運算單元的基礎。</p></div></div>
-                            <div class="card bg-light mx-1"><div class="card-body"><h5>多工器 (MUX)</h5><p class="small">如同電子開關，根據選擇信號決定哪一路輸入傳送到輸出。</p></div></div>
-                            <div class="card bg-light mx-1"><div class="card-body"><h5>解碼器 (Decoder)</h5><p class="small">將二進位代碼轉換為特定的致能信號。</p></div></div>
+                            <div class="card bg-light mx-1"><div class="card-body"><h5 data-i18n="section3_card1_title">加法器 (Adders)</h5><p class="small" data-i18n="section3_card1_p">半加器與全加器是 CPU 運算單元的基礎。</p></div></div>
+                            <div class="card bg-light mx-1"><div class="card-body"><h5 data-i18n="section3_card2_title">多工器 (MUX)</h5><p class="small" data-i18n="section3_card2_p">如同電子開關，根據選擇信號決定哪一路輸入傳送到輸出。</p></div></div>
+                            <div class="card bg-light mx-1"><div class="card-body"><h5 data-i18n="section3_card3_title">解碼器 (Decoder)</h5><p class="small" data-i18n="section3_card3_p">將二進位代碼轉換為特定的致能信號。</p></div></div>
                         </div>
                     </section>
 
                     <section class="mb-5">
-                        <h2 class="concept-title">4. 序向邏輯與 FSM (Sequential Logic & State Machines)</h2>
-                        <p>當電路需要「記憶」時，我們引入時脈 (Clock) 與正反器 (Flip-Flops)。</p>
+                        <h2 class="concept-title" data-i18n="section4_title">4. 序向邏輯與 FSM (Sequential Logic & State Machines)</h2>
+                        <p data-i18n="section4_p">當電路需要「記憶」時，我們引入時脈 (Clock) 與正反器 (Flip-Flops)。</p>
                         <ul>
-                            <li><strong>正反器：</strong> D-FlipFlop, JK-FlipFlop 等觸發式記憶元件。</li>
-                            <li><strong>有限狀態機 (FSM)：</strong> Mealy 與 Moore 機型，用於設計自動控制邏輯。</li>
+                            <li data-i18n="section4_li1"><strong>正反器：</strong> D-FlipFlop, JK-FlipFlop 等觸發式記憶元件。</li>
+                            <li data-i18n="section4_li2"><strong>有限狀態機 (FSM)：</strong> Mealy 與 Moore 機型，用於設計自動控制邏輯。</li>
                         </ul>
                     </section>
                 </div>
@@ -104,13 +148,13 @@
                     <div class="sidebar-sticky">
                         <div class="card shadow">
                             <div class="card-body">
-                                <h5 class="card-title font-weight-bold">課程核心技能</h5>
+                                <h5 class="card-title font-weight-bold" data-i18n="sidebar_title">課程核心技能</h5>
                                 <hr>
                                 <ul class="list-unstyled">
-                                    <li class="mb-2">✅ 邏輯電路分析與合成</li>
-                                    <li class="mb-2">✅ 同步與非同步計數器設計</li>
-                                    <li class="mb-2">✅ 暫存器與記憶體架構</li>
-                                    <li class="mb-2">✅ Verilog HDL 硬體描述語言</li>
+                                    <li class="mb-2" data-i18n="sidebar_li1">✅ 邏輯電路分析與合成</li>
+                                    <li class="mb-2" data-i18n="sidebar_li2">✅ 同步與非同步計數器設計</li>
+                                    <li class="mb-2" data-i18n="sidebar_li3">✅ 暫存器與記憶體架構</li>
+                                    <li class="mb-2" data-i18n="sidebar_li4">✅ Verilog HDL 硬體描述語言</li>
                                 </ul>
                             </div>
                         </div>
@@ -122,7 +166,7 @@
 
     <!-- Courses Section -->
     <div id="courses" class="section container" style="margin-top: 80px;">
-        <h2 class="mb-4 text-primary font-weight-bold">講義與參考資源下載</h2>
+        <h2 class="mb-4 text-primary font-weight-bold" data-i18n="courses_title">講義與參考資源下載</h2>
         <div class="row" id="course-list">
             <!-- Dynamic Content -->
         </div>
@@ -130,7 +174,10 @@
 
     <!-- Ans Section -->
     <div id="ans" class="section container" style="margin-top: 80px;">
-        <h2 class="mb-4 text-danger font-weight-bold">考試與解答專區</h2>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-danger font-weight-bold m-0" data-i18n="ans_title">考試與解答專區</h2>
+            <a href="/" data-target="home" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-left"></i> <span data-i18n="ans_back">返回課程首頁</span></a>
+        </div>
         <div class="row" id="ans-list">
             <!-- Dynamic Content -->
         </div>
@@ -140,24 +187,226 @@
     <div id="verilog" class="section container" style="margin-top: 80px;">
         <div class="row">
             <div class="col-md-5">
-                <h2 class="font-weight-bold text-success mb-3">Verilog 編輯器</h2>
+                <h2 class="font-weight-bold text-success mb-3" data-i18n="verilog_editor_title">Verilog 編輯器</h2>
                 <div class="card shadow-lg">
                     <div class="card-body">
                         <textarea id="verilogCode" class="form-control mb-3" rows="15" style="font-family: 'Courier New', Courier, monospace;" 
-                        placeholder="// 範例：AND Gate\nmodule my_and(input a, b, output y);\n  assign y = a & b;\nendmodule"></textarea>
-                        <button id="generateButton" class="btn btn-success btn-block font-weight-bold py-3">執行模擬並產出波形</button>
+                        placeholder="// 範例：AND Gate\nmodule my_and(input a, b, output y);\n  assign y = a & b;\nendmodule" data-i18n="verilog_editor_placeholder"></textarea>
+                        <button id="generateButton" class="btn btn-success btn-block font-weight-bold py-3" data-i18n="verilog_generate_btn">執行模擬並產出波形</button>
                     </div>
                 </div>
             </div>
             <div class="col-md-7">
-                <h2 class="font-weight-bold mb-3">時序模擬波形 (Waveform)</h2>
+                <h2 class="font-weight-bold mb-3" data-i18n="verilog_waveform_title">時序模擬波形 (Waveform)</h2>
                 <div id="waveform" class="border shadow-sm rounded p-2"></div>
             </div>
         </div>
     </div>
 
     <script>
+        const translations = {
+            'zh-TW': {
+                'nav_brand': '數位邏輯設計',
+                'nav_home': '首頁課程介紹', 'nav_courses': '課程講義下載', 'nav_ans': '考試與解答', 'nav_verilog': 'Verilog 在線模擬', 'nav_gate': '邏輯門模擬器 (Quartus)', 'nav_help': '使用說明',
+                'guide_title': '系統使用說明', 'guide_close': '關閉', 'current_lang': '中文',
+                'hero_title': '數位邏輯設計', 'hero_subtitle': '數位邏輯與微處理器設計基礎',
+                'hero_start': '開始學習', 'hero_quartus': 'Quartus 模擬器', 'hero_verilog': 'Verilog 實作',
+                'section1_title': '1. 布林代數與邏輯閘 (Boolean Algebra & Logic Gates)',
+                'section1_p': '數位電路的基礎建立在二進位運算（0 與 1）。透過布林代數，我們可以將複雜的邏輯問題轉化為數學運算式。',
+                'section1_img_caption': 'ANSI/IEEE 標準邏輯閘符號與真值表',
+                'section1_li1': '<strong>公理與定理：</strong> 交換律、結合律、分配律以及最重要的 <strong>狄摩根定律 (De Morgan\'s Laws)</strong>。',
+                'section1_li2': '<strong>萬用邏輯閘：</strong> NAND 與 NOR 閘可以建構出任何其他的邏輯功能。',
+                'section2_title': '2. 卡諾圖化簡 (Karnaugh Map Minimization)',
+                'section2_p': '在設計電路時，減少邏輯閘的使用數量是核心目標。透過「圈選」相鄰的 1（Groupings），可以找出最簡的積之和 (SOP) 表示式。',
+                'section2_img_caption': '範例：透過 4x4 卡諾圖化簡布林函數',
+                'section3_title': '3. 組合邏輯 (Combinational Logic)',
+                'section3_p': '這類電路的輸出「僅」與目前的輸入有關。常見模組包括：',
+                'section3_card1_title': '加法器 (Adders)', 'section3_card1_p': '半加器與全加器是 CPU 運算單元的基礎。',
+                'section3_card2_title': '多工器 (MUX)', 'section3_card2_p': '如同電子開關，根據選擇信號決定哪一路輸入傳送到輸出。',
+                'section3_card3_title': '解碼器 (Decoder)', 'section3_card3_p': '將二進位代碼轉換為特定的致能信號。',
+                'section4_title': '4. 序向邏輯與 FSM (Sequential Logic & State Machines)',
+                'section4_p': '當電路需要「記憶」時，我們引入時脈 (Clock) 與正反器 (Flip-Flops)。',
+                'section4_li1': '<strong>正反器：</strong> D-FlipFlop, JK-FlipFlop 等觸發式記憶元件。',
+                'section4_li2': '<strong>有限狀態機 (FSM)：</strong> Mealy 與 Moore 機型，用於設計自動控制邏輯。',
+                'sidebar_title': '課程核心技能',
+                'sidebar_li1': '✅ 邏輯電路分析與合成', 'sidebar_li2': '✅ 同步與非同步計數器設計', 'sidebar_li3': '✅ 暫存器與記憶體架構', 'sidebar_li4': '✅ Verilog HDL 硬體描述語言',
+                'courses_title': '講義與參考資源下載',
+                'ans_title': '考試與解答專區', 'ans_back': '返回課程首頁',
+                'verilog_editor_title': 'Verilog 編輯器', 'verilog_editor_placeholder': '// 範例：AND Gate\nmodule my_and(input a, b, output y);\n  assign y = a & b;\nendmodule', 'verilog_generate_btn': '執行模擬並產出波形', 'verilog_waveform_title': '時序模擬波形 (Waveform)',
+                'footer_text': '數位邏輯設計與微處理器實務 | Copyright &copy; 2026 <span class="font-weight-bold text-dark">西園寺佳頴</span>'
+            },
+            'en': {
+                'nav_brand': 'Digital Logic Design',
+                'nav_home': 'Home', 'nav_courses': 'Handouts', 'nav_ans': 'Exams', 'nav_verilog': 'Verilog Online', 'nav_gate': 'Logic Simulator', 'nav_help': 'Help',
+                'guide_title': 'System User Guide', 'guide_close': 'Close', 'current_lang': 'English',
+                'hero_title': 'Digital Logic Design', 'hero_subtitle': 'Fundamentals of Digital Logic and Microprocessor Design',
+                'hero_start': 'Get Started', 'hero_quartus': 'Quartus Simulator', 'hero_verilog': 'Verilog Practice',
+                'section1_title': '1. Boolean Algebra & Logic Gates',
+                'section1_p': 'The foundation of digital circuits is based on binary operations (0 and 1). Through Boolean algebra, we can transform complex logical problems into mathematical expressions.',
+                'section1_img_caption': 'ANSI/IEEE standard logic gate symbols and truth tables',
+                'section1_li1': '<strong>Axioms and Theorems:</strong> Commutative, associative, distributive laws, and most importantly, <strong>De Morgan\'s Laws</strong>.',
+                'section1_li2': '<strong>Universal Gates:</strong> NAND and NOR gates can construct any other logical functions.',
+                'section2_title': '2. Karnaugh Map Minimization',
+                'section2_p': 'When designing circuits, reducing the number of logic gates is a core goal. By "grouping" adjacent 1s, the simplest Sum of Products (SOP) expression can be found.',
+                'section2_img_caption': 'Example: Simplifying Boolean functions using a 4x4 K-Map',
+                'section3_title': '3. Combinational Logic',
+                'section3_p': 'The output of these circuits depends "only" on the current inputs. Common modules include:',
+                'section3_card1_title': 'Adders', 'section3_card1_p': 'Half-adders and full-adders are the basis of CPU arithmetic units.',
+                'section3_card2_title': 'Multiplexers (MUX)', 'section3_card2_p': 'Like an electronic switch, it decides which input to pass to the output based on a select signal.',
+                'section3_card3_title': 'Decoders', 'section3_card3_p': 'Converts binary codes into specific enable signals.',
+                'section4_title': '4. Sequential Logic & State Machines',
+                'section4_p': 'When circuits need "memory," we introduce Clocks and Flip-Flops.',
+                'section4_li1': '<strong>Flip-Flops:</strong> Trigger-based memory elements such as D-FlipFlop and JK-FlipFlop.',
+                'section4_li2': '<strong>Finite State Machines (FSM):</strong> Mealy and Moore models, used for designing automatic control logic.',
+                'sidebar_title': 'Core Skills',
+                'sidebar_li1': '✅ Logic Circuit Analysis and Synthesis', 'sidebar_li2': '✅ Synchronous and Asynchronous Counter Design', 'sidebar_li3': '✅ Register and Memory Architecture', 'sidebar_li4': '✅ Verilog HDL Hardware Description Language',
+                'courses_title': 'Handouts and Resources',
+                'ans_title': 'Exams and Solutions', 'ans_back': 'Back to Home',
+                'verilog_editor_title': 'Verilog Editor', 'verilog_editor_placeholder': '// Example: AND Gate\nmodule my_and(input a, b, output y);\n  assign y = a & b;\nendmodule', 'verilog_generate_btn': 'Run Simulation', 'verilog_waveform_title': 'Simulation Waveform',
+                'footer_text': 'Digital Logic Design and Microprocessor Practice | Copyright &copy; 2026 <span class="font-weight-bold text-dark">Kaiei Saionji</span>'
+            },
+            'ja': {
+                'nav_brand': 'デジタル論理設計',
+                'nav_home': 'ホーム', 'nav_courses': '講義資料', 'nav_ans': '試験と解答', 'nav_verilog': 'Verilog シミュレーション', 'nav_gate': 'ロジックシミュレータ', 'nav_help': 'ヘルプ',
+                'guide_title': 'システム利用ガイド', 'guide_close': '閉じる', 'current_lang': '日本語',
+                'hero_title': 'デジタル論理設計', 'hero_subtitle': 'デジタル論理およびマイクロプロセッサ設計の基礎',
+                'hero_start': '学習を始める', 'hero_quartus': 'Quartus シミュレータ', 'hero_verilog': 'Verilog 実装',
+                'section1_title': '1. ブール代数と論理ゲート',
+                'section1_p': 'デジタル回路の基礎はバイナリ演算（0と1）に基づいています。ブール代数を通じて、複雑な論理問題を数式に変換できます。',
+                'section1_img_caption': 'ANSI/IEEE 標準論理ゲート記号と真理値表',
+                'section1_li1': '<strong>公理と定理：</strong> 交換法則、結合法則、分配法則、そして最も重要な<strong>ド・モルガンの法則</strong>。',
+                'section1_li2': '<strong>汎用論理ゲート：</strong> NAND および NOR ゲートは、他のあらゆる論理機能を構築できます。',
+                'section2_title': '2. カルノー図による簡略化',
+                'section2_p': '回路設計において、論理ゲートの使用数を減らすことが主要な目標です。隣接する 1 を「グルーピング」することで、最小限の積和 (SOP) 形式を見つけることができます。',
+                'section2_img_caption': '例：4x4 カルノー図を使用したブール関数の簡略化',
+                'section3_title': '3. 組合せ論理',
+                'section3_p': 'これらの回路の輸出は現在の入力「のみ」に依存します。一般的なモジュールには以下が含まれます：',
+                'section3_card1_title': '加算器 (Adders)', 'section3_card1_p': '半加算器と全加算器は CPU 演算ユニットの基礎です。',
+                'section3_card2_title': 'マルチプレクサ (MUX)', 'section3_card2_p': '電子スイッチのように、選択信号に基づいてどの入力を出力に送るかを決定します。',
+                'section3_card3_title': 'デコーダ (Decoder)', 'section3_card3_p': 'バイナリコードを特定のイネーブル信号に変換します。',
+                'section4_title': '4. 順序論理と状態マシン (FSM)',
+                'section4_p': '回路に「メモリ」が必要な場合、クロックとフリップフロップを導入します。',
+                'section4_li1': '<strong>フリップフロップ：</strong> D-フリップフロップ、JK-フリップフロップなどのトリガー式記憶素子。',
+                'section4_li2': '<strong>有限状態マシン (FSM)：</strong> ミーリー型およびムーア型、自動制御ロジックの設計に使用されます。',
+                'sidebar_title': 'コアスキル',
+                'sidebar_li1': '✅ 論理回路の分析と合成', 'sidebar_li2': '✅ 同期および非同期カウンタの設計', 'sidebar_li3': '✅ レジスタとメモリのアーキテクチャ', 'sidebar_li4': '✅ Verilog HDL ハードウェア記述語言',
+                'courses_title': '講義資料とリソース',
+                'ans_title': '試験と解答', 'ans_back': 'ホームに戻る',
+                'verilog_editor_title': 'Verilog エディタ', 'verilog_editor_placeholder': '// 例：AND Gate\nmodule my_and(input a, b, output y);\n  assign y = a & b;\nendmodule', 'verilog_generate_btn': 'シミュレーションを実行', 'verilog_waveform_title': 'シミュレーション波形',
+                'footer_text': 'デジタル論理設計とマイクロプロセッサ実習 | Copyright &copy; 2026 <span class="font-weight-bold text-dark">西園寺佳頴</span>'
+            },
+            'it': {
+                'nav_brand': 'Progettazione Logica Digitale',
+                'nav_home': 'Home', 'nav_courses': 'Dispense', 'nav_ans': 'Esami e Soluzioni', 'nav_verilog': 'Simulazione Verilog', 'nav_gate': 'Simulatore Logico', 'nav_help': 'Aiuto',
+                'guide_title': 'Guida Utente del Sistema', 'guide_close': 'Chiudi', 'current_lang': 'Italiano',
+                'hero_title': 'Progettazione Logica Digitale', 'hero_subtitle': 'Fondamenti di Logica Digitale e Progettazione di Microprocessori',
+                'hero_start': 'Inizia a Imparare', 'hero_quartus': 'Simulatore Quartus', 'hero_verilog': 'Pratica Verilog',
+                'section1_title': '1. Algebra di Boole e Porte Logiche',
+                'section1_p': 'Le fondamenta dei circuiti digitali si basano su operazioni binarie (0 e 1). Attraverso l\'algebra di Boole, possiamo trasformare complessi problemi logici in espressioni matematiche.',
+                'section1_img_caption': 'Simboli delle porte logiche standard ANSI/IEEE e tavole della verità',
+                'section1_li1': '<strong>Assiomi e Teoremi:</strong> Leggi commutativa, associativa, distributiva e, soprattutto, le <strong>Leggi di De Morgan</strong>.',
+                'section1_li2': '<strong>Porte Universali:</strong> Le porte NAND e NOR possono costruire qualsiasi altra funzione logica.',
+                'section2_title': '2. Minimizzazione con Mappe di Karnaugh',
+                'section2_p': 'Nella progettazione di circuiti, ridurre il numero di porte logiche è un obiettivo centrale. "Raggruppando" gli 1 adiacenti, è possibile trovare l\'espressione minima in Somma di Prodotti (SOP).',
+                'section2_img_caption': 'Esempio: Semplificazione di funzioni booleane tramite mappa di Karnaugh 4x4',
+                'section3_title': '3. Logica Combinatoria',
+                'section3_p': 'L\'uscita di questi circuiti dipende "solo" dagli ingressi attuali. I moduli comuni includono:',
+                'section3_card1_title': 'Addizionatori (Adders)', 'section3_card1_p': 'Semisommatori e sommatori completi sono la base delle unità aritmetiche delle CPU.',
+                'section3_card2_title': 'Multiplexer (MUX)', 'section3_card2_p': 'Come un interruttore elettronico, decide quale ingresso trasmettere all\'uscita in base a un segnale di selezione.',
+                'section3_card3_title': 'Decodificatori (Decoder)', 'section3_card3_p': 'Converte codici binari in specifici segnali di abilitazione.',
+                'section4_title': '4. Logica Sequenziale e FSM',
+                'section4_p': 'Quando i circuiti hanno bisogno di "memoria", introduciamo Clock e Flip-Flop.',
+                'section4_li1': '<strong>Flip-Flop:</strong> Elementi di memoria a trigger come D-FlipFlop e JK-FlipFlop.',
+                'section4_li2': '<strong>Macchine a Stati Finiti (FSM):</strong> Modelli di Mealy e Moore, utilizzati per la progettazione di logiche di controllo automatico.',
+                'sidebar_title': 'Competenze Core',
+                'sidebar_li1': '✅ Analisi e Sintesi di Circuiti Logici', 'sidebar_li2': '✅ Progettazione di Contatori Sincroni e Asincroni', 'sidebar_li3': '✅ Architettura di Registri e Memoria', 'sidebar_li4': '✅ Linguaggio di Descrizione Hardware Verilog HDL',
+                'courses_title': 'Dispense e Risorse',
+                'ans_title': 'Esami e Soluzioni', 'ans_back': 'Torna alla Home',
+                'verilog_editor_title': 'Editor Verilog', 'verilog_editor_placeholder': '// Esempio: AND Gate\nmodule my_and(input a, b, output y);\n  assign y = a & b;\nendmodule', 'verilog_generate_btn': 'Esegui Simulazione', 'verilog_waveform_title': 'Forma d\'onda della Simulazione',
+                'footer_text': 'Progettazione Logica Digitale e Pratica di Microprocessori | Copyright &copy; 2026 <span class="font-weight-bold text-dark">Kaiei Saionji</span>'
+            },
+            'vi': {
+                'nav_brand': 'Thiết kế Logic Số',
+                'nav_home': 'Trang chủ', 'nav_courses': 'Tài liệu học tập', 'nav_ans': 'Kỳ thi & Đáp án', 'nav_verilog': 'Mô phỏng Verilog', 'nav_gate': 'Trình mô phỏng logic', 'nav_help': 'Hướng dẫn',
+                'guide_title': 'Hướng dẫn sử dụng hệ thống', 'guide_close': 'Đóng', 'current_lang': 'Tiếng Việt',
+                'hero_title': 'Thiết kế Logic Số', 'hero_subtitle': 'Cơ sở Thiết kế Logic Số và Vi xử lý',
+                'hero_start': 'Bắt đầu học', 'hero_quartus': 'Trình mô phỏng Quartus', 'hero_verilog': 'Thực hành Verilog',
+                'section1_title': '1. Đại số Boolean & Cổng Logic',
+                'section1_p': 'Nền tảng của mạch số dựa trên các phép toán nhị phân (0 và 1). Thông qua đại số Boolean, chúng ta có thể chuyển đổi các vấn đề logic phức tạp thành các biểu thức toán học.',
+                'section1_img_caption': 'Ký hiệu cổng logic tiêu chuẩn ANSI/IEEE và bảng chân trị',
+                'section1_li1': '<strong>Tiên đề và Định lý:</strong> Luật giao hoán, kết hợp, phân phối và quan trọng nhất là <strong>Định luật De Morgan</strong>.',
+                'section1_li2': '<strong>Cổng vạn năng:</strong> Cổng NAND và NOR có thể xây dựng bất kỳ chức năng logic nào khác.',
+                'section2_title': '2. Tối giản bằng bản đồ Karnaugh',
+                'section2_p': 'Khi thiết kế mạch, việc giảm số lượng cổng logic là mục tiêu cốt lõi. Bằng cách "nhóm" các số 1 liền kề, có thể tìm thấy biểu thức Tổng các Tích (SOP) đơn giản nhất.',
+                'section2_img_caption': 'Ví dụ: Tối giản hàm Boolean bằng bản đồ K 4x4',
+                'section3_title': '3. Logic tổ hợp',
+                'section3_p': 'Đầu ra của các mạch này "chỉ" phụ thuộc vào các đầu vào hiện tại. Các mô-đun phổ biến bao gồm:',
+                'section3_card1_title': 'Bộ cộng (Adders)', 'section3_card1_p': 'Bộ nửa cộng và bộ cộng toàn phần là cơ sở của các đơn vị số học CPU.',
+                'section3_card2_title': 'Bộ đa hợp (MUX)', 'section3_card2_p': 'Giống như một công tắc điện tử, quyết định đầu vào nào được truyền đến đầu ra dựa trên tín hiệu chọn.',
+                'section3_card3_title': 'Bộ giải mã (Decoder)', 'section3_card3_p': 'Chuyển đổi mã nhị phân thành các tín hiệu kích hoạt cụ thể.',
+                'section4_title': '4. Logic tuần tự & FSM',
+                'section4_p': 'Khi mạch cần "bộ nhớ", chúng ta giới thiệu Xung nhịp (Clock) và Flip-Flop.',
+                'section4_li1': '<strong>Flip-Flop:</strong> Các phần tử nhớ dựa trên kích hoạt như D-FlipFlop và JK-FlipFlop.',
+                'section4_li2': '<strong>Máy trạng thái hữu hạn (FSM):</strong> Các mô hình Mealy và Moore, được sử dụng để thiết kế logic điều khiển tự động.',
+                'sidebar_title': 'Kỹ năng cốt lõi',
+                'sidebar_li1': '✅ Phân tích và Tổng hợp Mạch Logic', 'sidebar_li2': '✅ Thiết kế Bộ đếm Đồng bộ và Không đồng bộ', 'sidebar_li3': '✅ Kiến trúc Thanh ghi và Bộ nhớ', 'sidebar_li4': '✅ Ngôn ngữ Mô tả Phần cứng Verilog HDL',
+                'courses_title': 'Tài liệu và Nguồn tham khảo',
+                'ans_title': 'Kỳ thi và Đáp án', 'ans_back': 'Quay lại Trang chủ',
+                'verilog_editor_title': 'Trình soạn thảo Verilog', 'verilog_editor_placeholder': '// Ví dụ: AND Gate\nmodule my_and(input a, b, output y);\n  assign y = a & b;\nendmodule', 'verilog_generate_btn': 'Chạy mô phỏng', 'verilog_waveform_title': 'Dạng sóng mô phỏng',
+                'footer_text': 'Thực hành Thiết kế Logic Số và Vi xử lý | Bản quyền &copy; 2026 <span class="font-weight-bold text-dark">Kaiei Saionji</span>'
+            }
+        };
+
+        function changeLang(lang) {
+            localStorage.setItem('selectedLang', lang);
+            updateUI(lang);
+            // 如果說明視窗是開啟的，立即重新加載內容
+            if ($('#guideModal').hasClass('show')) {
+                loadGuideContent(lang);
+            }
+        }
+
+        function loadGuideContent(lang) {
+            $.ajax({
+                url: `/GUIDE_${lang}.md`,
+                method: 'GET',
+                success: function(data) {
+                    $('#guideContent').html(marked.parse(data));
+                },
+                error: function() {
+                    $.get('/GUIDE_zh-TW.md', function(data) {
+                        $('#guideContent').html(marked.parse(data));
+                    });
+                }
+            });
+        }
+
+        function updateUI(lang) {
+            $('[data-i18n]').each(function() {
+                const key = $(this).data('i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    if ($(this).is('textarea, input')) {
+                        $(this).attr('placeholder', translations[lang][key]);
+                    } else {
+                        $(this).html(translations[lang][key]);
+                    }
+                }
+            });
+            $('#currentLang').text(translations[lang]['current_lang']);
+        }
+
         $(document).ready(function() {
+            // 初始化語言
+            const savedLang = localStorage.getItem('selectedLang') || 'zh-TW';
+            updateUI(savedLang);
+
+            // 加載並顯示對應語言的 Markdown 使用說明
+            $('#guideModal').on('show.bs.modal', function() {
+                const currentLang = localStorage.getItem('selectedLang') || 'zh-TW';
+                loadGuideContent(currentLang);
+            });
+
+
             function showSection(target, pushState = true) {
                 $('.section').removeClass('active');
                 $('#' + target).addClass('active');
@@ -169,9 +418,11 @@
             }
 
             $('a[data-target]').click(function(event) {
-                event.preventDefault();
                 const target = $(this).data('target');
-                if (target) showSection(target);
+                if (target) {
+                    event.preventDefault();
+                    showSection(target);
+                }
             });
 
             window.onpopstate = function(event) {
@@ -275,5 +526,10 @@
             });
         });
     </script>
+    <footer class="mt-5 py-4 border-top text-center text-muted">
+        <div class="container">
+            <p class="mb-0" data-i18n="footer_text">數位邏輯設計與微處理器實務 | Copyright &copy; 2026 <span class="font-weight-bold text-dark">西園寺佳頴</span></p>
+        </div>
+    </footer>
 </body>
 </html>

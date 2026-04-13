@@ -8,6 +8,7 @@ const coursesRouter = require('./routes/courses');
 const verilogRouter = require('./routes/verilog');
 const examRouter = require('./routes/exam');
 const ansRouter = require('./routes/ans');
+const gateRouter = require('./routes/gate');
 
 const app = express();
 
@@ -30,5 +31,6 @@ app.use('/courses', coursesRouter);
 app.use('/verilog', verilogRouter);
 app.use('/exam', examRouter);
 app.use('/ans', ansRouter);
+app.use('/gate', gateRouter);
 
 module.exports = app;

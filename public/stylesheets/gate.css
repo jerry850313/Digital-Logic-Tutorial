@@ -1,0 +1,106 @@
+body { font-family: 'Noto Sans TC', sans-serif; background-color: #0f172a; overflow: hidden; }
+
+/* 畫布網格背景 */
+#workspace {
+    background-color: #1e293b;
+    background-image: 
+        linear-gradient(to right, #334155 1px, transparent 1px),
+        linear-gradient(to bottom, #334155 1px, transparent 1px);
+    background-size: 20px 20px;
+    position: relative;
+}
+
+/* 邏輯元件樣式 */
+.gate-node {
+    position: absolute;
+    background: #0f172a;
+    border: 2px solid #3b82f6;
+    border-radius: 6px;
+    padding: 5px 15px;
+    color: #f8fafc;
+    cursor: grab;
+    user-select: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 70px;
+    min-height: 50px;
+    z-index: 10;
+    transition: box-shadow 0.2s, height 0.2s;
+}
+.gate-node:active { cursor: grabbing; border-color: #60a5fa; }
+.gate-node.active-gate { box-shadow: 0 0 15px rgba(34, 197, 94, 0.5); }
+
+/* 元件名稱輸入框 (自訂名稱) */
+.node-name-input {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid #475569;
+    color: #fbbf24;
+    font-size: 12px;
+    font-weight: bold;
+    width: 60px;
+    text-align: center;
+    border-radius: 4px;
+    padding: 2px 0;
+    outline: none;
+    cursor: text;
+}
+.node-name-input:focus { border-color: #3b82f6; background: #0f172a; }
+
+/* 邏輯閘類型標籤 */
+.gate-type-label {
+    position: absolute;
+    bottom: -20px;
+    font-size: 10px;
+    color: #94a3b8;
+    font-weight: bold;
+    pointer-events: none;
+    letter-spacing: 1px;
+}
+
+/* 接點 (Ports) */
+.port {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    position: absolute;
+    cursor: crosshair;
+    z-index: 20;
+    transition: transform 0.1s;
+}
+.port:hover { transform: scale(1.8); }
+.port-in { background-color: #ef4444; border: 2px solid #fff; }
+.port-out { background-color: #22c55e; border: 2px solid #fff; }
+
+/* 元件特例 */
+.gate-io { background: #1e293b; border-color: #64748b; padding: 10px 15px; font-weight: bold; }
+.gate-io:hover { background: #334155; }
+.gate-led { border-radius: 50%; width: 45px; height: 45px; border-color: #475569; padding: 0; min-width: 45px; min-height: 45px; }
+.led-on { background: #eab308; box-shadow: 0 0 30px #eab308; border-color: #fef08a; }
+
+/* 線路 SVG */
+#wire-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
+.wire-path { stroke-width: 3; fill: none; pointer-events: stroke; cursor: pointer; transition: stroke 0.1s; }
+.wire-path:hover { stroke-width: 6; stroke: #ef4444 !important; filter: drop-shadow(0 0 5px #ef4444); }
+
+/* 側邊欄與波形圖區塊 */
+.palette-item { cursor: grab; transition: transform 0.1s, background-color 0.2s; }
+.palette-item:active { cursor: grabbing; }
+.palette-item:hover { transform: translateY(-2px); background-color: #334155; }
+
+#waveform-container {
+    border-top: 4px solid #475569;
+    background-color: #020617; 
+    position: relative;
+}
+canvas { display: block; }
+
+/* 滾動條 */
+::-webkit-scrollbar { width: 6px; height: 6px;}
+::-webkit-scrollbar-track { background: #1e293b; }
+::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #64748b; }

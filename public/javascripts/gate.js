@@ -1,0 +1,558 @@
+// === 全域變數與 DOM ===
+const workspace = document.getElementById('workspace');
+const nodesContainer = document.getElementById('nodes-container');
+const wireLayer = document.getElementById('wire-layer');
+const tempWire = document.getElementById('temp-wire');
+const wfCanvas = document.getElementById('waveformCanvas');
+const wfCtx = wfCanvas.getContext('2d');
+const wfWrapper = document.getElementById('canvas-wrapper');
+
+let nodes = {}; 
+let wires = []; 
+let nodeIdCounter = 0;
+let ioCounter = 1; 
+
+let draggingNode = null; 
+let offsetX = 0, offsetY = 0;
+let wiringStartPort = null; 
+
+// 波形狀態
+let isWaveformRunning = true;
+let simTick = 0;
+const MAX_WAVE_SAMPLES = 200; 
+let waveformHistory = {}; 
+
+// 自動掃描狀態
+let isAutoScanning = false;
+let autoScanTick = 0;
+let autoScanCounter = 0;
+
+// === 畫布自適應 ===
+function resizeCanvas() {
+    if (!wfWrapper) return;
+    wfCanvas.width = wfWrapper.clientWidth;
+    wfCanvas.height = wfWrapper.clientHeight;
+    drawWaveform();
+}
+window.addEventListener('resize', () => { renderWires(); resizeCanvas(); });
+
+// === SVG 產生器 ===
+function getGateSVG(type, h) {
+    const attrs = 'width="100%" height="100%" viewBox="0 0 60 40" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"';
+    switch(type) {
+        case 'AND': return `<svg ${attrs}><path d="M 15 5 V 35 H 30 A 15 15 0 0 0 30 5 H 15 Z"/></svg>`;
+        case 'NAND':return `<svg ${attrs}><path d="M 10 5 V 35 H 25 A 15 15 0 0 0 25 5 H 10 Z"/><circle cx="45" cy="20" r="4"/></svg>`;
+        case 'OR':  return `<svg ${attrs}><path d="M 10 5 C 25 5 40 10 50 20 C 40 30 25 35 10 35 C 20 25 20 15 10 5 Z"/></svg>`;
+        case 'NOR': return `<svg ${attrs}><path d="M 5 5 C 20 5 35 10 45 20 C 35 30 20 35 5 35 C 15 25 15 15 5 5 Z"/><circle cx="50" cy="20" r="4"/></svg>`;
+        case 'XOR': return `<svg ${attrs}><path d="M 16 5 C 31 5 46 10 54 20 C 46 30 31 35 16 35 C 26 25 26 15 16 5 Z"/><path d="M 8 5 C 18 15 18 25 8 35"/></svg>`;
+        case 'XNOR':return `<svg ${attrs}><path d="M 11 5 C 26 5 41 10 49 20 C 41 30 26 35 11 35 C 21 25 21 15 11 5 Z"/><path d="M 3 5 C 13 15 13 25 3 35"/><circle cx="54" cy="20" r="4"/></svg>`;
+        case 'NOT': return `<svg ${attrs}><polygon points="15,5 15,35 40,20"/><circle cx="45" cy="20" r="4"/></svg>`;
+        case 'MUX': return `<svg width="100%" height="100%" viewBox="0 0 40 60" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"><polygon points="5,5 35,15 35,45 5,55"/><text x="20" y="34" fill="currentColor" stroke="none" font-size="12" font-family="sans-serif" text-anchor="middle" font-weight="bold">MUX</text></svg>`;
+        case 'DFF': return `<svg width="100%" height="100%" viewBox="0 0 50 60" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"><rect x="5" y="5" width="40" height="50"/><polyline points="5,40 15,45 5,50"/><text x="25" y="32" fill="currentColor" stroke="none" font-size="14" font-weight="bold" font-family="sans-serif" text-anchor="middle">D</text><text x="37" y="50" fill="currentColor" stroke="none" font-size="10" font-weight="bold" font-family="sans-serif">Q</text></svg>`;
+    }
+    return '';
+}
+
+// ==========================================
+// 1. 元件建立與更新
+// ==========================================
+function startDragNewNode(e, type) {
+    e.preventDefault();
+    const id = 'node_' + (nodeIdCounter++);
+    const rect = workspace.getBoundingClientRect();
+    let x = Math.round((e.clientX - rect.left - 30) / 20) * 20;
+    let y = Math.round((e.clientY - rect.top - 20) / 20) * 20;
+    
+    let inputCount = 2;
+    if (['NOT', 'LED'].includes(type)) inputCount = 1;
+    if (['SWITCH', 'CLOCK'].includes(type)) inputCount = 0;
+    if (type === 'MUX') inputCount = 3; 
+    if (type === 'DFF') inputCount = 2; 
+
+    let ins = {};
+    if (type === 'MUX') { ins = { in0: 0, in1: 0, sel: 0 }; }
+    else if (type === 'DFF') { ins = { D: 0, CLK: 0 }; }
+    else { for(let i=0; i<inputCount; i++) ins[`in${i}`] = 0; }
+
+    let nodeData = { id, type, x, y, out: 0, ins, inputCount, isIO: false };
+    
+    if (['SWITCH', 'CLOCK', 'LED'].includes(type)) {
+        nodeData.isIO = true;
+        nodeData.label = (type === 'LED' ? 'OUT' : 'SW') + ioCounter++;
+        waveformHistory[id] = new Array(MAX_WAVE_SAMPLES).fill(0); 
+        if (type === 'SWITCH') nodeData.state = 0;
+    }
+    if (['CLOCK', 'DFF'].includes(type)) {
+        nodeData.state = 0; 
+        nodeData.timer = 0;
+        nodeData.lastClk = 0;
+        if (type === 'CLOCK') nodeData.freq = 5; 
+    }
+
+    nodes[id] = nodeData;
+    updateNodeDOM(nodeData);
+    startDragExistingNode(e, id);
+}
+
+window.adjustPins = function(id, delta) {
+    const node = nodes[id];
+    const newCount = node.inputCount + delta;
+    if (newCount < 2 || newCount > 8) return; 
+    
+    node.inputCount = newCount;
+    const newIns = {};
+    for (let i=0; i<newCount; i++) newIns[`in${i}`] = node.ins[`in${i}`] || 0;
+    node.ins = newIns;
+
+    wires = wires.filter(w => {
+        if (w.inNode === id && !newIns.hasOwnProperty(w.inPort)) {
+            document.getElementById(w.id)?.remove(); return false;
+        } return true;
+    });
+
+    updateNodeDOM(node);
+    renderWires();
+};
+
+window.adjustClock = function(id, delta) {
+    const node = nodes[id];
+    if (!node || node.type !== 'CLOCK') return;
+    node.freq = Math.max(1, Math.min(10, (node.freq || 5) + delta));
+    updateNodeDOM(node);
+};
+
+function updateNodeDOM(node) {
+    let el = document.getElementById(node.id);
+    if (!el) { el = document.createElement('div'); el.id = node.id; nodesContainer.appendChild(el); }
+    
+    let extraClasses = 'gate-node group ';
+    if (node.isIO) extraClasses += node.type === 'LED' ? 'gate-led ' : 'gate-io ';
+    else extraClasses += 'border-slate-500 text-slate-300 '; 
+    
+    el.className = extraClasses;
+    el.style.left = node.x + 'px'; el.style.top = node.y + 'px';
+    
+    if (['AND', 'OR', 'NAND', 'NOR', 'XOR', 'XNOR'].includes(node.type)) el.style.minHeight = Math.max(50, node.inputCount * 20) + 'px';
+    else if (node.type === 'MUX') { el.style.minHeight = '70px'; el.style.minWidth = '50px'; }
+    else if (node.type === 'DFF') { el.style.minHeight = '65px'; el.style.minWidth = '55px'; }
+
+    el.ondblclick = (e) => { e.stopPropagation(); deleteNode(node.id); };
+    el.onmousedown = (e) => startDragExistingNode(e, node.id);
+    el.innerHTML = generateNodeHTML(node);
+
+    if (node.type === 'SWITCH') {
+        el.querySelector('.val-label').onclick = (e) => {
+            node.state = node.state === 1 ? 0 : 1;
+            e.target.innerText = node.state;
+            if(node.state) el.classList.add('active-gate'); else el.classList.remove('active-gate');
+        };
+    }
+    node.el = el;
+}
+
+function generateNodeHTML(node) {
+    let innerHTML = '';
+    if (node.isIO) innerHTML += `<input type="text" class="node-name-input" value="${node.label}" onmousedown="event.stopPropagation()" onchange="updateLabel('${node.id}', this.value)">`;
+
+    const inKeys = Object.keys(node.ins);
+    inKeys.forEach((key, index) => {
+        let style = ''; let label = key.replace('in', '');
+        if (node.type === 'MUX') {
+            if (key === 'sel') { style = 'bottom: -7px; left: 50%; transform: translateX(-50%);'; label = 'SEL'; }
+            else if (key === 'in0') { style = 'top: 30%; left: -7px; transform: translateY(-50%);'; label = '0'; }
+            else if (key === 'in1') { style = 'top: 70%; left: -7px; transform: translateY(-50%);'; label = '1'; }
+        } else if (node.type === 'DFF') {
+            if (key === 'CLK') { style = 'top: 75%; left: -7px; transform: translateY(-50%);'; label = ''; }
+            else if (key === 'D') { style = 'top: 25%; left: -7px; transform: translateY(-50%);'; label = 'D'; }
+        } else {
+            const pos = ((index + 1) * 100) / (inKeys.length + 1);
+            style = `top: ${pos}%; left: -7px; transform: translateY(-50%);`;
+        }
+
+        innerHTML += `<div class="port port-in" data-port="${key}" style="${style}" onmousedown="startWiring(event, '${node.id}', '${key}', true)" onmouseup="finishWiring(event, '${node.id}', '${key}')">
+                        <span class="absolute -left-5 top-1/2 -translate-y-1/2 text-[9px] text-slate-400 font-mono font-bold">${label !== '0' && node.type !== 'MUX' && node.type !== 'DFF' ? (node.type==='LED'?'':label) : label}</span>
+                      </div>`;
+    });
+
+    if (node.type !== 'LED') innerHTML += `<div class="port port-out" data-port="out" style="top: 50%; right: -7px; transform: translateY(-50%);" onmousedown="startWiring(event, '${node.id}', 'out', false)"></div>`;
+
+    if (node.type === 'SWITCH') innerHTML += `<span class="val-label text-xl cursor-pointer">${node.state}</span>`;
+    else if (node.type === 'CLOCK') innerHTML += `<i class="fa-solid fa-stopwatch text-xl text-purple-400"></i><div class="absolute -bottom-5 text-[9px] text-purple-300 font-bold bg-slate-800 px-1 rounded border border-purple-500/30 whitespace-nowrap">Freq: ${node.freq || 5}</div><div class="absolute -top-3 -right-2 flex gap-1 hidden group-hover:flex z-50"><button class="bg-blue-600 hover:bg-blue-500 text-white rounded w-4 h-4 flex items-center justify-center text-[12px] shadow" onclick="adjustClock('${node.id}', 1); event.stopPropagation();">+</button><button class="bg-red-600 hover:bg-red-500 text-white rounded w-4 h-4 flex items-center justify-center text-[12px] shadow" onclick="adjustClock('${node.id}', -1); event.stopPropagation();">-</button></div>`;
+    else if (node.type === 'LED') innerHTML += `<i class="fa-solid fa-lightbulb text-xl text-slate-400 led-icon"></i>`;
+    else if (['MUX', 'DFF'].includes(node.type)) innerHTML += `<div class="absolute inset-0 flex items-center justify-center pointer-events-none p-1 text-${node.type==='MUX'?'teal':'orange'}-300">${getGateSVG(node.type)}</div><div class="gate-type-label">${node.type === 'DFF' ? 'D-FF' : 'MUX'}</div>`;
+    else {
+        innerHTML += `<div class="absolute inset-0 flex items-center justify-center pointer-events-none p-2 opacity-80">${getGateSVG(node.type)}</div><div class="gate-type-label">${node.type}</div>`;
+        if (node.type !== 'NOT') innerHTML += `<div class="absolute -top-3 -right-2 flex gap-1 hidden group-hover:flex z-50"><button class="bg-blue-600 hover:bg-blue-500 text-white rounded w-4 h-4 flex items-center justify-center text-[12px] shadow" onclick="adjustPins('${node.id}', 1); event.stopPropagation();">+</button><button class="bg-red-600 hover:bg-red-500 text-white rounded w-4 h-4 flex items-center justify-center text-[12px] shadow" onclick="adjustPins('${node.id}', -1); event.stopPropagation();">-</button></div>`;
+    }
+    return innerHTML;
+}
+
+function updateLabel(id, newLabel) { if(nodes[id]) nodes[id].label = newLabel || id; }
+function startDragExistingNode(e, id) {
+    if (e.target.classList.contains('port') || e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return; 
+    draggingNode = id;
+    const rect = nodes[id].el.getBoundingClientRect();
+    offsetX = e.clientX - rect.left; offsetY = e.clientY - rect.top;
+}
+
+// ==========================================
+// 2. 畫線與滑鼠事件
+// ==========================================
+function startWiring(e, nodeId, portName, isInput) {
+    e.stopPropagation(); wiringStartPort = { id: nodeId, port: portName, isInput: isInput, el: e.target };
+    tempWire.classList.remove('hidden'); updateTempWire(e.clientX, e.clientY);
+}
+function updateTempWire(mouseX, mouseY) {
+    if (!wiringStartPort) return;
+    const rect = workspace.getBoundingClientRect();
+    const portRect = wiringStartPort.el.getBoundingClientRect();
+    const startX = portRect.left + portRect.width/2 - rect.left;
+    const startY = portRect.top + portRect.height/2 - rect.top;
+    const endX = mouseX - rect.left; const endY = mouseY - rect.top;
+    let cpX1 = startX + (wiringStartPort.isInput ? -30 : 30); let cpY1 = startY;
+    let cpX2 = endX + (wiringStartPort.isInput ? 30 : -30); let cpY2 = endY;
+    if (wiringStartPort.port === 'sel') { cpX1 = startX; cpY1 = startY + 40; }
+    tempWire.setAttribute('d', `M ${startX} ${startY} C ${cpX1} ${cpY1}, ${cpX2} ${cpY2}, ${endX} ${endY}`);
+}
+function finishWiring(e, nodeId, portName) {
+    e.stopPropagation();
+    if (!wiringStartPort) return;
+    let outNode, outPort, inNode, inPort;
+    if (wiringStartPort.isInput === false && e.target.classList.contains('port-in')) {
+        outNode = wiringStartPort.id; outPort = wiringStartPort.port; inNode = nodeId; inPort = portName;
+    } else if (wiringStartPort.isInput === true && e.target.classList.contains('port-out')) {
+        outNode = nodeId; outPort = portName; inNode = wiringStartPort.id; inPort = wiringStartPort.port;
+    } else { cancelWiring(); return; }
+
+    wires = wires.filter(w => !(w.inNode === inNode && w.inPort === inPort)); 
+    const wireId = `wire_${Date.now()}`;
+    wires.push({ id: wireId, outNode, outPort, inNode, inPort, state: 0 });
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.id = wireId; path.setAttribute('class', 'wire-path'); path.setAttribute('stroke', '#64748b');
+    path.ondblclick = () => deleteWire(wireId); 
+    wireLayer.appendChild(path);
+    cancelWiring(); renderWires(); 
+}
+function cancelWiring() { wiringStartPort = null; tempWire.classList.add('hidden'); }
+
+function handleMouseMove(e) {
+    if (draggingNode) {
+        const node = nodes[draggingNode]; const rect = workspace.getBoundingClientRect();
+        let rawX = e.clientX - rect.left - offsetX; let rawY = e.clientY - rect.top - offsetY;
+        let newX = Math.round(rawX / 20) * 20; let newY = Math.round(rawY / 20) * 20;
+        newX = Math.max(0, Math.min(newX, rect.width - node.el.offsetWidth));
+        newY = Math.max(0, Math.min(newY, rect.height - node.el.offsetHeight));
+        node.x = newX; node.y = newY; node.el.style.left = node.x + 'px'; node.el.style.top = node.y + 'px';
+        renderWires(); 
+    }
+    if (wiringStartPort) updateTempWire(e.clientX, e.clientY);
+}
+function handleMouseUp() { draggingNode = null; if (wiringStartPort) cancelWiring(); }
+
+function renderWires() {
+    const rect = workspace.getBoundingClientRect();
+    wires.forEach(wire => {
+        const outEl = nodes[wire.outNode]?.el?.querySelector(`[data-port="${wire.outPort}"]`);
+        const inEl = nodes[wire.inNode]?.el?.querySelector(`[data-port="${wire.inPort}"]`);
+        if (!outEl || !inEl) return;
+        const outRect = outEl.getBoundingClientRect(); const inRect = inEl.getBoundingClientRect();
+        const x1 = outRect.left + outRect.width/2 - rect.left; const y1 = outRect.top + outRect.height/2 - rect.top;
+        const x2 = inRect.left + inRect.width/2 - rect.left; const y2 = inRect.top + inRect.height/2 - rect.top;
+        let cpX1 = x1 + 30; let cpY1 = y1; let cpX2 = x2 - 30; let cpY2 = y2;
+        if (wire.inPort === 'sel') { cpX2 = x2; cpY2 = y2 + 40; } 
+        const path = document.getElementById(wire.id);
+        if (path) {
+            path.setAttribute('d', `M ${x1} ${y1} C ${cpX1} ${cpY1}, ${cpX2} ${cpY2}, ${x2} ${y2}`);
+            path.setAttribute('stroke', wire.state === 1 ? '#22c55e' : '#475569');
+            path.style.filter = wire.state === 1 ? 'drop-shadow(0 0 4px #22c55e)' : 'none';
+        }
+    });
+}
+
+function deleteNode(nodeId) {
+    if (nodes[nodeId]) { nodes[nodeId].el.remove(); delete nodes[nodeId]; delete waveformHistory[nodeId]; }
+    wires = wires.filter(w => {
+        if (w.outNode === nodeId || w.inNode === nodeId) { document.getElementById(w.id)?.remove(); return false; }
+        return true;
+    });
+}
+function deleteWire(wireId) { wires = wires.filter(w => w.id !== wireId); document.getElementById(wireId)?.remove(); }
+function clearWorkspace() {
+    if(confirm('確定要清空畫布嗎？')) { Object.keys(nodes).forEach(deleteNode); nodeIdCounter = 0; ioCounter = 1; simTick = 0; wfCtx.clearRect(0,0,wfCanvas.width,wfCanvas.height); }
+}
+function toggleWaveform() {
+    isWaveformRunning = !isWaveformRunning;
+    const btn = document.getElementById('btn-wave');
+    btn.innerHTML = isWaveformRunning ? '<i class="fa-solid fa-pause mr-1"></i> 暫停波形' : '<i class="fa-solid fa-play mr-1"></i> 繼續波形';
+    btn.className = isWaveformRunning ? 'bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded border border-blue-500 transition shadow' : 'bg-slate-600 hover:bg-slate-500 text-white px-3 py-1.5 rounded border border-slate-500 transition shadow';
+}
+
+// 啟動/停止自動掃描邏輯
+function toggleAutoScan() {
+    const switches = Object.values(nodes).filter(n => n.type === 'SWITCH');
+    if (switches.length === 0) {
+        alert("畫面上沒有 Switch (開關) 可以自動掃描！\n請先從左側拖曳 Switch 到畫布中。");
+        return;
+    }
+    
+    isAutoScanning = !isAutoScanning;
+    const btn = document.getElementById('btn-autoscan');
+    if (isAutoScanning) {
+        btn.innerHTML = '<i class="fa-solid fa-stop mr-1"></i> 停止掃描';
+        btn.classList.replace('bg-green-600', 'bg-red-600');
+        btn.classList.replace('hover:bg-green-500', 'hover:bg-red-500');
+        btn.classList.replace('border-green-500', 'border-red-500');
+        autoScanTick = 0;
+        autoScanCounter = 0; // 從 00..0 開始循環
+    } else {
+        btn.innerHTML = '<i class="fa-solid fa-forward-step mr-1"></i> 自動波形掃描';
+        btn.classList.replace('bg-red-600', 'bg-green-600');
+        btn.classList.replace('hover:bg-red-500', 'hover:bg-green-500');
+        btn.classList.replace('border-red-500', 'border-green-500');
+    }
+}
+
+// ==========================================
+// 3. 核心模擬器與波形繪製
+// ==========================================
+function simulateLogic() {
+    // --- 自動波形掃描 (Auto Scan) 邏輯 ---
+    if (isAutoScanning) {
+        autoScanTick++;
+        if (autoScanTick >= 20) { // 每秒切換一次狀態 (20 * 50ms)
+            autoScanTick = 0;
+            const switches = Object.values(nodes).filter(n => n.type === 'SWITCH').sort((a,b) => a.label.localeCompare(b.label));
+            if (switches.length > 0) {
+                const maxVal = Math.pow(2, switches.length);
+                for (let j = 0; j < switches.length; j++) {
+                    let bit = (autoScanCounter >> (switches.length - 1 - j)) & 1;
+                    switches[j].state = bit;
+                    switches[j].el.querySelector('.val-label').innerText = bit;
+                    if(bit) switches[j].el.classList.add('active-gate'); else switches[j].el.classList.remove('active-gate');
+                }
+                autoScanCounter++;
+                if (autoScanCounter >= maxVal) autoScanCounter = 0; // 循環掃描
+            }
+        }
+    }
+
+    Object.values(nodes).forEach(n => { 
+        for(let key in n.ins) n.ins[key] = 0;
+        if(n.type === 'CLOCK') {
+            n.timer++; const threshold = Math.max(1, 11 - (n.freq || 5));
+            if(n.timer >= threshold) { n.state = n.state === 1 ? 0 : 1; n.timer = 0; }
+            n.out = n.state;
+        }
+    });
+
+    wires.forEach(wire => {
+        const outVal = nodes[wire.outNode] ? nodes[wire.outNode].out : 0;
+        wire.state = outVal; 
+        if (nodes[wire.inNode]) nodes[wire.inNode].ins[wire.inPort] = outVal;
+    });
+
+    Object.values(nodes).forEach(node => {
+        const vals = Object.values(node.ins);
+        switch(node.type) {
+            case 'SWITCH': node.out = node.state; break;
+            case 'AND':    node.out = vals.every(v => v === 1) ? 1 : 0; break;
+            case 'NAND':   node.out = vals.every(v => v === 1) ? 0 : 1; break;
+            case 'OR':     node.out = vals.some(v => v === 1) ? 1 : 0; break;
+            case 'NOR':    node.out = vals.some(v => v === 1) ? 0 : 1; break;
+            case 'XOR':    node.out = (vals.reduce((a,b)=>a+b, 0) % 2 === 1) ? 1 : 0; break;
+            case 'XNOR':   node.out = (vals.reduce((a,b)=>a+b, 0) % 2 === 1) ? 0 : 1; break;
+            case 'NOT':    node.out = (!node.ins.in0) ? 1 : 0; break;
+            case 'MUX':    node.out = node.ins.sel === 1 ? node.ins.in1 : node.ins.in0; break;
+            case 'DFF':
+                if (node.ins.CLK === 1 && node.lastClk === 0) node.state = node.ins.D;
+                node.lastClk = node.ins.CLK; node.out = node.state; break;
+            case 'LED':
+                node.out = node.ins.in0; 
+                const icon = node.el.querySelector('.led-icon');
+                if (node.out === 1) { node.el.classList.add('led-on'); icon.classList.replace('text-slate-400', 'text-white'); } 
+                else { node.el.classList.remove('led-on'); icon.classList.replace('text-white', 'text-slate-400'); }
+                break;
+        }
+    });
+
+    renderWires();
+
+    if(isWaveformRunning) {
+        simTick++; document.getElementById('sim-time').innerText = `Time: ${simTick * 10} ns`;
+        Object.values(nodes).forEach(node => {
+            if (node.isIO) {
+                if(!waveformHistory[node.id]) waveformHistory[node.id] = new Array(MAX_WAVE_SAMPLES).fill(0);
+                waveformHistory[node.id].push(node.out);
+                if(waveformHistory[node.id].length > MAX_WAVE_SAMPLES) waveformHistory[node.id].shift();
+            }
+        });
+        drawWaveform();
+    }
+}
+
+function drawWaveform() {
+    if (!wfCtx) return;
+    const w = wfCanvas.width; const h = wfCanvas.height; wfCtx.clearRect(0, 0, w, h);
+    const ioNodes = Object.values(nodes).filter(n => n.isIO);
+    if (ioNodes.length === 0) {
+        wfCtx.fillStyle = '#475569'; wfCtx.font = '14px sans-serif'; wfCtx.fillText('加入 Switch, Clock 或 LED 來顯示波形...', 20, 30); return;
+    }
+    const trackHeight = Math.max(40, h / ioNodes.length); const stepX = (w - 80) / MAX_WAVE_SAMPLES; 
+    wfCtx.strokeStyle = '#1e293b'; wfCtx.lineWidth = 1;
+    for(let i=0; i<MAX_WAVE_SAMPLES; i+=10) { wfCtx.beginPath(); wfCtx.moveTo(80 + i*stepX, 0); wfCtx.lineTo(80 + i*stepX, h); wfCtx.stroke(); }
+
+    ioNodes.forEach((node, index) => {
+        const history = waveformHistory[node.id] || [];
+        const baseY = index * trackHeight + trackHeight - 10; const highY = index * trackHeight + 10;              
+        wfCtx.strokeStyle = '#334155'; wfCtx.lineWidth = 1;
+        wfCtx.beginPath(); wfCtx.moveTo(80, baseY); wfCtx.lineTo(w, baseY); wfCtx.stroke();
+        wfCtx.fillStyle = node.type === 'LED' ? '#eab308' : '#3b82f6'; wfCtx.font = 'bold 12px monospace';
+        wfCtx.fillText(node.label, 10, baseY - (trackHeight/2) + 5);
+        wfCtx.strokeStyle = '#22c55e'; wfCtx.lineWidth = 2; wfCtx.lineJoin = 'bevel'; wfCtx.beginPath();
+        for(let i=0; i<history.length; i++) {
+            const val = history[i]; const x = 80 + i * stepX; const y = val === 1 ? highY : baseY;
+            if (i === 0) { wfCtx.moveTo(x, y); } 
+            else {
+                const prevVal = history[i-1];
+                if (val !== prevVal) wfCtx.lineTo(x, prevVal === 1 ? highY : baseY);
+                wfCtx.lineTo(x, y);
+            }
+        } wfCtx.stroke();
+    });
+}
+
+setInterval(simulateLogic, 50);
+setTimeout(resizeCanvas, 100);
+
+// ==========================================
+// 4. Testbench 真值表產生器
+// ==========================================
+function generateTruthTable() {
+    // 抓取所有開關(輸入)與燈泡(輸出)並依標籤排序
+    const switches = Object.values(nodes).filter(n => n.type === 'SWITCH').sort((a,b) => a.label.localeCompare(b.label));
+    const leds = Object.values(nodes).filter(n => n.type === 'LED').sort((a,b) => a.label.localeCompare(b.label));
+
+    if (switches.length === 0 || leds.length === 0) {
+        alert("Testbench 需要至少 1 個 Switch (輸入) 與 1 個 LED (輸出) 才能產生真值表！");
+        return;
+    }
+    if (switches.length > 6) {
+        alert("輸入端過多 (最多支援 6 個 Switch，即 64 種組合)，以免瀏覽器卡頓。");
+        return;
+    }
+
+    // 儲存原始開關狀態
+    const originalStates = switches.map(sw => sw.state);
+
+    const numRows = Math.pow(2, switches.length);
+    let tableData = [];
+
+    // 掃描所有 2^n 種組合
+    for (let i = 0; i < numRows; i++) {
+        // 設定輸入狀態 (從高位元到低位元)
+        for (let j = 0; j < switches.length; j++) {
+            switches[j].state = (i >> (switches.length - 1 - j)) & 1;
+        }
+
+        // 讓組合邏輯穩定 (多次迭代確保訊號傳遞到底)
+        for(let pass = 0; pass < 20; pass++) {
+            simulateLogicSync(); 
+        }
+
+        // 記錄結果
+        const inVals = switches.map(sw => sw.state);
+        const outVals = leds.map(led => led.out);
+        tableData.push({ inVals, outVals });
+    }
+
+    // 恢復原始狀態
+    switches.forEach((sw, idx) => {
+        sw.state = originalStates[idx];
+        sw.el.querySelector('.val-label').innerText = sw.state;
+        if(sw.state) sw.el.classList.add('active-gate'); else sw.el.classList.remove('active-gate');
+    });
+    for(let pass = 0; pass < 20; pass++) simulateLogicSync(); // 讓 UI 回到原始穩定態
+
+    // 繪製表格
+    renderTruthTable(switches, leds, tableData);
+    
+    // 顯示 Modal
+    const modal = document.getElementById('tt-modal');
+    const content = document.getElementById('tt-modal-content');
+    modal.classList.remove('hidden');
+    // 觸發 Tailwind 動畫
+    setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        content.classList.remove('scale-95');
+    }, 10);
+}
+
+// 不含波形與 UI 更新的「純粹邏輯模擬」，專供 Testbench 快速掃描使用
+function simulateLogicSync() {
+    Object.values(nodes).forEach(n => {
+        if(n.type !== 'SWITCH' && n.type !== 'CLOCK' && n.type !== 'DFF') {
+            for(let key in n.ins) n.ins[key] = 0;
+        }
+    });
+
+    wires.forEach(wire => {
+        const outVal = nodes[wire.outNode] ? nodes[wire.outNode].out : 0;
+        if (nodes[wire.inNode]) nodes[wire.inNode].ins[wire.inPort] = outVal;
+    });
+
+    Object.values(nodes).forEach(node => {
+        const vals = Object.values(node.ins);
+        switch(node.type) {
+            case 'SWITCH': node.out = node.state; break;
+            case 'AND':    node.out = vals.every(v => v === 1) ? 1 : 0; break;
+            case 'NAND':   node.out = vals.every(v => v === 1) ? 0 : 1; break;
+            case 'OR':     node.out = vals.some(v => v === 1) ? 1 : 0; break;
+            case 'NOR':    node.out = vals.some(v => v === 1) ? 0 : 1; break;
+            case 'XOR':    node.out = (vals.reduce((a,b)=>a+b, 0) % 2 === 1) ? 1 : 0; break;
+            case 'XNOR':   node.out = (vals.reduce((a,b)=>a+b, 0) % 2 === 1) ? 0 : 1; break;
+            case 'NOT':    node.out = (!node.ins.in0) ? 1 : 0; break;
+            case 'MUX':    node.out = node.ins.sel === 1 ? node.ins.in1 : node.ins.in0; break;
+            case 'LED':    node.out = node.ins.in0; break;
+        }
+    });
+}
+
+// 將掃描結果渲染為 HTML 表格
+function renderTruthTable(switches, leds, tableData) {
+    const thead = document.getElementById('tt-head');
+    const tbody = document.getElementById('tt-body');
+    
+    // 標題列
+    let headHTML = '<tr>';
+    switches.forEach(sw => headHTML += `<th class="border border-slate-600 px-4 py-2 bg-blue-900/50 text-blue-300">${sw.label}</th>`);
+    leds.forEach(led => headHTML += `<th class="border border-slate-600 px-4 py-2 bg-yellow-900/50 text-yellow-300">${led.label}</th>`);
+    headHTML += '</tr>';
+    thead.innerHTML = headHTML;
+
+    // 資料列
+    let bodyHTML = '';
+    tableData.forEach((row, i) => {
+        const bgClass = i % 2 === 0 ? 'bg-slate-800' : 'bg-slate-800/50';
+        bodyHTML += `<tr class="${bgClass} hover:bg-slate-700 transition">`;
+        
+        row.inVals.forEach(val => {
+            const color = val === 1 ? 'text-green-400' : 'text-slate-500';
+            bodyHTML += `<td class="border border-slate-600 px-4 py-2 ${color} font-bold">${val}</td>`;
+        });
+        
+        row.outVals.forEach(val => {
+            const color = val === 1 ? 'text-yellow-400 drop-shadow-[0_0_5px_rgba(250,204,21,0.8)]' : 'text-slate-600';
+            bodyHTML += `<td class="border border-slate-600 px-4 py-2 ${color} font-bold text-lg">${val}</td>`;
+        });
+        bodyHTML += '</tr>';
+    });
+    tbody.innerHTML = bodyHTML;
+}
+
+window.closeTTModal = function() {
+    const modal = document.getElementById('tt-modal');
+    const content = document.getElementById('tt-modal-content');
+    modal.classList.add('opacity-0');
+    content.classList.add('scale-95');
+    setTimeout(() => modal.classList.add('hidden'), 300);
+}
