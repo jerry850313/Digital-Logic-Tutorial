@@ -1,14 +1,7 @@
-module top_module (
-	input clk,
-	input L,
-	input r_in,
-	input q_in,
-	output reg Q);
-    always @(posedge clk)begin
-        if(L)
-            Q <= r_in;
-        else
-            Q <= q_in;
-    end
+module full_adder (
+    input a, b, cin,
+    output sum, cout
+);
+    assign sum = a ^ b ^ cin;
+    assign cout = (a & b) | (b & cin) | (a & cin);
 endmodule
-
