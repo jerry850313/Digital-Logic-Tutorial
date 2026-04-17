@@ -50,3 +50,17 @@
 {"time":"2026-04-17T03:34:44.583Z","ip":"140.125.35.129","user":"admin","method":"GET","url":"/exam/api/state?t=1776396884579","status":"200","ms":"0.987"}
 {"time":"2026-04-17T03:34:47.583Z","ip":"140.125.35.129","user":"admin","method":"GET","url":"/exam/api/state?t=1776396887579","status":"200","ms":"0.780"}
 {"time":"2026-04-17T03:34:50.582Z","ip":"140.125.35.129","user":"admin","method":"GET","url":"/exam/api/state?t=1776396890579","status":"200","ms":"0.742"}
+{"time":"2026-04-17T03:34:53.580Z","ip":"140.125.35.129","user":"admin","method":"GET","url":"/exam/api/state?t=1776396893579","status":"200","ms":"0.279"}
+{"time":"2026-04-17T03:34:56.581Z","ip":"140.125.35.129","user":"admin","method":"GET","url":"/exam/api/state?t=1776396896579","status":"200","ms":"0.486"}
+{"time":"2026-04-17T03:34:59.584Z","ip":"140.125.35.129","user":"admin","method":"GET","url":"/exam/api/state?t=1776396899579","status":"200","ms":"0.820"}
+{"time":"2026-04-17T03:35:02.583Z","ip":"140.125.35.129","user":"admin","method":"GET","url":"/exam/api/state?t=1776396902579","status":"200","ms":"1.072"}
+{"time":"2026-04-17T03:35:05.584Z","ip":"140.125.35.129","user":"admin","method":"GET","url":"/exam/api/state?t=1776396905579","status":"200","ms":"0.830"}
+{"time":"2026-04-17T03:35:08.583Z","ip":"140.125.35.129","user":"admin","method":"GET","url":"/exam/api/state?t=1776396908579","status":"200","ms":"0.961"}
+{"time":"2026-04-17T03:35:11.584Z","ip":"140.125.35.129","user":"admin","method":"GET","url":"/exam/api/state?t=1776396911579","status":"200","ms":"1.596"}
+{"time":"2026-04-17T03:35:14.583Z","ip":"140.125.35.129","user":"admin","method":"GET","url":"/exam/api/state?t=1776396914579","status":"200","ms":"0.911"}
+{"time":"2026-04-17T03:35:17.581Z","ip":"140.125.35.129","user":"admin","method":"GET","url":"/exam/api/state?t=1776396917579","status":"200","ms":"0.474"}
+{"time":"2026-04-17T03:35:20.584Z","ip":"140.125.35.129","user":"admin","method":"GET","url":"/exam/api/state?t=1776396920579","status":"200","ms":"1.091"}
+{"time":"2026-04-17T03:35:23.584Z","ip":"140.125.35.129","user":"admin","method":"GET","url":"/exam/api/state?t=1776396923579","status":"200","ms":"0.866"}
+{"time":"2026-04-17T03:35:26.584Z","ip":"140.125.35.129","user":"admin","method":"GET","url":"/exam/api/state?t=1776396926579","status":"200","ms":"0.877"}
+{"time":"2026-04-17T03:35:29.584Z","ip":"140.125.35.129","user":"admin","method":"GET","url":"/exam/api/state?t=1776396929579","status":"200","ms":"0.899"}
+{"time":"2026-04-17T03:35:32.581Z","ip":"140.125.35.129","user":"admin","method":"GET","url":"/exam/api/state?t=1776396932579","status":"200","ms":"0.420"}
