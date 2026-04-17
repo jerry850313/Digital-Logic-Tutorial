@@ -18,6 +18,12 @@
             padding: 20px;
             background-color: #fcfcfc;
         }
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
         h1 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; text-align: center;}
         h2 { color: #2980b9; margin-top: 40px; border-bottom: 1px dashed #bdc3c7; padding-bottom: 5px; }
         .answer-block { margin-bottom: 15px; }
@@ -80,12 +86,25 @@
             min-width: 320px;
         }
     </style>
+    <script src="/js/security.js"></script>
 </head>
 <body>
-    <div class="container mt-3">
-        <a href="/ans" class="btn btn-outline-secondary">
+    <div class="container mt-3 nav-container">
+        <a href="/ans" class="btn btn-outline-secondary" data-i18n="back_to_exams">
             <i class="fas fa-arrow-left"></i> Back to Exams
         </a>
+        <div class="dropdown">
+            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="langDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                🌐 <span id="currentLang">中文</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="langDropdown">
+                <a class="dropdown-item" href="#" onclick="window.changeLang('zh-TW')">繁體中文</a>
+                <a class="dropdown-item" href="#" onclick="window.changeLang('en')">English</a>
+                <a class="dropdown-item" href="#" onclick="window.changeLang('ja')">日本語</a>
+                <a class="dropdown-item" href="#" onclick="window.changeLang('it')">Italiano</a>
+                <a class="dropdown-item" href="#" onclick="window.changeLang('vi')">Tiếng Việt</a>
+            </div>
+        </div>
     </div>
 
     <svg width="0" height="0" style="display:none;">
@@ -103,31 +122,31 @@
         </defs>
     </svg>
 
-    <h1>小考 1 完整答案與推導</h1>
+    <h1 data-i18n="page_title">小考 1 完整答案與推導</h1>
 
-    <h2>第一題：數字系統轉換</h2>
+    <h2 data-i18n="q1_title">第一題：數字系統轉換</h2>
     <div class="correction">
         <strong>1(a) </strong>
         <p>$$ (43B.3A)_{16} = (0100\;0011\;1011.0011\;\mathbf{1010})_2 $$</p>
     </div>
     <div class="answer-block">
-        <strong>1(b) 轉 Gray code：</strong>
+        <strong data-i18n="q1b_text">1(b) 轉 Gray code：</strong>
         <p>$$ (27)_{10} = (11011)_2 \Rightarrow (10110)_{\text{gray}} $$</p>
     </div>
     <div class="answer-block">
-        <strong>1(c) 找 8 進制的 7 補數：</strong>
+        <strong data-i18n="q1c_text">1(c) 找 8 進制的 7 補數：</strong>
         <p>$$ (F5)_{16} = (1111\;0101)_2 = (365)_8 $$</p>
-        <p>7 補數為：$$ 777 - 365 = 412 $$</p>
+        <p><span data-i18n="q1c_solution">7 補數為：</span>$$ 777 - 365 = 412 $$</p>
     </div>
     <div class="answer-block">
-        <strong>1(d) 找 8 進制的 8 補數：</strong>
+        <strong data-i18n="q1d_text">1(d) 找 8 進制的 8 補數：</strong>
         <p>$$ (B3)_{16} = (1011\;0011)_2 = (263)_8 $$</p>
-        <p>8 補數為：$$ 777 - 263 + 1 = 515 $$</p>
+        <p><span data-i18n="q1d_solution">8 補數為：</span>$$ 777 - 263 + 1 = 515 $$</p>
     </div>
 
-    <h2>第二題：布林代數與卡諾圖</h2>
+    <h2 data-i18n="q2_title">第二題：布林代數與卡諾圖</h2>
     <div class="kmap-container">
-        <h3 style="text-align: center; margin-top: 0; color: #34495e;">(a) 最簡 SOP 卡諾圖化簡</h3>
+        <h3 style="text-align: center; margin-top: 0; color: #34495e;" data-i18n="q2a_subtitle">(a) 最簡 SOP 卡諾圖化簡</h3>
         
         <svg viewBox="0 0 400 220" style="max-width: 400px; margin: 10px auto; display: block;" xmlns="http://www.w3.org/2000/svg">
             <line x1="40" y1="20" x2="100" y2="60" stroke="#333" stroke-width="1.5" />
@@ -167,19 +186,19 @@
     </div>
     
     <div class="answer-block">
-        <strong>(b) SOP 與 POS 轉換：</strong>
+        <strong data-i18n="q2b_text">(b) SOP 與 POS 轉換：</strong>
         <p>$$ F = x'y + y'z + xz = \Sigma(1, 2, 3, 5, 7) = \Pi(0, 4, 6) $$</p>
         <p>$$ F' = \Sigma(0, 4, 6) = \Pi(1, 2, 3, 5, 7) $$</p>
     </div>
 
-    <h2>第三題：邏輯閘電路實作</h2>
+    <h2 data-i18n="q3_title">第三題：邏輯閘電路實作</h2>
     
     <div class="kmap-container">
-        <h3 style="text-align: center; margin-top: 0; color: #34495e;">基礎函數卡諾圖推導 \( f(A,B,C) = \Sigma(0, 2, 3, 4, 6) \)</h3>
+        <h3 style="text-align: center; margin-top: 0; color: #34495e;" data-i18n="q3_subtitle">基礎函數卡諾圖推導 \( f(A,B,C) = \Sigma(0, 2, 3, 4, 6) \)</h3>
         
         <div class="kmap-flex">
             <div class="kmap-item">
-                <strong style="color: #2980b9;">(1) 圈選 1 得到 SOP</strong>
+                <strong style="color: #2980b9;" data-i18n="q3_1_text">(1) 圈選 1 得到 SOP</strong>
                 <svg viewBox="0 0 380 220" style="max-width: 380px; margin: 10px auto; display: block;" xmlns="http://www.w3.org/2000/svg">
                     <line x1="40" y1="20" x2="100" y2="60" stroke="#333" stroke-width="1.5" />
                     <text x="50" y="55" font-family="math, serif" font-size="16" fill="#333">A</text>
@@ -218,7 +237,7 @@
             </div>
 
             <div class="kmap-item">
-                <strong style="color: #8e44ad;">(2) 圈選 0 得到 POS</strong>
+                <strong style="color: #8e44ad;" data-i18n="q3_2_text">(2) 圈選 0 得到 POS</strong>
                 <svg viewBox="0 0 380 220" style="max-width: 380px; margin: 10px auto; display: block;" xmlns="http://www.w3.org/2000/svg">
                     <line x1="40" y1="20" x2="100" y2="60" stroke="#333" stroke-width="1.5" />
                     <text x="50" y="55" font-family="math, serif" font-size="16" fill="#333">A</text>
@@ -260,7 +279,6 @@
     </div>
 
     <div class="circuit-grid">
-
         <div class="circuit-card">
             <h4>(a) AND-OR</h4>
             <p>\( f = A'B + C' \)</p>
@@ -420,15 +438,138 @@
                 <text x="185" y="47.5" font-family="Georgia, serif" font-style="italic" font-size="16" fill="#333" dominant-baseline="central">f</text>
             </svg>
         </div>
-
     </div>
+
     <footer class="mt-5 py-4 border-top text-center text-muted">
         <div class="container">
-            <a href="/ans" class="btn btn-outline-secondary mb-3">
+            <a href="/ans" class="btn btn-outline-secondary mb-3" data-i18n="back_to_exams">
                 <i class="fas fa-arrow-left"></i> Back to Exams
             </a>
-            <p>&copy; 2026 數位邏輯設計教程 | Copyright: 西園寺佳頴</p>
+            <p data-i18n="footer_text">&copy; 2026 數位邏輯設計 | Teacher: Doc.蘇慶龍 | Copyright: <a href="https://github.com/jerry850313" target="_blank">謝佳頴 TA</a></p>
         </div>
     </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <script>
+        const langMapNames = {
+            'zh-TW': '繁體中文',
+            'en': 'English',
+            'ja': '日本語',
+            'it': 'Italiano',
+            'vi': 'Tiếng Việt'
+        };
+
+        window.pageTranslations = {
+            'zh-TW': {
+                'page_title': '小考 1 完整答案與推導',
+                'back_to_exams': '回到考試列表',
+                'q1_title': '第一題：數字系統轉換',
+                'q1b_text': '1(b) 轉 Gray code：',
+                'q1c_text': '1(c) 找 8 進制的 7 補數：',
+                'q1c_solution': '7 補數為：',
+                'q1d_text': '1(d) 找 8 進制的 8 補數：',
+                'q1d_solution': '8 補數為：',
+                'q2_title': '第二題：布林代數與卡諾圖',
+                'q2a_subtitle': '(a) 最簡 SOP 卡諾圖化簡',
+                'q2b_text': '(b) SOP 與 POS 轉換：',
+                'q3_title': '第三題：邏輯閘電路實作',
+                'q3_subtitle': '基礎函數卡諾圖推導 \( f(A,B,C) = \\Sigma(0, 2, 3, 4, 6) \)',
+                'q3_1_text': '(1) 圈選 1 得到 SOP',
+                'q3_2_text': '(2) 圈選 0 得到 POS',
+                'footer_text': '&copy; 2026 數位邏輯設計 | Teacher: Doc.蘇慶龍 | Copyright: 謝佳頴 TA'
+            },
+            'en': {
+                'page_title': 'Quiz 1 Full Answers & Derivations',
+                'back_to_exams': 'Back to Exams',
+                'q1_title': 'Q1: Number System Conversion',
+                'q1b_text': '1(b) Convert to Gray code:',
+                'q1c_text': '1(c) Find 7\'s complement (Octal):',
+                'q1c_solution': '7\'s complement is:',
+                'q1d_text': '1(d) Find 8\'s complement (Octal):',
+                'q1d_solution': '8\'s complement is:',
+                'q2_title': 'Q2: Boolean Algebra & K-Map',
+                'q2a_subtitle': '(a) Simplest SOP using K-Map',
+                'q2b_text': '(b) SOP and POS Conversion:',
+                'q3_title': 'Q3: Logic Gate Implementation',
+                'q3_subtitle': 'K-Map Derivation for \( f(A,B,C) = \\Sigma(0, 2, 3, 4, 6) \)',
+                'q3_1_text': '(1) Group 1s to get SOP',
+                'q3_2_text': '(2) Group 0s to get POS',
+                'footer_text': '&copy; 2026 Digital Logic Design | Teacher: Doc. Su | Copyright: Chia-Ying Hsieh TA'
+            },
+            'ja': {
+                'page_title': '小テスト 1 正解と導出',
+                'back_to_exams': '試験一覧に戻る',
+                'q1_title': '第1問：数値系の変換',
+                'q1b_text': '1(b) グレイコードへの変換：',
+                'q1c_text': '1(c) 8進数の7の補数を求める：',
+                'q1c_solution': '7の補数は：',
+                'q1d_text': '1(d) 8進数の8の補数を求める：',
+                'q1d_solution': '8の補数は：',
+                'q2_title': '第2問：ブール代数とカルノー図',
+                'q2a_subtitle': '(a) カルノー図による最小SOP形式の簡略化',
+                'q2b_text': '(b) SOP形式とPOS形式の変換：',
+                'q3_title': '第3問：論理ゲート回路の実装',
+                'q3_subtitle': 'カルノー図による導出 \( f(A,B,C) = \\Sigma(0, 2, 3, 4, 6) \)',
+                'q3_1_text': '(1) 1をグループ化してSOPを得る',
+                'q3_2_text': '(2) 0をグループ化してPOSを得る',
+                'footer_text': '&copy; 2026 デジタル論理設計 | 担当講師: 蘇慶龍 博士 | 著作権: 謝佳頴 TA'
+            },
+            'it': {
+                'page_title': 'Quiz 1 - Risposte Complete e Derivazioni',
+                'back_to_exams': 'Torna all\'elenco degli esami',
+                'q1_title': 'D1: Conversione dei Sistemi Numerici',
+                'q1b_text': '1(b) Converti in codice Gray:',
+                'q1c_text': '1(c) Trova il complemento a 7 (Ottale):',
+                'q1c_solution': 'Il complemento a 7 è:',
+                'q1d_text': '1(d) Trova il complemento a 8 (Ottale):',
+                'q1d_solution': 'Il complemento a 8 è:',
+                'q2_title': 'D2: Algebra Booleana e Mappe K',
+                'q2a_subtitle': '(a) Semplificazione SOP tramite Mappa K',
+                'q2b_text': '(b) Conversione SOP e POS:',
+                'q3_title': 'D3: Implementazione con Porte Logiche',
+                'q3_subtitle': 'Derivazione Mappa K per \( f(A,B,C) = \\Sigma(0, 2, 3, 4, 6) \)',
+                'q3_1_text': '(1) Raggruppa gli 1 per ottenere SOP',
+                'q3_2_text': '(2) Raggruppa gli 0 per ottenere POS',
+                'footer_text': '&copy; 2026 Progetto di Logica Digitale | Docente: Doc. Su Qinglong | Copyright: Chia-Ying Hsieh TA'
+            },
+            'vi': {
+                'page_title': 'Bài kiểm tra 1 - Đáp án đầy đủ và Suy luận',
+                'back_to_exams': 'Quay lại danh sách kỳ thi',
+                'q1_title': 'Câu 1: Chuyển đổi hệ thống số',
+                'q1b_text': '1(b) Chuyển sang mã Gray:',
+                'q1c_text': '1(c) Tìm phần bù 7 (Bát phân):',
+                'q1c_solution': 'Phần bù 7 là:',
+                'q1d_text': '1(d) Tìm phần bù 8 (Bát phân):',
+                'q1d_solution': 'Phần bù 8 là:',
+                'q2_title': 'Câu 2: Đại số Boolean và Bản đồ K-map',
+                'q2a_subtitle': '(a) Đơn giản hóa SOP bằng bản đồ K-map',
+                'q2b_text': '(b) Chuyển đổi SOP và POS:',
+                'q3_title': 'Câu 3: Thực hiện mạch cổng Logic',
+                'q3_subtitle': 'Suy luận K-map cho \( f(A,B,C) = \\Sigma(0, 2, 3, 4, 6) \)',
+                'q3_1_text': '(1) Nhóm các số 1 để lấy SOP',
+                'q3_2_text': '(2) Nhóm các số 0 để lấy POS',
+                'footer_text': '&copy; 2026 Thiết kế Logic Kỹ thuật số | Giảng viên: Tiến sĩ Tô Khánh Long | Bản quyền: Tạ Giai Dĩnh TA'
+            }
+        };
+
+        window.changeLang = function(lang) {
+            const currentLangEl = document.getElementById('currentLang');
+            if (currentLangEl) {
+                currentLangEl.innerText = langMapNames[lang] || '繁體中文';
+            }
+            
+            const dict = window.pageTranslations[lang] || window.pageTranslations['zh-TW'];
+            
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict && dict[key]) {
+                    el.innerHTML = dict[key];
+                }
+            });
+        };
+    </script>
 </body>
 </html>

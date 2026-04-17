@@ -1,0 +1,2 @@
+/home/ayame/Digital-Logic-Tutorial/logs/20260416-0000-01-access.log.gz
+/home/ayame/Digital-Logic-Tutorial/logs/20260417-0000-01-access.log.gz

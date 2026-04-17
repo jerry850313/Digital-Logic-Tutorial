@@ -4,11 +4,6 @@ const { exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-/* GET verilog page. */
-router.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
-});
-
 /* POST verilog code. */
 router.post('/generate', (req, res) => {
   const verilogCode = req.body.code;
@@ -32,8 +27,8 @@ router.post('/generate', (req, res) => {
   fs.writeFile(filePath, verilogCode, (err) => {
     if (err) return res.status(500).send('File Error');
 
-    // 1. 產生 Testbench (因為調用 Ollama 較花時間，建議將 timeout 拉長到 15000)
-    exec(`python3 ${scriptPath} ${filePath}`, { timeout: 15000 }, (err, stdout, stderr) => {
+    // 1. 產生 Testbench (因為調用 Ollama 較花時間，建議將 timeout 拉長到 300000)
+    exec(`python3 ${scriptPath} ${filePath}`, { timeout: 300000 }, (err, stdout, stderr) => {
       if (err) return res.status(500).send(`TB Error: ${stderr || stdout}`);
       
       const tbFile = 'verilog_code_tb.v';
@@ -55,7 +50,7 @@ router.post('/generate', (req, res) => {
             // 4. VCD 轉 JSON
             exec(`python3 ${convertScriptPath} output.vcd waveform.json`, { cwd: verilogDir, timeout: 5000 }, (err, stdout, stderr) => {
               if (err) return res.status(500).send(`JSON Error: ${stderr}`);
-              res.json({ message: 'Success', jsonFile: '/verilog_files/waveform.json' }); // 這裡的路徑可能要確認是否與前端匹配
+              res.json({ message: 'Success', jsonFile: '/verilog/waveform.json' }); 
             });
           });
         });

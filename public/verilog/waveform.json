@@ -2,7 +2,7 @@
   "timescale": "1 ns",
   "signals": {
     "!": {
-      "name": "sum",
+      "name": "c",
       "type": "wire",
       "size": "1",
       "values": [
@@ -20,69 +20,11 @@
         },
         {
           "time": 40000,
-          "value": "1"
-        },
-        {
-          "time": 50000,
           "value": "0"
-        },
-        {
-          "time": 70000,
-          "value": "1"
-        },
-        {
-          "time": 80000,
-          "value": "1"
         }
       ]
     },
     "\"": {
-      "name": "cout",
-      "type": "wire",
-      "size": "1",
-      "values": [
-        {
-          "time": 0,
-          "value": "0"
-        },
-        {
-          "time": 30000,
-          "value": "1"
-        },
-        {
-          "time": 40000,
-          "value": "0"
-        },
-        {
-          "time": 50000,
-          "value": "1"
-        },
-        {
-          "time": 80000,
-          "value": "1"
-        }
-      ]
-    },
-    "#": {
-      "name": "cin",
-      "type": "wire",
-      "size": "1",
-      "values": [
-        {
-          "time": 0,
-          "value": "0"
-        },
-        {
-          "time": 40000,
-          "value": "1"
-        },
-        {
-          "time": 80000,
-          "value": "1"
-        }
-      ]
-    },
-    "$": {
       "name": "b",
       "type": "wire",
       "size": "1",
@@ -97,19 +39,11 @@
         },
         {
           "time": 40000,
-          "value": "0"
-        },
-        {
-          "time": 60000,
-          "value": "1"
-        },
-        {
-          "time": 80000,
           "value": "1"
         }
       ]
     },
-    "%": {
+    "#": {
       "name": "a",
       "type": "wire",
       "size": "1",
@@ -132,30 +66,14 @@
         },
         {
           "time": 40000,
-          "value": "0"
-        },
-        {
-          "time": 50000,
-          "value": "1"
-        },
-        {
-          "time": 60000,
-          "value": "0"
-        },
-        {
-          "time": 70000,
-          "value": "1"
-        },
-        {
-          "time": 80000,
           "value": "1"
         }
       ]
     },
-    "&": {
+    "$": {
       "name": "test_bits",
       "type": "reg",
-      "size": "3",
+      "size": "2",
       "values": [
         {
           "time": 0,
@@ -175,27 +93,11 @@
         },
         {
           "time": 40000,
-          "value": "b100"
-        },
-        {
-          "time": 50000,
-          "value": "b101"
-        },
-        {
-          "time": 60000,
-          "value": "b110"
-        },
-        {
-          "time": 70000,
-          "value": "b111"
-        },
-        {
-          "time": 80000,
-          "value": "b111"
+          "value": "b11"
         }
       ]
     },
-    "'": {
+    "%": {
       "name": "i",
       "type": "integer",
       "size": "32",
@@ -221,24 +123,8 @@
           "value": "b100"
         },
         {
-          "time": 50000,
-          "value": "b101"
-        },
-        {
-          "time": 60000,
-          "value": "b110"
-        },
-        {
-          "time": 70000,
-          "value": "b111"
-        },
-        {
-          "time": 80000,
-          "value": "b1000"
-        },
-        {
-          "time": 80000,
-          "value": "b1000"
+          "time": 40000,
+          "value": "b100"
         }
       ]
     }

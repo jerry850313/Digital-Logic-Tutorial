@@ -8,6 +8,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
     <style>
         body {
             font-family: 'Noto Sans TC', sans-serif;
@@ -36,6 +47,7 @@
         ::-webkit-scrollbar-thumb { background: rgba(71, 85, 105, 0.8); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(100, 116, 139, 1); }
     </style>
+    <script src="/js/security.js"></script>
 </head>
 <body class="h-screen w-screen flex flex-col">
 
@@ -81,58 +93,71 @@
                     等待伺服器資料...<br>
                     <span class="text-xl xl:text-2xl">Waiting for server...</span>
                 </div>
+
+                <!-- 考試時段顯示區 -->
+                <div class="mt-8 bg-slate-800/50 px-6 py-4 rounded-2xl border border-slate-700 w-full flex flex-col items-center gap-2">
+                    <div class="text-slate-400 text-lg font-bold">考試時段 / Exam Period</div>
+                    <div id="display-time-range" class="text-2xl text-blue-300 font-bold clock-font">--:-- ~ --:--</div>
+                </div>
             </div>
         </div>
 
         <div class="w-[60%] flex flex-col gap-6 h-full">
-            <div class="bg-blue-900/30 border border-blue-500/30 rounded-2xl p-6 shadow-lg flex flex-col min-h-[250px] shrink-0">
-                <div class="flex justify-between items-center mb-4 border-b border-blue-500/30 pb-3">
-                    <div class="flex items-center gap-3 text-blue-400">
-                        <i class="fa-solid fa-bullhorn text-4xl"></i>
-                        <h3 class="text-3xl font-bold">考場公告 <span class="text-xl text-blue-300 ml-2">Announcements</span></h3>
+            <div class="bg-slate-800/80 border border-slate-600 rounded-2xl p-8 shadow-lg flex flex-col h-full overflow-y-auto">
+                <div class="flex items-center justify-between mb-6 border-b border-slate-600 pb-4 shrink-0">
+                    <div class="flex items-center gap-3 text-red-400">
+                        <i class="fa-solid fa-triangle-exclamation text-4xl"></i>
+                        <h3 id="sidebar-title" class="text-3xl font-bold">重要規則與公告 <span class="text-xl text-red-300 ml-2">Rules & Announcements</span></h3>
                     </div>
-                    <div class="flex items-center text-slate-300 bg-slate-900/60 px-3 py-1 rounded-lg border border-slate-700 shadow-inner ml-2">
+                    <div class="flex items-center text-slate-300 bg-slate-900/60 px-3 py-1 rounded-lg border border-slate-700 shadow-inner">
                         <i class="fa-regular fa-clock mr-2 text-blue-400"></i>
                         <span id="header-time" class="clock-font text-xl font-bold tracking-wider">00:00:00</span>
                     </div>
                 </div>
-                <div id="display-announcement" class="text-2xl leading-relaxed text-slate-100 whitespace-pre-wrap overflow-y-auto flex-1 font-medium">
-                    正在同步最新公告...
-                </div>
-            </div>
 
-            <div class="bg-slate-800/80 border border-slate-600 rounded-2xl p-6 shadow-lg flex flex-col flex-1 overflow-y-auto">
-                <div class="flex items-center gap-3 mb-4 text-red-400 border-b border-slate-600 pb-3 shrink-0">
-                    <i class="fa-solid fa-triangle-exclamation text-4xl"></i>
-                    <h3 class="text-3xl font-bold">重要規則提醒 <span class="text-xl text-red-300 ml-2">Exam Rules</span></h3>
-                </div>
-                <ul class="text-2xl text-slate-200 space-y-6">
+                <ul class="text-2xl text-slate-200 space-y-8 flex-1">
                     <li class="flex gap-4 items-start">
                         <i class="fa-solid fa-ban text-red-400 text-3xl mt-2"></i>
                         <div>
-                            手機、手錶請關機收進書包，<strong class="text-red-400">發出聲響考卷 0 分</strong>。<br>
-                            <span class="text-slate-400 text-xl">Turn off phones/smartwatches. Ringing = Score of 0.</span>
+                            手機、手錶請關機收進書包，<strong class="text-red-400 font-black underline">書包請統一放置於講台前地面</strong>。發出聲響考卷 0 分。<br>
+                            <span class="text-slate-400 text-xl">Turn off phones/watches. <strong class="text-slate-300">Bags must be placed on the floor in front of the podium.</strong> Ringing = 0.</span>
                         </div>
                     </li>
                     <li class="flex gap-4 items-start">
                         <i class="fa-solid fa-pen text-slate-400 text-3xl mt-2"></i>
                         <div>
-                            作答時請務必將題號、答案及單位標示清楚。<br>
-                            <span class="text-slate-400 text-xl">Clearly mark question numbers, answers, and units.</span>
+                            作答時請務必將題號、答案及單位標示清楚，並包含<strong class="text-blue-400">詳細過程</strong>。<br>
+                            <span class="text-blue-300 text-xl">（詳細過程定義：包含邏輯式之演化步驟或卡諾圖分組分析過程）</span><br>
+                            <span class="text-slate-400 text-xl">Clearly mark ID, Ans, and Units. Include <strong class="text-slate-300">detailed derivation</strong> (Logic evolution or K-map analysis).</span>
                         </div>
                     </li>
                     <li class="flex gap-4 items-start">
                         <i class="fa-solid fa-share-nodes text-slate-400 text-3xl mt-2"></i>
                         <div>
-                            畫圖題遇線路相接點，請務必於交界處打點。<br>
-                            <span class="text-slate-400 text-xl">Mark connection points with a dot in circuit diagrams.</span>
+                            畫圖題遇線路相接點務必打點。邏輯電路圖<strong class="text-amber-400 font-bold">請勿畫出反向閘 (NOT gate)</strong>。<br>
+                            <span class="text-amber-300 text-xl">（請直接標註反向訊號，例如：使用 \( A' \) 代替 \( A \) 經過 NOT gate）</span><br>
+                            <span class="text-slate-400 text-xl">Mark connection dots. <strong class="text-slate-300">Do not draw NOT gates</strong>; label inverted signals directly (e.g., \( A' \)).</span>
                         </div>
                     </li>
                     <li class="flex gap-4 items-start">
                         <i class="fa-solid fa-compress text-slate-400 text-3xl mt-2"></i>
                         <div>
-                            布林代數請化簡至最簡式（除非題目另有要求）。<br>
-                            <span class="text-slate-400 text-xl">Simplify Boolean algebra to the simplest form.</span>
+                            布林代數請化簡至<strong class="text-green-400">最簡式</strong>（除非題目另有要求）。<br>
+                            <span class="text-green-300 text-xl">（最簡式定義：項數 Product/Sum term 最少，且每項之文字 Literal 最少之 SOP 或 POS）</span><br>
+                            <span class="text-slate-400 text-xl">Simplify to <strong class="text-slate-300">simplest form</strong> (Minimum terms and literals in SOP/POS).</span>
+                        </div>
+                    </li>
+
+                    <!-- 動態公告合併區 -->
+                    <li id="announcement-row" class="mt-10 pt-8 border-t-4 border-blue-500/50 hidden">
+                        <div class="flex gap-4 items-start">
+                            <i class="fa-solid fa-bullhorn text-blue-400 text-5xl mt-1"></i>
+                            <div class="flex-1">
+                                <div id="announcement-label" class="text-blue-400 text-2xl font-black mb-3 tracking-widest">即時公告 / LATEST ANNOUNCEMENT</div>
+                                <div id="display-announcement" class="text-4xl xl:text-5xl font-black text-white leading-tight whitespace-pre-wrap glow-text-warning">
+                                    <!-- 公告內容將顯示在此 -->
+                                </div>
+                            </div>
                         </div>
                     </li>
                 </ul>
@@ -176,9 +201,15 @@
                     <input type="text" id="input-exam-name" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-3 text-white text-lg focus:outline-none focus:border-blue-500" placeholder="例如：第一次期中考 / Midterm Exam 1">
                 </div>
 
-                <div>
-                    <label class="block text-lg font-medium text-slate-300 mb-1">考試結束時間 (End Time) <span class="text-red-400">*必填</span></label>
-                    <input type="datetime-local" id="input-end-time" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-3 text-white text-lg focus:outline-none focus:border-blue-500" style="color-scheme: dark;">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-lg font-medium text-slate-300 mb-1">開始時間 (Start Time)</label>
+                        <input type="datetime-local" id="input-start-time" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-3 text-white text-lg focus:outline-none focus:border-blue-500" style="color-scheme: dark;">
+                    </div>
+                    <div>
+                        <label class="block text-lg font-medium text-slate-300 mb-1">結束時間 (End Time) <span class="text-red-400">*必填</span></label>
+                        <input type="datetime-local" id="input-end-time" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-3 text-white text-lg focus:outline-none focus:border-blue-500" style="color-scheme: dark;">
+                    </div>
                 </div>
 
                 <div>
@@ -193,8 +224,10 @@
                     <div class="flex justify-between items-center mt-2">
                         <p class="text-xs text-slate-500">※ 內容將自動保存至伺服器 txt 檔中。</p>
                         <select id="ollama-model" class="bg-slate-900 border border-slate-600 text-slate-300 rounded p-1 text-sm outline-none">
-                            <option value="gemma3:1b">翻譯模型：gemma3:1b</option>
-                            <option value="gemma4:e4b">翻譯模型：gemma4:e4b</option>
+                            <option value="gemma3:1b">最快：gemma3:1b</option>
+                            <option value="gemma3:270m">極速：gemma3:270m</option>
+                            <option value="gemma3:4b">平衡：gemma3:4b</option>
+                            <option value="gemma4:e4b">精準：gemma4:e4b</option>
                         </select>
                     </div>
                 </div>

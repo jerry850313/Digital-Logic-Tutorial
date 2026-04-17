@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="exam1">期中考 1 完整答案與解析</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script>
+	MathJax = {
+	    tex: {
+		inlineMath: [['$', '$'], ['\\(', '\\)']],
+		displayMath: [['$$', '$$'], ['\\[', '\\]']]
+	    },
+	    svg: { fontCache: 'global' }
+	};
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body { font-family: 'Noto Sans TC', 'Segoe UI', sans-serif; line-height: 1.6; background-color: #f8f9fa; color: #333; padding-bottom: 50px; }
+        .container { max-width: 1100px; }
+        .exam-paper { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-top: 30px; }
+        h1 { color: #2c3e50; text-align: center; font-weight: bold; margin-bottom: 30px; border-bottom: 3px solid #3498db; padding-bottom: 15px; }
+        h2 { color: #2980b9; margin-top: 40px; border-left: 5px solid #3498db; padding-left: 15px; font-size: 1.5rem; }
+        .question-block { margin-bottom: 30px; padding: 20px; border: 1px solid #e9ecef; border-radius: 8px; }
+        .solution { background-color: #f0f7ff; border-left: 5px solid #27ae60; padding: 20px; margin-top: 15px; border-radius: 0 4px 4px 0; }
+        .kmap-svg, .logic-svg { display: block; margin: 20px auto; max-width: 100%; height: auto; }
+        .step-title { font-weight: bold; color: #2c3e50; margin-top: 10px; display: block; font-size: 1.1em; border-bottom: 1px dashed #ccc; padding-bottom: 5px; margin-bottom: 15px;}
+        .theory-box { background-color: #fff; border: 1px solid #ddd; padding: 12px; margin: 15px 0; border-radius: 4px; font-size: 0.95em; color: #444; }
+        .highlight { color: #e74c3c; font-weight: bold; }
+        .circuit-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-top: 20px; }
+        .circuit-card { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 15px; text-align: center; }
+        .circuit-card h6 { color: #2980b9; font-weight: bold; }
+        .circuit-svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+        .wire { fill: none; stroke: #333; stroke-width: 1.5; }
+        .wire-thick { fill: none; stroke: #c0392b; stroke-width: 2.5; }
+        .lbl { font-size: 13px; fill: #333; font-family: monospace; font-weight: bold; }
+        .out { font-weight: bold; fill: #c0392b; font-size: 15px; }
+        .kmap-cell-text { font-family: 'Courier New', Courier, monospace; font-weight: bold; }
+        .hl-red { fill: #e74c3c; fill-opacity: 0.15; stroke: #e74c3c; stroke-width: 2; stroke-dasharray: 4; }
+        .hl-blue { fill: #3498db; fill-opacity: 0.15; stroke: #3498db; stroke-width: 2; stroke-dasharray: 4; }
+        .hl-green { fill: #2ecc71; fill-opacity: 0.15; stroke: #2ecc71; stroke-width: 2; stroke-dasharray: 4; }
+        .hl-purple { fill: #9b59b6; fill-opacity: 0.15; stroke: #9b59b6; stroke-width: 2; stroke-dasharray: 4; }
+        .hl-orange { fill: #f39c12; fill-opacity: 0.15; stroke: #f39c12; stroke-width: 2; stroke-dasharray: 4; }
+        .hl-teal { fill: #1abc9c; fill-opacity: 0.15; stroke: #1abc9c; stroke-width: 2; stroke-dasharray: 4; }
+        @media print { body { background: white; } .exam-paper { box-shadow: none; border: none; padding: 10px; margin-top: 0;} }
+    </style>
+</head>
+<body>
+    <div class="container mt-3 d-flex justify-content-between align-items-center">
+        <a href="/ans" class="btn btn-outline-secondary" data-i18n="back_to_exams"><i class="fas fa-arrow-left"></i> Back to Exams</a>
+        <div class="dropdown">
+            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="langDropdown" data-toggle="dropdown">🌐 <span id="currentLang">中文</span></button>
+            <div class="dropdown-menu dropdown-menu-right">
+                <a class="dropdown-item" href="#" onclick="changeLang('zh-TW')">繁體中文</a>
+                <a class="dropdown-item" href="#" onclick="changeLang('en')">English</a>
+                <a class="dropdown-item" href="#" onclick="changeLang('ja')">日本語</a>
+                <a class="dropdown-item" href="#" onclick="changeLang('it')">Italiano</a>
+                <a class="dropdown-item" href="#" onclick="changeLang('vi')">Tiếng Việt</a>
+            </div>
+        </div>
+    </div>
+    <svg width="0" height="0" style="display:none;">
+        <defs>
+            <g id="gate-and"><path d="M 0,0 L 25,0 A 25,20 0 0,1 25,40 L 0,40 Z" fill="#fff" stroke="#333" stroke-width="2"/></g>
+            <g id="gate-or"><path d="M 0,0 C 20,0 30,5 45,20 C 30,35 20,40 0,40 Q 15,20 0,0 Z" fill="#fff" stroke="#333" stroke-width="2"/></g>
+            <g id="gate-xor"><path d="M -6,0 Q 9,20 -6,40" fill="none" stroke="#333" stroke-width="2"/><path d="M 0,0 C 20,0 30,5 45,20 C 30,35 20,40 0,40 Q 15,20 0,0 Z" fill="#fff" stroke="#333" stroke-width="2"/></g>
+            <g id="gate-nand"><path d="M 0,0 L 25,0 A 25,20 0 0,1 25,40 L 0,40 Z" fill="#fff" stroke="#333" stroke-width="2"/><circle cx="53" cy="20" r="4" fill="#fff" stroke="#333" stroke-width="2"/></g>
+            <g id="gate-nor"><path d="M 0,0 C 20,0 30,5 45,20 C 30,35 20,40 0,40 Q 15,20 0,0 Z" fill="#fff" stroke="#333" stroke-width="2"/><circle cx="49" cy="20" r="4" fill="#fff" stroke="#333" stroke-width="2"/></g>
+        </defs>
+    </svg>
+    <div class="container">
+        <div class="exam-paper">
+            <h1 data-i18n="exam1_title">第一次期中考 參考答案與推導</h1>
+            <h2 data-i18n="q1_header_full">第一題：補數之定義與計算 (18%)</h2>
+            <div class="question-block">
+                <p data-i18n="q1_text">請依下面要求並利用補數之定義寫出十進位值 $(37)_{10}$ 之補數值：</p>
+                <div class="solution">
+                    <span class="step-title" data-i18n="val_prep">數值準備：</span>
+                    <div data-i18n="val_prep_desc">十進位值 $N = 37$，位數 $n = 2$。<br>其二進位為 $(37)_{10} = (100101)_2$ (6位)，八進位為 $(45)_8$ (2位)。</div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6"><strong data-i18n="q1a">(a) 10 進位的 9 補數：</strong><br><span data-i18n="formula">公式：</span>$(10^n - 1) - N = (10^2 - 1) - 37 = 99 - 37 = \mathbf{62}$</div>
+                        <div class="col-md-6"><strong data-i18n="q1b">(b) 10 進位的 10 補數：</strong><br><span data-i18n="formula">公式：</span>$10^n - N = 100 - 37 = \mathbf{63}$</div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6"><strong data-i18n="q1c">(c) 2 進位的 1 補數：</strong><br><span data-i18n="q1c_desc">將 $(100101)_2$ 反轉：</span>\(\mathbf{011010}\)</div>
+                        <div class="col-md-6"><strong data-i18n="q1d">(d) 2 進位的 2 補數：</strong><br><span data-i18n="q1d_desc">1 補數 + 1：</span>\(011010 + 1 = \mathbf{011011}\)</div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6"><strong data-i18n="q1e">(e) 8 進位的 7 補數：</strong><br><span data-i18n="q1e_desc">$(45)_8$ 之 7 補數：</span>$(77)_8 - (45)_8 = \mathbf{32_8}$</div>
+                        <div class="col-md-6"><strong data-i18n="q1f">(f) 8 進位的 8 補數：</strong><br><span data-i18n="q1f_desc">7 補數 + 1：</span>$32_8 + 1 = \mathbf{33_8}$</div>
+                    </div>
+                </div>
+            </div>
+            <h2 data-i18n="q2_header_full">第二題：Canonical and Standard Forms (12%)</h2>
+            <div class="question-block">
+                <p data-i18n="q2a_text">(a) $F(x,y,z)=y'+x'y+x'z'$，請寫出 $F$ 之 Canonical Sum of Minterm 形式。</p>
+                <div class="solution">
+                    <span class="step-title" data-i18n="derivation">推導過程：</span>
+                    <div data-i18n="q2a_sol">1. 補齊變數：<br>$y' = xy'z + xy'z' + x'y'z + x'y'z'$ (m5, m4, m1, m0)<br>$x'y = x'yz + x'yz'$ (m3, m2)<br>$x'z' = x'yz' + x'y'z'$ (m2, m0)<br>2. 合併重複項並排序：<br>$F = m0 + m1 + m2 + m3 + m4 + m5$</div>
+                    <p class="font-weight-bold highlight mt-2"><span data-i18n="ans">答案：</span>$F(x,y,z) = \Sigma(0, 1, 2, 3, 4, 5)$</p>
+                </div>
+                <p class="mt-4" data-i18n="q2b_text">(b) $F(x,y,z)= xyz+yz'+x'z'$，請寫出函數 $F'$ 之 Canonical Product of Maxterm 形式。</p>
+                <div class="solution">
+                    <span class="step-title" data-i18n="derivation">推導過程：</span>
+                    <div data-i18n="q2b_sol">1. 找 $F$ 的 Minterm：$F = \Sigma(0, 2, 6, 7)$<br>2. $F'$ 的 Minterm 為 $F$ 沒出現的項：$F' = \Sigma(1, 3, 4, 5)$<br>3. Minterm index $i$ 對應的 Maxterm 為 $M_i$</div>
+                    <p class="font-weight-bold highlight mt-2"><span data-i18n="ans">答案：</span>$F'(x,y,z) = \Pi(0, 2, 6, 7)$</p>
+                </div>
+            </div>
+            <h2 data-i18n="q3_header_full">第三題：兩級邏輯電路實現 (32%)</h2>
+            <div class="question-block">
+                <p data-i18n="q3_text">請將 $F(A,B,C,D)=\Sigma(1,2,3,5,6,7,8,10)$ 用最簡化兩級邏輯電路實現。</p>
+                <div class="solution">
+                    <span class="step-title" data-i18n="kmap_simplify">卡諾圖化簡 (4-variable)：</span>
+                    <svg class="kmap-svg" width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+                        <g stroke="#333" stroke-width="1"><line x1="80" y1="40" x2="320" y2="40" stroke-width="2"/><line x1="80" y1="90" x2="320" y2="90"/><line x1="80" y1="140" x2="320" y2="140"/><line x1="80" y1="190" x2="320" y2="190"/><line x1="80" y1="240" x2="320" y2="240" stroke-width="2"/><line x1="80" y1="40" x2="80" y2="240" stroke-width="2"/><line x1="140" y1="40" x2="140" y2="240"/><line x1="200" y1="40" x2="200" y2="240"/><line x1="260" y1="40" x2="260" y2="240"/><line x1="320" y1="40" x2="320" y2="240" stroke-width="2"/></g>
+                        <text x="40" y="30" font-size="16">AB\CD</text><text x="110" y="30" font-size="14">00</text><text x="170" y="30" font-size="14">01</text><text x="230" y="30" font-size="14">11</text><text x="290" y="30" font-size="14">10</text>
+                        <text x="50" y="70" font-size="14">00</text><text x="50" y="120" font-size="14">01</text><text x="50" y="170" font-size="14">11</text><text x="50" y="220" font-size="14">10</text>
+                        <rect x="145" y="45" width="110" height="90" rx="10" class="hl-red"/><rect x="205" y="45" width="110" height="90" rx="10" class="hl-blue"/><path d="M 85,195 L 135,195 Q 145,195 145,205 L 145,235 L 85,235 Z" class="hl-green"/><path d="M 315,195 L 265,195 Q 255,195 255,205 L 255,235 L 315,235 Z" class="hl-green"/>
+                        <g class="kmap-cell-text"><text x="110" y="70">0</text><text x="170" y="70">1</text><text x="230" y="70">1</text><text x="290" y="70">1</text><text x="110" y="120">0</text><text x="170" y="120">1</text><text x="230" y="120">1</text><text x="290" y="120">1</text><text x="110" y="170">0</text><text x="170" y="170">0</text><text x="230" y="170">0</text><text x="290" y="170">0</text><text x="110" y="220">1</text><text x="170" y="220">0</text><text x="230" y="220">0</text><text x="290" y="220">1</text></g>
+                    </svg>
+                    <div class="theory-box mb-3"><strong data-i18n="derivation_base">推導基礎式：</strong><br>SOP <span data-i18n="simplest">最簡式</span>：$F = A'D + A'C + AB'D'$<br>POS <span data-i18n="simplest">最簡式</span>：$F = (A+C+D)(A'+B')(A'+D')$</div>
+                    <span class="step-title" data-i18n="2level_impl">兩級邏輯實現：</span>
+                    <div class="circuit-grid">
+                        <div class="circuit-card"><h6>(a) AND-OR</h6><svg width="250" height="180" class="circuit-svg"><text x="5" y="30" class="lbl">A'</text><text x="5" y="45" class="lbl">D</text><use href="#gate-and" x="35" y="15"/><path d="M85,35 L115,35 L115,75 L135,75" class="wire"/><text x="5" y="80" class="lbl">A'</text><text x="5" y="95" class="lbl">C</text><use href="#gate-and" x="35" y="65"/><path d="M85,85 L135,85" class="wire"/><text x="5" y="120" class="lbl">A</text><text x="5" y="132" class="lbl">B'</text><text x="5" y="145" class="lbl">D'</text><use href="#gate-and" x="35" y="115"/><path d="M85,135 L115,135 L115,95 L135,95" class="wire"/><use href="#gate-or" x="135" y="65"/><text x="190" y="90" class="out">F</text></svg></div>
+                        <div class="circuit-card"><h6>(b) OR-AND</h6><svg width="250" height="180" class="circuit-svg"><text x="5" y="20" class="lbl">A</text><text x="5" y="35" class="lbl">C</text><text x="5" y="50" class="lbl">D</text><use href="#gate-or" x="35" y="15"/><path d="M80,35 L115,35 L115,75 L135,75" class="wire"/><text x="5" y="80" class="lbl">A'</text><text x="5" y="95" class="lbl">B'</text><use href="#gate-or" x="35" y="65"/><path d="M80,85 L135,85" class="wire"/><text x="5" y="130" class="lbl">A'</text><text x="5" y="145" class="lbl">D'</text><use href="#gate-or" x="35" y="115"/><path d="M80,135 L115,135 L115,95 L135,95" class="wire"/><use href="#gate-and" x="135" y="65"/><text x="170" y="90" class="out">F</text></svg></div>
+                        <div class="circuit-card"><h6>(c) NAND-NAND</h6><svg width="250" height="180" class="circuit-svg"><text x="5" y="30" class="lbl">A'</text><text x="5" y="45" class="lbl">D</text><use href="#gate-nand" x="35" y="15"/><path d="M90,35 L115,35 L115,75 L135,75" class="wire"/><text x="5" y="80" class="lbl">A'</text><text x="5" y="95" class="lbl">C</text><use href="#gate-nand" x="35" y="65"/><path d="M90,85 L135,85" class="wire"/><text x="5" y="120" class="lbl">A</text><text x="5" y="132" class="lbl">B'</text><text x="5" y="145" class="lbl">D'</text><use href="#gate-nand" x="35" y="115"/><path d="M90,135 L115,135 L115,95 L135,95" class="wire"/><use href="#gate-nand" x="135" y="65"/><text x="200" y="90" class="out">F</text></svg></div>
+                        <div class="circuit-card"><h6>(d) NOR-NOR</h6><svg width="250" height="180" class="circuit-svg"><text x="5" y="20" class="lbl">A</text><text x="5" y="35" class="lbl">C</text><text x="5" y="50" class="lbl">D</text><use href="#gate-nor" x="35" y="15"/><path d="M85,35 L115,35 L115,75 L135,75" class="wire"/><text x="5" y="80" class="lbl">A'</text><text x="5" y="95" class="lbl">B'</text><use href="#gate-nor" x="35" y="65"/><path d="M85,85 L135,85" class="wire"/><text x="5" y="130" class="lbl">A'</text><text x="5" y="145" class="lbl">D'</text><use href="#gate-nor" x="35" y="115"/><path d="M85,135 L115,135 L115,95 L135,95" class="wire"/><use href="#gate-nor" x="135" y="65"/><text x="195" y="90" class="out">F</text></svg></div>
+                        <div class="circuit-card"><h6>(e) NOR-OR</h6><svg width="250" height="180" class="circuit-svg"><text x="5" y="30" class="lbl">A</text><text x="5" y="45" class="lbl">D'</text><use href="#gate-nor" x="35" y="15"/><path d="M85,35 L115,35 L115,75 L135,75" class="wire"/><text x="5" y="80" class="lbl">A</text><text x="5" y="95" class="lbl">C'</text><use href="#gate-nor" x="35" y="65"/><path d="M85,85 L135,85" class="wire"/><text x="5" y="120" class="lbl">A'</text><text x="5" y="132" class="lbl">B</text><text x="5" y="145" class="lbl">D</text><use href="#gate-nor" x="35" y="115"/><path d="M85,135 L115,135 L115,95 L135,95" class="wire"/><use href="#gate-or" x="135" y="65"/><text x="190" y="90" class="out">F</text></svg></div>
+                        <div class="circuit-card"><h6>(f) NAND-AND</h6><svg width="250" height="180" class="circuit-svg"><text x="5" y="20" class="lbl">A'</text><text x="5" y="35" class="lbl">C'</text><text x="5" y="50" class="lbl">D'</text><use href="#gate-nand" x="35" y="15"/><path d="M90,35 L115,35 L115,75 L135,75" class="wire"/><text x="5" y="80" class="lbl">A</text><text x="5" y="95" class="lbl">B</text><use href="#gate-nand" x="35" y="65"/><path d="M90,85 L135,85" class="wire"/><text x="5" y="130" class="lbl">A</text><text x="5" y="145" class="lbl">D</text><use href="#gate-nand" x="35" y="115"/><path d="M90,135 L115,135 L115,95 L135,95" class="wire"/><use href="#gate-and" x="135" y="65"/><text x="170" y="90" class="out">F</text></svg></div>
+                        <div class="circuit-card"><h6>(g) OR-NAND</h6><svg width="250" height="180" class="circuit-svg"><text x="5" y="30" class="lbl">A</text><text x="5" y="45" class="lbl">D'</text><use href="#gate-or" x="35" y="15"/><path d="M80,35 L115,35 L115,75 L135,75" class="wire"/><text x="5" y="80" class="lbl">A</text><text x="5" y="95" class="lbl">C'</text><use href="#gate-or" x="35" y="65"/><path d="M80,85 L135,85" class="wire"/><text x="5" y="120" class="lbl">A'</text><text x="5" y="132" class="lbl">B</text><text x="5" y="145" class="lbl">D</text><use href="#gate-or" x="35" y="115"/><path d="M80,135 L115,135 L115,95 L135,95" class="wire"/><use href="#gate-nand" x="135" y="65"/><text x="200" y="90" class="out">F</text></svg></div>
+                        <div class="circuit-card"><h6>(h) AND-NOR</h6><svg width="250" height="180" class="circuit-svg"><text x="5" y="20" class="lbl">A'</text><text x="5" y="35" class="lbl">C'</text><text x="5" y="50" class="lbl">D'</text><use href="#gate-and" x="35" y="15"/><path d="M85,35 L115,35 L115,75 L135,75" class="wire"/><text x="5" y="80" class="lbl">A</text><text x="5" y="95" class="lbl">B</text><use href="#gate-and" x="35" y="65"/><path d="M85,85 L135,85" class="wire"/><text x="5" y="130" class="lbl">A</text><text x="5" y="145" class="lbl">D</text><use href="#gate-and" x="35" y="115"/><path d="M85,135 L115,135 L115,95 L135,95" class="wire"/><use href="#gate-nor" x="135" y="65"/><text x="195" y="90" class="out">F</text></svg></div>
+                    </div>
+                </div>
+            </div>

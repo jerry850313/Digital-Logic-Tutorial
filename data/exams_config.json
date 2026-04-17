@@ -1,0 +1,54 @@
+[
+    {
+        "id": "exam1",
+        "name": "第一次期中考",
+        "file": "exam1.html",
+        "date": "2026-04-15",
+        "releaseTime": "2026-04-22T00:00",
+        "isOpen": true,
+        "requiresPassword": true
+    },
+    {
+        "id": "exam2",
+        "name": "第二次期中考",
+        "file": "exam2.html",
+        "date": "2026-05-20",
+        "isOpen": false,
+        "requiresPassword": true,
+        "releaseTime": "2026-05-30T00:00"
+    },
+    {
+        "id": "exam3",
+        "name": "期末考",
+        "file": "exam3.html",
+        "date": "2026-06-30",
+        "isOpen": false,
+        "requiresPassword": true,
+        "releaseTime": "2026-06-30T00:00"
+    },
+    {
+        "id": "quiz1",
+        "name": "小考 1 (第一章 ~ 第二章)",
+        "file": "quiz1.html",
+        "date": "2026-04-09",
+        "isOpen": true,
+        "requiresPassword": false,
+        "releaseTime": "2026-04-09T19:00"
+    },
+    {
+        "id": "quiz2",
+        "name": "小考 2 (第三章 ~ 第五章)",
+        "file": "quiz2.html",
+        "date": "2026-05-20",
+        "isOpen": false,
+        "requiresPassword": true
+    },
+    {
+        "id": "quiz3",
+        "name": "小考 3 (第六章 ~ 第八章)",
+        "file": "quiz3.html",
+        "date": "2026-06-30",
+        "isOpen": false,
+        "requiresPassword": true
+    }
+]

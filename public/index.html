@@ -22,6 +22,7 @@
         .concept-title { color: #2a5298; border-bottom: 2px solid #2a5298; padding-bottom: 10px; margin-bottom: 20px; }
         .sidebar-sticky { position: sticky; top: 100px; }
     </style>
+    <script src="/js/security.js"></script>
 </head>
 <body>
     <!-- Navigation -->
@@ -76,6 +77,29 @@
         </div>
     </div>
 
+    <!-- 密碼驗證 Modal -->
+    <div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title font-weight-bold" data-i18n="pwd_title">管理員解鎖</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="form-group">
+                        <label for="admin-password" class="font-weight-bold text-muted mb-2" data-i18n="pwd_placeholder">請輸入管理員密碼：</label>
+                        <input type="password" class="form-control form-control-lg border-danger" id="admin-password">
+                        <small id="passwordHelp" class="form-text text-danger mt-2 d-none" data-i18n="pwd_error">密碼錯誤，請重新輸入！</small>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-outline-secondary px-4" data-dismiss="modal" data-i18n="pwd_cancel">取消</button>
+                    <button type="button" id="confirmUnlock" class="btn btn-danger px-5 font-weight-bold" data-i18n="pwd_confirm">確認解鎖</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="home" class="section active" style="margin-top: 56px;">
         <div class="hero-section text-center">
             <div class="container">
@@ -103,7 +127,7 @@
                             <div class="col-12 text-left">
                                 <ul class="list-group list-group-flush bg-transparent">
                                     <li class="list-group-item bg-transparent" data-i18n="section1_li1"><strong>公理與定理：</strong> 交換律、結合律、分配律以及最重要的 狄摩根定律。</li>
-                                    <li class="list-group-item bg-transparent" data-i18n="section1_li2"><strong>萬用邏輯閘：</strong> NAND 與 NOR 閘可以建構出任何其他的邏輯功能。</li>
+                                    <li class="list-group-item bg-transparent" data-i18n="section1_li2"><strong>萬用邏輯閘：</strong> NAND 與 NOR 閘可以建構出 any 其他的邏輯功能。</li>
                                 </ul>
                             </div>
                         </div>
@@ -166,9 +190,48 @@
     <div id="ans" class="section container" style="margin-top: 80px;">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="text-danger font-weight-bold m-0" data-i18n="ans_title">考試與解答專區</h2>
-            <a href="/" data-target="home" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-left"></i> <span data-i18n="ans_back">返回課程首頁</span></a>
+            <div class="d-flex gap-2">
+                <button onclick="openConfigManager()" class="btn btn-outline-info btn-sm mr-2" id="adminConfigBtn">
+                    <i class="fas fa-cog"></i> 管理開放時間
+                </button>
+                <a href="/" data-target="home" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-left"></i> <span data-i18n="ans_back">返回課程首頁</span></a>
+            </div>
         </div>
         <div class="row" id="ans-list"></div>
+    </div>
+
+    <!-- 管理開放時間 Modal -->
+    <div class="modal fade" id="configModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title font-weight-bold">管理考試開放設定</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div id="config-list-container" class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>項目名稱</th>
+                                    <th>狀態</th>
+                                    <th>開放日期 (顯示)</th>
+                                    <th>自動開放時間 (Release Time)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="config-table-body">
+                                <!-- 動態填入 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <p class="text-muted mr-auto small">※ 若設定了 Release Time，時間到時會自動變更為「已開放」。</p>
+                    <button type="button" class="btn btn-outline-secondary px-4" data-dismiss="modal">取消</button>
+                    <button type="button" onclick="saveConfig()" class="btn btn-info px-5 font-weight-bold">儲存變更</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="verilog" class="section container" style="margin-top: 80px;">
@@ -189,151 +252,284 @@
         </div>
     </div>
 
+    <script src="/i18n/i18n.js"></script>
     <script>
-        const translations = {
-            'zh-TW': {
-                'nav_brand': '數位邏輯設計', 'nav_home': '首頁課程介紹', 'nav_courses': '課程講義下載', 'nav_ans': '考試與解答', 'nav_verilog': 'Verilog 在線模擬', 'nav_gate': '邏輯門模擬器 (Quartus)', 'nav_help': '使用說明',
-                'guide_title': '系統使用說明', 'guide_close': '關閉', 'current_lang': '中文',
-                'hero_title': '數位邏輯設計', 'hero_subtitle': 'Fundamentals of Digital Logic and Microprocessor Design', 'hero_start': '開始學習', 'hero_quartus': 'Quartus 模擬器', 'hero_verilog': 'Verilog 實作',
-                'section1_title': '1. 布林代數與邏輯閘', 'section1_p': '數位電路的基礎建立在二進位運算（0 與 1）。透過布林代數，我們可以將複雜的邏輯問題轉化為數學運算式。', 'section1_img_caption': 'ANSI/IEEE 標準邏輯閘符號與真值表', 'section1_li1': '<strong>公理與定理：</strong> 交換律、結合律、分配律以及最重要的 <strong>狄摩根定律</strong>。', 'section1_li2': '<strong>萬用邏輯閘：</strong> NAND 與 NOR 閘可以建構出任何其他的邏輯功能。',
-                'section2_title': '2. 卡諾圖化簡', 'section2_p': '在設計電路時，減少邏輯閘的使用數量是核心目標。透過「圈選」相鄰的 1，可以找出最簡的積之和表示式。', 'section2_img_caption': '範例：透過 4x4 卡諾圖化簡布林函數',
-                'section3_title': '3. 組合邏輯', 'section3_p': '這類電路的輸出「僅」與目前的輸入有關。常見模組包括：', 'section3_card1_title': '加法器', 'section3_card1_p': '半加器與全加器是 CPU 運算單元的基礎。', 'section3_card2_title': '多工器', 'section3_card2_p': '如同電子開關，根據選擇信號決定哪一路輸入傳送到輸出。', 'section3_card3_title': '解碼器', 'section3_card3_p': '將二進位代碼轉換為特定的致能信號。',
-                'section4_title': '4. 序向邏輯與 FSM', 'section4_p': '當電路需要「記憶」時，我們引入時脈與正反器。', 'section4_li1': '<strong>正反器：</strong> D-FlipFlop, JK-FlipFlop 等觸發式記憶元件。', 'section4_li2': '<strong>有限狀態機 (FSM)：</strong> Mealy 與 Moore 機型，用於設計自動控制邏輯。',
-                'sidebar_title': '課程核心技能', 'sidebar_li1': '✅ 邏輯電路分析與合成', 'sidebar_li2': '✅ 同步與非同步計數器設計', 'sidebar_li3': '✅ 暫存器與記憶體架構', 'sidebar_li4': '✅ Verilog HDL 硬體描述語言',
-                'courses_title': '講義與參考資源下載', 'ans_title': '考試與解答專區', 'ans_back': '返回課程首頁', 'verilog_editor_title': 'Verilog 編輯器', 'verilog_editor_placeholder': '// 範例：AND Gate\nmodule my_and(input a, b, output y);\n  assign y = a & b;\nendmodule', 'verilog_generate_btn': '執行模擬並產出波形', 'verilog_waveform_title': '時序模擬波形',
-                'cat_ic': '數位積體電路--楊博惠', 'cat_ncu': '國立中央大學--謝易叡', 'cat_yuntech': '國立雲林科技大學--蘇慶龍', 'cat_nthu': '清大ocw', 'cat_exams': '正式考試', 'cat_quizzes': '平時小考', 'btn_download': '下載 PDF', 'btn_view': '查看解答', 'item_date': '日期', 'footer_text': '數位邏輯設計與微處理器實務 | Copyright &copy; 2026 <span class="font-weight-bold text-dark">西園寺佳頴</span>'
-            },
-            'en': {
-                'nav_brand': 'Digital Logic Design', 'nav_home': 'Home', 'nav_courses': 'Handouts', 'nav_ans': 'Exams', 'nav_verilog': 'Verilog Online', 'nav_gate': 'Logic Simulator', 'nav_help': 'Help',
-                'guide_title': 'System User Guide', 'guide_close': 'Close', 'current_lang': 'English',
-                'hero_title': 'Digital Logic Design', 'hero_subtitle': 'Fundamentals of Digital Logic and Microprocessor Design', 'hero_start': 'Get Started', 'hero_quartus': 'Quartus Simulator', 'hero_verilog': 'Verilog Practice',
-                'section1_title': '1. Boolean Algebra & Logic Gates', 'section1_p': 'The foundation of digital circuits is based on binary operations (0 and 1).', 'section1_img_caption': 'ANSI/IEEE standard symbols and truth tables', 'section1_li1': '<strong>Axioms:</strong> Commutative, associative, and <strong>De Morgan\'s Laws</strong>.', 'section1_li2': '<strong>Universal Gates:</strong> NAND and NOR gates can build any function.',
-                'section2_title': '2. K-Map Minimization', 'section2_p': 'Reducing gates by grouping adjacent 1s to find the simplest SOP expression.', 'section2_img_caption': 'Example: 4x4 K-Map simplification',
-                'section3_title': '3. Combinational Logic', 'section3_p': 'Outputs depend only on current inputs. Common modules:', 'section3_card1_title': 'Adders', 'section3_card1_p': 'Half/Full adders for arithmetic units.', 'section3_card2_title': 'MUX', 'section3_card2_p': 'Selects one of many inputs.', 'section3_card3_title': 'Decoders', 'section3_card3_p': 'Converts binary to enable signals.',
-                'section4_title': '4. Sequential Logic & FSM', 'section4_p': 'Memory elements with clocks and flip-flops.', 'section4_li1': '<strong>Flip-Flops:</strong> D-FF, JK-FF memory elements.', 'section4_li2': '<strong>FSM:</strong> Mealy and Moore machine models.',
-                'sidebar_title': 'Core Skills', 'sidebar_li1': '✅ Circuit Analysis', 'sidebar_li2': '✅ Counter Design', 'sidebar_li3': '✅ Architecture', 'sidebar_li4': '✅ Verilog HDL',
-                'courses_title': 'Handouts & Resources', 'ans_title': 'Exams & Solutions', 'ans_back': 'Back Home', 'verilog_editor_title': 'Verilog Editor', 'verilog_editor_placeholder': '// Example...\nmodule...', 'verilog_generate_btn': 'Run Sim', 'verilog_waveform_title': 'Waveform',
-                'cat_ic': 'Digital IC Design', 'cat_ncu': 'NCU Course', 'cat_yuntech': 'YunTech Course', 'cat_nthu': 'NTHU OCW', 'cat_exams': 'Official Exams', 'cat_quizzes': 'Quizzes', 'btn_download': 'Download PDF', 'btn_view': 'View Analysis', 'item_date': 'Date', 'footer_text': 'Digital Logic & Microprocessor | Copyright &copy; 2026 <span class="font-weight-bold text-dark">Kaei Saionji</span>'
-            },
-            'ja': {
-                'nav_brand': 'デジタル論理設計', 'nav_home': 'ホーム', 'nav_courses': '講義資料', 'nav_ans': '試験と解答', 'nav_verilog': 'Verilog シミュレーション', 'nav_gate': 'ロジックシミュレータ', 'nav_help': 'ヘルプ',
-                'guide_title': 'システム利用ガイド', 'guide_close': '閉じる', 'current_lang': '日本語',
-                'hero_title': 'デジタル論理設計', 'hero_subtitle': 'デジタル論理およびマイクロプロセッサ設計の基礎', 'hero_start': '学習開始', 'hero_quartus': 'Quartus シミュレータ', 'hero_verilog': 'Verilog 実装',
-                'section1_title': '1. ブール代数と論理ゲート', 'section1_p': 'デジタル回路の基礎は二進演算（0と1）に基づいています。', 'section1_img_caption': '標準論理ゲート記号と真理値表', 'section1_li1': '<strong>公理：</strong> 交換、結合法則、および <strong>ド・モルガンの法則</strong>。', 'section1_li2': '<strong>汎用ゲート：</strong> NAND と NOR ゲートですべてを構築。',
-                'section2_title': '2. カルノー図簡略化', 'section2_p': 'ゲート数を減らすため、隣接する1をグループ化して最小限のSOPを求めます。', 'section2_img_caption': '例：4x4 カルノー図による簡略化',
-                'section3_title': '3. 組合せ論理', 'section3_p': '出力は現在の入力のみに依存します。', 'section3_card1_title': '加算器', 'section3_card1_p': 'CPUの演算ユニットの基礎。', 'section3_card2_title': 'マルチプレクサ', 'section3_card2_p': '入力信号を選択。', 'section3_card3_title': 'デコーダ', 'section3_card3_p': 'バイナリをイネーブル信号に変換。',
-                'section4_title': '4. 順序論理とFSM', 'section4_p': 'クロックとフリップフロップによるメモリ要素。', 'section4_li1': '<strong>フリップフロップ：</strong> D-FF, JK-FF メモリ素子。', 'section4_li2': '<strong>状態マシン：</strong> ミーリー型とムーア型。',
-                'sidebar_title': 'コアスキル', 'sidebar_li1': '✅ 論理回路分析', 'sidebar_li2': '✅ カウンタ設計', 'sidebar_li3': '✅ アーキテクチャ', 'sidebar_li4': '✅ Verilog HDL',
-                'courses_title': '講義資料とリソース', 'ans_title': '試験と解答', 'ans_back': 'ホームに戻る', 'verilog_editor_title': 'Verilog エディタ', 'verilog_editor_placeholder': '// 例：AND Gate...', 'verilog_generate_btn': '実行', 'verilog_waveform_title': 'シミュレーション波形',
-                'cat_ic': 'デジタル集積回路', 'cat_ncu': '国立中央大学', 'cat_yuntech': '国立雲林科技大学', 'cat_nthu': '国立清華大学 OCW', 'cat_exams': '定期試験', 'cat_quizzes': 'クイズ', 'btn_download': 'ダウンロード', 'btn_view': '解答を確認', 'item_date': '日付', 'footer_text': 'デジタル論理設計とマイクロプロセッサ | Copyright &copy; 2026 <span class="font-weight-bold text-dark">西園寺佳頴</span>'
-            },
-            'it': {
-                'nav_brand': 'Logica Digitale', 'nav_home': 'Home', 'nav_courses': 'Dispense', 'nav_ans': 'Esami', 'nav_verilog': 'Verilog', 'nav_gate': 'Simulatore', 'nav_help': 'Aiuto',
-                'guide_title': 'Guida Utente', 'guide_close': 'Chiudi', 'current_lang': 'Italiano',
-                'hero_title': 'Progettazione Logica Digitale', 'hero_subtitle': 'Fondamenti di Logica Digitale e Microprocessori', 'hero_start': 'Inizia', 'hero_quartus': 'Simulatore Quartus', 'hero_verilog': 'Pratica Verilog',
-                'section1_title': '1. Algebra di Boole', 'section1_p': 'Le fondamenta si basano su operazioni binarie (0 e 1).', 'section1_img_caption': 'Simboli e tavole della verità standard', 'section1_li1': '<strong>Assiomi:</strong> Leggi e <strong>Leggi di De Morgan</strong>.', 'section1_li2': '<strong>Porte Universali:</strong> NAND e NOR possono costruire tutto.',
-                'section2_title': '2. Mappe di Karnaugh', 'section2_p': 'Ridurre le porte raggruppando gli 1 adiacenti.', 'section2_img_caption': 'Esempio: Mappa di Karnaugh 4x4',
-                'section3_title': '3. Logica Combinatoria', 'section3_p': 'Uscite dipendono solo dagli ingressi attuali.', 'section3_card1_title': 'Addizionatori', 'section3_card1_p': 'Basi per le unità aritmetiche CPU.', 'section3_card2_title': 'MUX', 'section3_card2_p': 'Seleziona un ingresso.', 'section3_card3_title': 'Decodificatori', 'section3_card3_p': 'Converte binario in segnali.',
-                'section4_title': '4. Logica Sequenziale', 'section4_p': 'Circuiti con memoria tramite Clock e Flip-Flop.', 'section4_li1': '<strong>Flip-Flop:</strong> Elementi di memoria D-FF, JK-FF.', 'section4_li2': '<strong>FSM:</strong> Modelli Mealy e Moore.',
-                'sidebar_title': 'Competenze', 'sidebar_li1': '✅ Analisi Circuiti', 'sidebar_li2': '✅ Contatori', 'sidebar_li3': '✅ Architettura', 'sidebar_li4': '✅ Verilog HDL',
-                'courses_title': 'Dispense & Risorse', 'ans_title': 'Esami & Soluzioni', 'ans_back': 'Torna Home', 'verilog_editor_title': 'Editor Verilog', 'verilog_editor_placeholder': '// Esempio...', 'verilog_generate_btn': 'Esegui', 'verilog_waveform_title': 'Forma d\'onda',
-                'cat_ic': 'Circuiti IC Digitali', 'cat_ncu': 'Università NCU', 'cat_yuntech': 'Università YunTech', 'cat_nthu': '清華 NTHU OCW', 'cat_exams': 'Esami Ufficiali', 'cat_quizzes': 'Quiz', 'btn_download': 'Scarica', 'btn_view': 'Vedi Analisi', 'item_date': 'Data', 'footer_text': 'Logica Digitale e Microprocessori | Copyright &copy; 2026 <span class="font-weight-bold text-dark">Kaei Saionji</span>'
-            },
-            'vi': {
-                'nav_brand': 'Thiết kế Logic', 'nav_home': 'Trang chủ', 'nav_courses': 'Tài liệu', 'nav_ans': 'Kỳ thi', 'nav_verilog': 'Verilog', 'nav_gate': 'Mô phỏng', 'nav_help': 'Hướng dẫn',
-                'guide_title': 'Hướng dẫn sử dụng', 'guide_close': 'Đóng', 'current_lang': 'Tiếng Việt',
-                'hero_title': 'Thiết kế Logic Số', 'hero_subtitle': 'Cơ sở Thiết kế Logic Số và Vi xử lý', 'hero_start': 'Bắt đầu học', 'hero_quartus': 'Mô phỏng Quartus', 'hero_verilog': 'Thực hành Verilog',
-                'section1_title': '1. Đại số Boolean', 'section1_p': 'Nền tảng dựa trên các phép toán nhị phân (0 và 1).', 'section1_img_caption': 'Ký hiệu tiêu chuẩn và bảng chân trị', 'section1_li1': '<strong>Tiên đề:</strong> Luật giao hoán và <strong>Định luật De Morgan</strong>.', 'section1_li2': '<strong>Cổng vạn năng:</strong> NAND và NOR có thể xây dựng mọi thứ.',
-                'section2_title': '2. Bản đồ Karnaugh', 'section2_p': 'Giảm cổng bằng cách nhóm các số 1 liền kề.', 'section2_img_caption': 'Ví dụ: Tối giản bằng bản đồ K 4x4',
-                'section3_title': '3. Logic tổ hợp', 'section3_p': 'Đầu ra chỉ phụ thuộc vào đầu vào hiện tại.', 'section3_card1_title': 'Bộ cộng', 'section3_card1_p': 'Cơ sở của CPU.', 'section3_card2_title': 'Bộ đa hợp', 'section3_card2_p': 'Chọn một trong nhiều đầu vào.', 'section3_card3_title': 'Bộ giải mã', 'section3_card3_p': 'Chuyển đổi nhị phân thành tín hiệu.',
-                'section4_title': '4. Logic tuần tự', 'section4_p': 'Bộ nhớ với Xung nhịp và Flip-Flop.', 'section4_li1': '<strong>Flip-Flop:</strong> D-FF, JK-FF.', 'section4_li2': '<strong>FSM:</strong> Mealy và Moore.',
-                'sidebar_title': 'Kỹ năng', 'sidebar_li1': '✅ Phân tích mạch', 'sidebar_li2': '✅ Thiết kế bộ đếm', 'sidebar_li3': '✅ Kiến trúc', 'sidebar_li4': '✅ Verilog HDL',
-                'courses_title': 'Tài liệu học tập', 'ans_title': 'Kỳ thi & Đáp án', 'ans_back': 'Về trang chủ', 'verilog_editor_title': 'Trình soạn thảo', 'verilog_editor_placeholder': '// Ví dụ...', 'verilog_generate_btn': 'Chạy', 'verilog_waveform_title': 'Dạng sóng',
-                'cat_ic': 'Thiết kế IC', 'cat_ncu': 'Đại học NCU', 'cat_yuntech': 'Đại học YunTech', 'cat_nthu': '清華 NTHU OCW', 'cat_exams': 'Kỳ thi chính thức', 'cat_quizzes': 'Bài kiểm tra', 'btn_download': 'Tải xuống', 'btn_view': 'Xem đáp án', 'item_date': 'Ngày', 'footer_text': 'Thiết kế Logic Số và Vi xử lý | Bản quyền &copy; 2026 <span class="font-weight-bold text-dark">Kaei Saionji</span>'
-            }
-        };
-
         function translateCategory(name, lang) {
+            const trans = (window.i18n && window.i18n.translations) ? window.i18n.translations : {};
             const map = {
-                '數位積體電路--楊博惠': 'cat_ic', '國立中央大學--謝易叡': 'cat_ncu', '國立雲林科技大學--蘇慶龍': 'cat_yuntech',
-                '清大ocw': 'cat_nthu', '正式考試': 'cat_exams', '平時小考': 'cat_quizzes'
+                '數位積體電路 -- 楊博惠': 'cat_ic', 
+                '數位積體電路--楊博惠': 'cat_ic',
+                '數位邏輯 -- 國立中央大學 謝易叡': 'cat_ncu',
+                '國立中央大學--謝易叡': 'cat_ncu',
+                '數位邏輯設計 -- 蘇慶龍': 'cat_yuntech',
+                '國立雲林科技大學--蘇慶龍': 'cat_yuntech',
+                '數位邏輯 -- 清大 OCW': 'cat_nthu',
+                '清大ocw': 'cat_nthu',
+                '正式考試': 'cat_exams',
+                '平時小考': 'cat_quizzes'
             };
             const key = map[name];
-            return (key && translations[lang][key]) ? translations[lang][key] : name;
+            return (trans[key]) ? trans[key] : name;
         }
 
-        function changeLang(lang) {
-            localStorage.setItem('selectedLang', lang);
-            updateUI(lang);
-            loadDynamicContent(lang);
-            if ($('#guideModal').hasClass('show')) loadGuideContent(lang);
-        }
+        document.addEventListener('languageChanged', (e) => {
+            loadDynamicContent(e.detail.lang);
+            loadGuideContent(e.detail.lang);
+        });
 
         function loadGuideContent(lang) {
-            $.get(`/GUIDE_${lang}.md`, (data) => $('#guideContent').html(marked.parse(data)))
-             .fail(() => $.get('/GUIDE_zh-TW.md', (data) => $('#guideContent').html(marked.parse(data))));
+            console.log("Loading guide content for lang:", lang);
+            const guideUrl = `/GUIDE_${lang}.md`;
+            $.get(guideUrl, (data) => {
+                if (window.marked) {
+                    $('#guideContent').html(marked.parse(data));
+                } else {
+                    $('#guideContent').text(data);
+                }
+            }).fail(() => {
+                $.get('/GUIDE_zh-TW.md', (data) => {
+                    if (window.marked) {
+                        $('#guideContent').html(marked.parse(data));
+                    } else {
+                        $('#guideContent').text(data);
+                    }
+                });
+            });
         }
 
-        function updateUI(lang) {
-            $('[data-i18n]').each(function() {
-                const key = $(this).data('i18n');
-                if (translations[lang] && translations[lang][key]) {
-                    if ($(this).is('textarea, input')) $(this).attr('placeholder', translations[lang][key]);
-                    else $(this).html(translations[lang][key]);
-                }
-            });
-            $('#currentLang').text(translations[lang]['current_lang']);
-        }
+        // 當使用說明 Modal 開啟時，確保載入正確語言的內容
+        $('#guideModal').on('show.bs.modal', function () {
+            const currentLang = localStorage.getItem('selectedLang') || 'zh-TW';
+            loadGuideContent(currentLang);
+        });
 
         function loadDynamicContent(lang) {
+            console.log("Loading dynamic content for lang:", lang);
+            
+            // 抓取講義列表
             $.get('/courses/api/courses', (categories) => {
+                const trans = (window.i18n && window.i18n.translations) ? window.i18n.translations : {};
+                console.log("Courses API Success:", categories);
                 const list = $('#course-list').empty();
+                if (!categories || categories.length === 0) {
+                    list.append('<div class="col-12"><p class="text-muted">目前暫無講義資料。</p></div>');
+                    return;
+                }
                 categories.forEach(cat => {
-                    list.append(`<div class="col-12 mt-4"><h3>${translateCategory(cat.category, lang)}</h3></div>`);
+                    const catName = translateCategory(cat.category, lang);
+                    list.append(`<div class="col-12 mt-4"><h3>${catName}</h3></div>`);
                     cat.lessons.forEach(lesson => {
-                        list.append(`<div class="col-md-4 mb-3"><div class="card bg-white shadow-sm h-100"><div class="card-body"><h6>${lesson.name}</h6><a href="${lesson.url}" class="btn btn-sm btn-outline-primary">${translations[lang]['btn_download']}</a></div></div></div>`);
+                        list.append(`<div class="col-md-4 mb-3"><div class="card bg-white shadow-sm h-100"><div class="card-body"><h6>${lesson.name}</h6><a href="${lesson.url}" class="btn btn-sm btn-outline-primary">${trans['btn_download'] || 'Download'}</a></div></div></div>`);
                     });
                 });
-            });
+            }).fail((err) => console.error("Courses API Error:", err));
+
+            // 抓取考試列表
             $.get('/ans/api/list', (categories) => {
+                const trans = (window.i18n && window.i18n.translations) ? window.i18n.translations : {};
+                console.log("Ans API Success:", categories);
                 const list = $('#ans-list').empty();
+                if (!categories || categories.length === 0) {
+                    list.append('<div class="col-12"><p class="text-muted">目前暫無考試資料。</p></div>');
+                    return;
+                }
                 categories.forEach(cat => {
-                    list.append(`<div class="col-12 mt-4"><h3>${translateCategory(cat.category, lang)}</h3></div>`);
+                    const catName = translateCategory(cat.category, lang);
+                    list.append(`<div class="col-12 mt-4"><h3>${catName}</h3></div>`);
                     cat.items.forEach(item => {
-                        list.append(`<div class="col-md-4 mb-3"><div class="card bg-white shadow-sm h-100 border-danger"><div class="card-body"><h6>${item.name}</h6><p class="small text-muted">${translations[lang]['item_date']}: ${item.date}</p><a href="${item.url}" class="btn btn-sm btn-outline-danger">${translations[lang]['btn_view']}</a></div></div></div>`);
+                        let btnText, btnClass, clickHandler;
+                        if (item.isOpen) {
+                            btnText = trans['btn_view'] || 'View';
+                            btnClass = 'btn-outline-danger';
+                            clickHandler = `window.location.href='${item.url}'`;
+                        } else if (item.requiresPassword) {
+                            btnText = trans['btn_unlock'] || 'Unlock';
+                            btnClass = 'btn-danger';
+                            clickHandler = `unlockExam('${item.id}')`;
+                        } else {
+                            btnText = trans['btn_not_public'] || 'Hidden';
+                            btnClass = 'btn-outline-secondary disabled';
+                            clickHandler = 'void(0)';
+                        }
+                        const itemName = trans[item.id] || item.name;
+                        list.append(`
+                            <div class="col-md-4 mb-3">
+                                <div class="card bg-white shadow-sm h-100 border-danger">
+                                    <div class="card-body">
+                                        <h6>${itemName}</h6>
+                                        <p class="small text-muted">${trans['item_date'] || 'Date'}: ${item.date}</p>
+                                        <button onclick="${clickHandler}" class="btn btn-sm ${btnClass}">${btnText}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `);
                     });
                 });
+            }).fail((err) => console.error("Ans API Error:", err));
+
+            // 如果翻譯還沒好，2 秒後再刷一次（補上翻譯），但不阻塞資料顯示
+            if (!window.i18n || !window.i18n.translations || Object.keys(window.i18n.translations).length === 0) {
+                console.warn("I18n not ready yet, content loaded with default labels.");
+                setTimeout(() => loadDynamicContent(lang), 2000);
+            }
+        }
+
+        let currentConfigItems = [];
+        let configAdminPassword = "";
+
+        async function openConfigManager() {
+            // 重用原本的密碼驗證邏輯
+            currentUnlockId = "__ADMIN_CONFIG__"; 
+            $('#passwordHelp').addClass('d-none');
+            $('#admin-password').val('');
+            $('#passwordModal').modal('show');
+        }
+
+        async function loadConfigItems(pwd) {
+            configAdminPassword = pwd;
+            try {
+                const res = await $.get(`/ans/api/config?password=${pwd}`);
+                currentConfigItems = res;
+                renderConfigTable();
+                $('#passwordModal').modal('hide');
+                $('#configModal').modal('show');
+            } catch (e) {
+                $('#passwordHelp').removeClass('d-none');
+            }
+        }
+
+        function renderConfigTable() {
+            const body = $('#config-table-body').empty();
+            const trans = i18n.translations || {};
+            
+            currentConfigItems.forEach((item, index) => {
+                const itemName = trans[item.id] || item.name;
+                const releaseVal = item.releaseTime ? item.releaseTime.substring(0, 16) : ""; // YYYY-MM-DDTHH:mm
+                
+                body.append(`
+                    <tr>
+                        <td class="align-middle"><strong>${itemName}</strong><br><small class="text-muted">${item.file}</small></td>
+                        <td>
+                            <select class="form-control form-control-sm" onchange="updateItemField(${index}, 'isOpen', this.value === 'true')">
+                                <option value="true" ${item.isOpen ? 'selected' : ''}>已開放</option>
+                                <option value="false" ${!item.isOpen ? 'selected' : ''}>隱藏/需密碼</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" class="form-control form-control-sm" value="${item.date}" 
+                                   onchange="updateItemField(${index}, 'date', this.value)">
+                        </td>
+                        <td>
+                            <input type="datetime-local" class="form-control form-control-sm" value="${releaseVal}" 
+                                   onchange="updateItemField(${index}, 'releaseTime', this.value)">
+                        </td>
+                    </tr>
+                `);
             });
         }
 
+        function updateItemField(index, field, value) {
+            currentConfigItems[index][field] = value;
+        }
+
+        async function saveConfig() {
+            try {
+                const res = await $.ajax({
+                    url: '/ans/api/config',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ password: configAdminPassword, items: currentConfigItems })
+                });
+                
+                if (res.success) {
+                    $('#configModal').modal('hide');
+                    alert("設定已儲存！");
+                    loadDynamicContent(i18n.lang);
+                }
+            } catch (e) {
+                alert("儲存失敗: " + (e.responseJSON ? e.responseJSON.message : "未知錯誤"));
+            }
+        }
+
+        let currentUnlockId = null;
+        function unlockExam(id) {
+            currentUnlockId = id;
+            $('#passwordHelp').addClass('d-none');
+            $('#admin-password').val('');
+            $('#passwordModal').modal('show');
+        }
+
+        $('#confirmUnlock').click(function() {
+            const password = $('#admin-password').val();
+            if (!password) return;
+
+            // 如果是進入管理介面
+            if (currentUnlockId === "__ADMIN_CONFIG__") {
+                loadConfigItems(password);
+                return;
+            }
+
+            $.ajax({
+                url: '/ans/api/verify', type: 'POST', contentType: 'application/json',
+                data: JSON.stringify({ id: currentUnlockId, password: password }),
+                success: (res) => { $('#passwordModal').modal('hide'); window.location.href = res.url; },
+                error: () => { $('#passwordHelp').removeClass('d-none'); $('#admin-password').val('').focus(); }
+            });
+        });
+
         $(document).ready(function() {
-            const savedLang = localStorage.getItem('selectedLang') || 'zh-TW';
-            updateUI(savedLang);
-            loadDynamicContent(savedLang);
-
-            $('#guideModal').on('show.bs.modal', () => loadGuideContent(localStorage.getItem('selectedLang') || 'zh-TW'));
-
+            console.log("SPA Initialize - URL:", window.location.href);
+            
             function showSection(target, pushState = true) {
+                console.log("Showing section:", target);
                 $('.section').removeClass('active');
                 $('#' + target).addClass('active');
-                if (pushState) history.pushState({target: target}, '', target === 'home' ? '/' : '/' + target);
+                if (pushState) {
+                    const newUrl = target === 'home' ? '/' : '/' + target;
+                    history.pushState({target: target}, '', newUrl);
+                }
                 window.scrollTo(0, 0);
             }
 
-            $('a[data-target]').click(function(e) {
-                const target = $(this).data('target');
-                if (target) { e.preventDefault(); showSection(target); }
-            });
-
-            window.onpopstate = (e) => e.state && e.state.target && showSection(e.state.target, false);
-
-            const path = window.location.pathname;
-            if (path === '/courses') showSection('courses', false);
-            else if (path === '/ans') showSection('ans', false);
-            else if (path === '/verilog') showSection('verilog', false);
+            // 初次載入時的路徑偵測 (支援結尾斜槓與大小寫)
+            const path = window.location.pathname.toLowerCase();
+            console.log("Initial Path Detection:", path);
+            
+            if (path.includes('/courses')) showSection('courses', false);
+            else if (path.includes('/ans')) showSection('ans', false);
+            else if (path.includes('/verilog')) showSection('verilog', false);
             else showSection('home', false);
 
-            $('#generateButton').click(function() {
+            $('a[data-target]').on('click', function(e) {
+                const target = $(this).data('target');
+                if (target) { 
+                    e.preventDefault(); 
+                    showSection(target); 
+                }
+            });
+
+            window.onpopstate = (e) => {
+                if (e.state && e.state.target) showSection(e.state.target, false);
+                else {
+                    // 處理點擊瀏覽器回上一頁到初始狀態的情況
+                    const p = window.location.pathname.toLowerCase();
+                    if (p.includes('/courses')) showSection('courses', false);
+                    else if (p.includes('/ans')) showSection('ans', false);
+                    else if (p.includes('/verilog')) showSection('verilog', false);
+                    else showSection('home', false);
+                }
+            };
+
+            // 監聽語言變更
+            document.addEventListener('languageChanged', (e) => {
+                loadDynamicContent(e.detail.lang);
+            });
+
+            // 確保內容至少載入一次
+            const initialLang = localStorage.getItem('selectedLang') || 'zh-TW';
+            loadDynamicContent(initialLang);
+
+            $('#generateButton').on('click', function() {
                 const verilogCode = $('#verilogCode').val();
                 $(this).text('...').attr('disabled', true);
                 $.ajax({
@@ -349,14 +545,14 @@
                         });
                     },
                     error: () => alert('Error'),
-                    complete: () => $(this).text(translations[localStorage.getItem('selectedLang') || 'zh-TW']['verilog_generate_btn']).attr('disabled', false)
+                    complete: () => $(this).text(i18n.translations['verilog_generate_btn'] || 'Run').attr('disabled', false)
                 });
             });
         });
     </script>
     <footer class="mt-5 py-4 border-top text-center text-muted">
         <div class="container">
-            <p class="mb-0" data-i18n="footer_text">數位邏輯設計與微處理器實務 | Copyright &copy; 2026 <span class="font-weight-bold text-dark">西園寺佳頴</span></p>
+            <p class="mb-0" data-i18n="footer_text">數位邏輯設計與微處理器實務 | Copyright &copy; 2026 <a href="https://github.com/jerry850313" class="font-weight-bold text-dark" target="_blank">西園寺佳頴</a></p>
         </div>
     </footer>
 </body>

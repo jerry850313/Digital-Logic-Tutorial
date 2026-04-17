@@ -1,7 +1,7 @@
-module full_adder (
-    input a, b, cin,
-    output sum, cout
+module annd (
+input a,
+input b,
+output c
 );
-    assign sum = a ^ b ^ cin;
-    assign cout = (a & b) | (b & cin) | (a & cin);
+assign c = a ^ b;
 endmodule

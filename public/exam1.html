@@ -2,22 +2,1135 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>第一次期中考 - 解答</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>數位邏輯設計 第一次期中考 - 完整解答</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="/i18n/i18n.js"></script>
+
+    <script>
+        document.addEventListener('languageChanged', () => {
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                MathJax.typesetPromise();
+            }
+        });
+    </script>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, 'Noto Sans TC', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fcfcfc;
+        }
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .exam-paper {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            margin-top: 10px;
+        }
+        h1 { color: #2c3e50; text-align: center; font-weight: bold; margin-bottom: 20px; padding-bottom: 15px; }
+        h2 { color: #2980b9; margin-top: 40px; border-bottom: 1px dashed #bdc3c7; padding-bottom: 5px; font-size: 1.5rem; }
+        
+        .question-block { margin-bottom: 30px; }
+        .solution {
+            background-color: #fdf2e9;
+            border-left: 5px solid #e67e22;
+            padding: 20px;
+            margin-top: 15px;
+            border-radius: 4px;
+        }
+        
+        .step-title { font-weight: bold; color: #34495e; margin-top: 10px; display: block; font-size: 1.1em; border-bottom: 1px solid #f0f0f0; padding-bottom: 5px; margin-bottom: 15px;}
+        .theory-box { background-color: #fff; border: 1px solid #e0e0e0; padding: 15px; margin: 15px 0; border-radius: 8px; font-size: 0.95em; color: #444; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
+        .highlight { color: #e74c3c; font-weight: bold; }
+        
+        .circuit-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-top: 20px; }
+        .circuit-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 15px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.03); }
+        .circuit-card h6 { color: #34495e; font-weight: bold; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; margin-bottom: 12px; }
+        .circuit-svg, .kmap-svg { max-width: 100%; height: auto; display: block; margin: 15px auto; }
+        
+        .wire { fill: none; stroke: #333; stroke-width: 1.5; }
+        .wire-thick { fill: none; stroke: #c0392b; stroke-width: 2.5; }
+        .lbl { font-size: 13px; fill: #333; font-family: monospace; font-weight: bold; }
+        .out { font-weight: bold; fill: #c0392b; font-size: 15px; }
+        .kmap-cell-text { font-family: 'Courier New', Courier, monospace; font-weight: bold; }
+        
+        .hl-red { fill: #e74c3c; fill-opacity: 0.15; stroke: #e74c3c; stroke-width: 2; stroke-dasharray: 4; }
+        .hl-blue { fill: #3498db; fill-opacity: 0.15; stroke: #3498db; stroke-width: 2; stroke-dasharray: 4; }
+        .hl-green { fill: #2ecc71; fill-opacity: 0.15; stroke: #2ecc71; stroke-width: 2; stroke-dasharray: 4; }
+        .hl-purple { fill: #9b59b6; fill-opacity: 0.15; stroke: #9b59b6; stroke-width: 2; stroke-dasharray: 4; }
+        .hl-orange { fill: #e67e22; fill-opacity: 0.15; stroke: #e67e22; stroke-width: 2; stroke-dasharray: 4; }
+        .hl-teal { fill: #1abc9c; fill-opacity: 0.15; stroke: #1abc9c; stroke-width: 2; stroke-dasharray: 4; }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .exam-paper { box-shadow: none; border: none; padding: 0; margin-top: 0;}
+            .nav-container { display: none; }
+        }
+    </style>
+    <script src="/js/security.js"></script>
 </head>
-<body class="p-5">
-    <a href="/ans" class="btn btn-outline-secondary mb-3">
-        <i class="fas fa-arrow-left"></i> Back to Exams
-    </a>
-    <h1>第一次期中考 - 解答與解析</h1>
-    <hr>
-    <p>解答內容正在準備中...</p>
-    <footer class="mt-5 py-4 border-top text-center text-muted">
-        <a href="/ans" class="btn btn-outline-secondary mb-3">
+<body>
+    <div class="container mt-3 nav-container">
+        <a href="/ans" class="btn btn-outline-secondary" data-i18n="back_to_exams">
             <i class="fas fa-arrow-left"></i> Back to Exams
         </a>
-        <p>&copy; 2026 數位邏輯設計教程 | Copyright: 西園寺佳頴</p>
+        <div class="dropdown">
+            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="langDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                🌐 <span id="currentLang">中文</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="langDropdown">
+                <a class="dropdown-item" href="#" onclick="window.changeLang('zh-TW')">繁體中文</a>
+                <a class="dropdown-item" href="#" onclick="window.changeLang('en')">English</a>
+                <a class="dropdown-item" href="#" onclick="window.changeLang('ja')">日本語</a>
+                <a class="dropdown-item" href="#" onclick="window.changeLang('it')">Italiano</a>
+                <a class="dropdown-item" href="#" onclick="window.changeLang('vi')">Tiếng Việt</a>
+            </div>
+        </div>
+    </div>
+
+    <svg width="0" height="0" style="display:none;">
+        <defs>
+            <g id="gate-and"><path d="M 0,0 L 25,0 A 25,20 0 0,1 25,40 L 0,40 Z" fill="#fff" stroke="#333" stroke-width="2"/></g>
+            <g id="gate-or"><path d="M 0,0 C 20,0 30,5 45,20 C 30,35 20,40 0,40 Q 15,20 0,0 Z" fill="#fff" stroke="#333" stroke-width="2"/></g>
+            <g id="gate-xor"><path d="M -6,0 Q 9,20 -6,40" fill="none" stroke="#333" stroke-width="2"/><path d="M 0,0 C 20,0 30,5 45,20 C 30,35 20,40 0,40 Q 15,20 0,0 Z" fill="#fff" stroke="#333" stroke-width="2"/></g>
+            <g id="gate-nand"><path d="M 0,0 L 25,0 A 25,20 0 0,1 25,40 L 0,40 Z" fill="#fff" stroke="#333" stroke-width="2"/><circle cx="53" cy="20" r="4" fill="#fff" stroke="#333" stroke-width="2"/></g>
+            <g id="gate-nor"><path d="M 0,0 C 20,0 30,5 45,20 C 30,35 20,40 0,40 Q 15,20 0,0 Z" fill="#fff" stroke="#333" stroke-width="2"/><circle cx="49" cy="20" r="4" fill="#fff" stroke="#333" stroke-width="2"/></g>
+        </defs>
+    </svg>
+
+    <div class="exam-paper">
+        <h1 data-i18n="page_title">數位邏輯設計 第一次期中考</h1>
+        <h2 data-i18n="q1_title">第一題：補數之定義與計算 (18%)</h2>
+        <div class="question-block">
+            <p data-i18n="q1_desc">請依下面要求並利用補數之定義寫出十進位值 $(37)_{10}$ 之補數值：</p>
+            <div class="solution">
+                <span class="step-title" data-i18n="q1_prep">數值準備：</span>
+                <span data-i18n="q1_prep_val">十進位值 $N = 37$，位數 $n = 2$。</span><br>
+                <span data-i18n="q1_binary_octal">其二進位為 $(37)_{10} = (100101)_2$ (6位)，八進位為 $(45)_8$ (2位)。</span>
+                <hr>
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong data-i18n="q1_a">(a) 10 進位的 9 補數：</strong><br>
+                        <span data-i18n="q1_formula">公式：</span>$(10^n - 1) - N = (10^2 - 1) - 37 = 99 - 37 = \mathbf{62}$
+                    </div>
+                    <div class="col-md-6">
+                        <strong data-i18n="q1_b">(b) 10 進位的 10 補數：</strong><br>
+                        <span data-i18n="q1_formula">公式：</span>$10^n - N = 100 - 37 = \mathbf{63}$ <span data-i18n="q1_b_alt">(或 9 補數 + 1)</span>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <strong data-i18n="q1_c">(c) 2 進位的 1 補數：</strong><br>
+                        <span data-i18n="q1_c_rev">將 $(100101)_2$ 反轉：</span>$\mathbf{011010}$
+                    </div>
+                    <div class="col-md-6">
+                        <strong data-i18n="q1_d">(d) 2 進位的 2 補數：</strong><br>
+                        <span data-i18n="q1_d_add">1 補數 + 1：</span>$011010 + 1 = \mathbf{011011}$
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <strong data-i18n="q1_e">(e) 8 進位的 7 補數：</strong><br>
+                        $(45)_8$ <span data-i18n="q1_e_alt">之 7 補數：</span>$(77)_8 - (45)_8 = \mathbf{32_8}$
+                    </div>
+                    <div class="col-md-6">
+                        <strong data-i18n="q1_f">(f) 8 進位的 8 補數：</strong><br>
+                        <span data-i18n="q1_f_add">7 補數 + 1：</span>$32_8 + 1 = \mathbf{33_8}$
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2 data-i18n="q2_title">第二題：Canonical and Standard Forms (12%)</h2>
+        <div class="question-block">
+            <p data-i18n="q2a_desc">(a) $F(x,y,z)=y'+x'y+x'z'$，請寫出 $F$ 之 Canonical Sum of Minterm 形式。</p>
+            <div class="solution">
+                <span class="step-title" data-i18n="derivation">推導過程：</span>
+                <span data-i18n="q2a_step1">1. 補齊變數：</span><br>
+                $y' = y'(x+x')(z+z') = xy'z + xy'z' + x'y'z + x'y'z'$ (m5, m4, m1, m0)<br>
+                $x'y = x'y(z+z') = x'yz + x'yz'$ (m3, m2)<br>
+                $x'z' = x'z'(y+y') = x'yz' + x'y'z'$ (m2, m0)<br>
+                <span data-i18n="q2a_step2">2. 合併重複項並排序：</span><br>
+                $F = m0 + m1 + m2 + m3 + m4 + m5$<br>
+
+                <span class="step-title" data-i18n="q2_kmap_title">卡諾圖輔助說明：</span>
+                <svg class="kmap-svg" width="350" height="180" viewBox="0 0 350 180" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="80" y1="40" x2="320" y2="40" stroke="#333" stroke-width="2"/>
+                    <line x1="80" y1="90" x2="320" y2="90" stroke="#333" stroke-width="1"/>
+                    <line x1="80" y1="140" x2="320" y2="140" stroke="#333" stroke-width="2"/>
+                    <line x1="80" y1="40" x2="80" y2="140" stroke="#333" stroke-width="2"/>
+                    <line x1="140" y1="40" x2="140" y2="140" stroke="#333" stroke-width="1"/>
+                    <line x1="200" y1="40" x2="200" y2="140" stroke="#333" stroke-width="1"/>
+                    <line x1="260" y1="40" x2="260" y2="140" stroke="#333" stroke-width="1"/>
+                    <line x1="320" y1="40" x2="320" y2="140" stroke="#333" stroke-width="2"/>
+                    
+                    <text x="40" y="30" font-size="16">x\yz</text>
+                    <text x="100" y="30" font-size="14">00</text><text x="160" y="30" font-size="14">01</text><text x="220" y="30" font-size="14">11</text><text x="280" y="30" font-size="14">10</text>
+                    <text x="50" y="70" font-size="14">0</text><text x="50" y="120" font-size="14">1</text>
+                    
+                    <rect x="85" y="45" width="230" height="40" rx="10" class="hl-blue" opacity="0.4"/> 
+                    <rect x="85" y="95" width="110" height="40" rx="10" class="hl-green" opacity="0.4"/> 
+
+                    <text x="105" y="75" class="kmap-cell-text">1</text><text x="165" y="75" class="kmap-cell-text">1</text><text x="225" y="75" class="kmap-cell-text">1</text><text x="285" y="75" class="kmap-cell-text">1</text>
+                    <text x="105" y="125" class="kmap-cell-text">1</text><text x="165" y="125" class="kmap-cell-text">1</text><text x="225" y="125" class="kmap-cell-text">0</text><text x="285" y="125" class="kmap-cell-text">0</text>
+                </svg>
+
+                <p class="font-weight-bold highlight mt-2"><span data-i18n="ans">答案：</span>$F(x,y,z) = \Sigma(0, 1, 2, 3, 4, 5)$</p>
+            </div>
+
+            <p class="mt-4" data-i18n="q2b_desc">(b) $F(x,y,z)= xyz+yz'+x'z'$，請寫出函數 $F'$ 之 Canonical Product of Maxterm 形式。</p>
+            <div class="solution">
+                <span class="step-title" data-i18n="derivation">推導過程：</span>
+                <span data-i18n="q2b_step1">1. 先找 $F$ 的 Minterm：</span><br>
+                $xyz = m7$<br>
+                $yz' = (x+x')yz' = xyz' + x'yz' = m6 + m2$<br>
+                $x'z' = x'(y+y')z' = x'yz' + x'y'z' = m2 + m0$<br>
+                所以 $F = \Sigma(0, 2, 6, 7)$<br>
+                <span data-i18n="q2b_step2">2. $F'$ 的 Minterm 為 $F$ 沒出現的項：</span><br>
+                $F' = \Sigma(1, 3, 4, 5)$<br>
+
+                <span class="step-title" data-i18n="q2_kmap_title">卡諾圖輔助說明：</span>
+                <svg class="kmap-svg" width="350" height="180" viewBox="0 0 350 180" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="80" y1="40" x2="320" y2="40" stroke="#333" stroke-width="2"/>
+                    <line x1="80" y1="90" x2="320" y2="90" stroke="#333" stroke-width="1"/>
+                    <line x1="80" y1="140" x2="320" y2="140" stroke="#333" stroke-width="2"/>
+                    <line x1="80" y1="40" x2="80" y2="140" stroke="#333" stroke-width="2"/>
+                    <line x1="140" y1="40" x2="140" y2="140" stroke="#333" stroke-width="1"/>
+                    <line x1="200" y1="40" x2="200" y2="140" stroke="#333" stroke-width="1"/>
+                    <line x1="260" y1="40" x2="260" y2="140" stroke="#333" stroke-width="1"/>
+                    <line x1="320" y1="40" x2="320" y2="140" stroke="#333" stroke-width="2"/>
+                    
+                    <text x="40" y="30" font-size="16">x\yz</text>
+                    <text x="100" y="30" font-size="14">00</text><text x="160" y="30" font-size="14">01</text><text x="220" y="30" font-size="14">11</text><text x="280" y="30" font-size="14">10</text>
+                    <text x="50" y="70" font-size="14">0</text><text x="50" y="120" font-size="14">1</text>
+                    
+                    <text x="105" y="75" class="kmap-cell-text" fill="#2980b9">1₀</text>
+                    <text x="165" y="75" class="kmap-cell-text" fill="#e67e22">0₁</text>
+                    <text x="225" y="75" class="kmap-cell-text" fill="#e67e22">0₃</text>
+                    <text x="285" y="75" class="kmap-cell-text" fill="#2980b9">1₂</text>
+                    
+                    <text x="105" y="125" class="kmap-cell-text" fill="#e67e22">0₄</text>
+                    <text x="165" y="125" class="kmap-cell-text" fill="#e67e22">0₅</text>
+                    <text x="225" y="125" class="kmap-cell-text" fill="#2980b9">1₇</text>
+                    <text x="285" y="125" class="kmap-cell-text" fill="#2980b9">1₆</text>
+                </svg>
+                <p class="small text-muted mt-1">※ <span style="color:#2980b9;font-weight:bold;">1</span> 為 $F$ 之 minterms；<span style="color:#e67e22;font-weight:bold;">0</span> 為 $F$ 補數項 (即 $F'$ 之 minterms)。</p>
+
+                <span data-i18n="q2b_step3">3. 將 $F'$ 的 Minterm 轉為 Maxterm 形式：</span><br>
+                <span data-i18n="q2b_step3_desc">Minterm index $i$ 對應的 Maxterm 為 $M_i$</span><br>
+                <p class="font-weight-bold highlight mt-2"><span data-i18n="ans">答案：</span>$F'(x,y,z) = \Pi(0, 2, 6, 7)$</p>
+            </div>
+        </div>
+
+        <h2 data-i18n="q3_title">第三題：兩級邏輯電路實現 (32%)</h2>
+        <div class="question-block">
+            <p data-i18n="q3_desc">請將 $F(A,B,C,D)=\Sigma(1,2,3,5,6,7,8,10)$ 用最簡化兩級邏輯電路實現。</p>
+            
+            <div class="solution">
+                <span class="step-title" data-i18n="q3_kmap">卡諾圖化簡 (4-variable)：</span>
+                <svg class="kmap-svg" width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="80" y1="40" x2="320" y2="40" stroke="#333" stroke-width="2"/>
+                    <line x1="80" y1="90" x2="320" y2="90" stroke="#333" stroke-width="1"/>
+                    <line x1="80" y1="140" x2="320" y2="140" stroke="#333" stroke-width="1"/>
+                    <line x1="80" y1="190" x2="320" y2="190" stroke="#333" stroke-width="1"/>
+                    <line x1="80" y1="240" x2="320" y2="240" stroke="#333" stroke-width="2"/>
+                    <line x1="80" y1="40" x2="80" y2="240" stroke="#333" stroke-width="2"/>
+                    <line x1="140" y1="40" x2="140" y2="240" stroke="#333" stroke-width="1"/>
+                    <line x1="200" y1="40" x2="200" y2="240" stroke="#333" stroke-width="1"/>
+                    <line x1="260" y1="40" x2="260" y2="240" stroke="#333" stroke-width="1"/>
+                    <line x1="320" y1="40" x2="320" y2="240" stroke="#333" stroke-width="2"/>
+                    
+                    <text x="40" y="30" font-size="16">AB\CD</text>
+                    <text x="110" y="30" font-size="14">00</text><text x="170" y="30" font-size="14">01</text><text x="230" y="30" font-size="14">11</text><text x="290" y="30" font-size="14">10</text>
+                    <text x="50" y="70" font-size="14">00</text><text x="50" y="120" font-size="14">01</text><text x="50" y="170" font-size="14">11</text><text x="50" y="220" font-size="14">10</text>
+                    
+                    <rect x="145" y="45" width="110" height="90" rx="10" class="hl-red"/> <rect x="205" y="45" width="110" height="90" rx="10" class="hl-blue"/> <path d="M 85,195 L 135,195 Q 145,195 145,205 L 145,235 L 85,235 Z" class="hl-green"/> <path d="M 315,195 L 265,195 Q 255,195 255,205 L 255,235 L 315,235 Z" class="hl-green"/>
+
+                    <text x="110" y="70" class="kmap-cell-text">0</text><text x="170" y="70" class="kmap-cell-text">1</text><text x="230" y="70" class="kmap-cell-text">1</text><text x="290" y="70" class="kmap-cell-text">1</text>
+                    <text x="110" y="120" class="kmap-cell-text">0</text><text x="170" y="120" class="kmap-cell-text">1</text><text x="230" y="120" class="kmap-cell-text">1</text><text x="290" y="120" class="kmap-cell-text">1</text>
+                    <text x="110" y="170" class="kmap-cell-text">0</text><text x="170" y="170" class="kmap-cell-text">0</text><text x="230" y="170" class="kmap-cell-text">0</text><text x="290" y="170" class="kmap-cell-text">0</text>
+                    <text x="110" y="220" class="kmap-cell-text">1</text><text x="170" y="220" class="kmap-cell-text">0</text><text x="230" y="220" class="kmap-cell-text">0</text><text x="290" y="220" class="kmap-cell-text">1</text>
+                </svg>
+                
+                <div class="theory-box mb-3">
+                    <strong data-i18n="q3_theory">推導基礎式：</strong><br>
+                    <span data-i18n="q3_sop">SOP 最簡式：</span>$F = A'D + A'C + AB'D'$<br>
+                    <span data-i18n="q3_pos">POS 最簡式：</span>$F = (A+C+D)(A'+B')(A'+D')$
+                </div>
+
+                <span class="step-title" data-i18n="q3_subtitle">兩級邏輯實現：</span>
+                <div class="circuit-grid">
+                    <div class="circuit-card">
+                        <h6>(a) AND-OR</h6>
+                        <svg width="250" height="180" class="circuit-svg">
+                            <text x="5" y="30" class="lbl">A'</text><text x="5" y="45" class="lbl">D</text>
+                            <use href="#gate-and" x="35" y="15"/><path d="M85,35 L115,35 L115,75 L135,75" class="wire"/>
+                            <text x="5" y="80" class="lbl">A'</text><text x="5" y="95" class="lbl">C</text>
+                            <use href="#gate-and" x="35" y="65"/><path d="M85,85 L135,85" class="wire"/>
+                            <text x="5" y="120" class="lbl">A</text><text x="5" y="132" class="lbl">B'</text><text x="5" y="145" class="lbl">D'</text>
+                            <use href="#gate-and" x="35" y="115"/><path d="M85,135 L115,135 L115,95 L135,95" class="wire"/>
+                            <use href="#gate-or" x="135" y="65"/><text x="190" y="90" class="out">F</text>
+                        </svg>
+                    </div>
+
+                    <div class="circuit-card">
+                        <h6>(b) OR-AND</h6>
+                        <svg width="250" height="180" class="circuit-svg">
+                            <text x="5" y="20" class="lbl">A</text><text x="5" y="35" class="lbl">C</text><text x="5" y="50" class="lbl">D</text>
+                            <use href="#gate-or" x="35" y="15"/><path d="M80,35 L115,35 L115,75 L135,75" class="wire"/>
+                            <text x="5" y="80" class="lbl">A'</text><text x="5" y="95" class="lbl">B'</text>
+                            <use href="#gate-or" x="35" y="65"/><path d="M80,85 L135,85" class="wire"/>
+                            <text x="5" y="130" class="lbl">A'</text><text x="5" y="145" class="lbl">D'</text>
+                            <use href="#gate-or" x="35" y="115"/><path d="M80,135 L115,135 L115,95 L135,95" class="wire"/>
+                            <use href="#gate-and" x="135" y="65"/><text x="170" y="90" class="out">F</text>
+                        </svg>
+                    </div>
+
+                    <div class="circuit-card">
+                        <h6>(c) NAND-NAND</h6>
+                        <svg width="250" height="180" class="circuit-svg">
+                            <text x="5" y="30" class="lbl">A'</text><text x="5" y="45" class="lbl">D</text>
+                            <use href="#gate-nand" x="35" y="15"/><path d="M90,35 L115,35 L115,75 L135,75" class="wire"/>
+                            <text x="5" y="80" class="lbl">A'</text><text x="5" y="95" class="lbl">C</text>
+                            <use href="#gate-nand" x="35" y="65"/><path d="M90,85 L135,85" class="wire"/>
+                            <text x="5" y="120" class="lbl">A</text><text x="5" y="132" class="lbl">B'</text><text x="5" y="145" class="lbl">D'</text>
+                            <use href="#gate-nand" x="35" y="115"/><path d="M90,135 L115,135 L115,95 L135,95" class="wire"/>
+                            <use href="#gate-nand" x="135" y="65"/><text x="200" y="90" class="out">F</text>
+                        </svg>
+                    </div>
+
+                    <div class="circuit-card">
+                        <h6>(d) NOR-NOR</h6>
+                        <svg width="250" height="180" class="circuit-svg">
+                            <text x="5" y="20" class="lbl">A</text><text x="5" y="35" class="lbl">C</text><text x="5" y="50" class="lbl">D</text>
+                            <use href="#gate-nor" x="35" y="15"/><path d="M85,35 L115,35 L115,75 L135,75" class="wire"/>
+                            <text x="5" y="80" class="lbl">A'</text><text x="5" y="95" class="lbl">B'</text>
+                            <use href="#gate-nor" x="35" y="65"/><path d="M85,85 L135,85" class="wire"/>
+                            <text x="5" y="130" class="lbl">A'</text><text x="5" y="145" class="lbl">D'</text>
+                            <use href="#gate-nor" x="35" y="115"/><path d="M85,135 L115,135 L115,95 L135,95" class="wire"/>
+                            <use href="#gate-nor" x="135" y="65"/><text x="195" y="90" class="out">F</text>
+                        </svg>
+                    </div>
+
+                    <div class="circuit-card">
+                        <h6>(e) NOR-OR</h6>
+                        <svg width="250" height="180" class="circuit-svg">
+                            <text x="5" y="30" class="lbl">A</text><text x="5" y="45" class="lbl">D'</text>
+                            <use href="#gate-nor" x="35" y="15"/><path d="M85,35 L115,35 L115,75 L135,75" class="wire"/>
+                            <text x="5" y="80" class="lbl">A</text><text x="5" y="95" class="lbl">C'</text>
+                            <use href="#gate-nor" x="35" y="65"/><path d="M85,85 L135,85" class="wire"/>
+                            <text x="5" y="120" class="lbl">A'</text><text x="5" y="132" class="lbl">B</text><text x="5" y="145" class="lbl">D</text>
+                            <use href="#gate-nor" x="35" y="115"/><path d="M85,135 L115,135 L115,95 L135,95" class="wire"/>
+                            <use href="#gate-or" x="135" y="65"/><text x="190" y="90" class="out">F</text>
+                        </svg>
+                    </div>
+
+                    <div class="circuit-card">
+                        <h6>(f) NAND-AND</h6>
+                        <svg width="250" height="180" class="circuit-svg">
+                            <text x="5" y="20" class="lbl">A'</text><text x="5" y="35" class="lbl">C'</text><text x="5" y="50" class="lbl">D'</text>
+                            <use href="#gate-nand" x="35" y="15"/><path d="M90,35 L115,35 L115,75 L135,75" class="wire"/>
+                            <text x="5" y="80" class="lbl">A</text><text x="5" y="95" class="lbl">B</text>
+                            <use href="#gate-nand" x="35" y="65"/><path d="M90,85 L135,85" class="wire"/>
+                            <text x="5" y="130" class="lbl">A</text><text x="5" y="145" class="lbl">D</text>
+                            <use href="#gate-nand" x="35" y="115"/><path d="M90,135 L115,135 L115,95 L135,95" class="wire"/>
+                            <use href="#gate-and" x="135" y="65"/><text x="170" y="90" class="out">F</text>
+                        </svg>
+                    </div>
+
+                    <div class="circuit-card">
+                        <h6>(g) OR-NAND</h6>
+                        <svg width="250" height="180" class="circuit-svg">
+                            <text x="5" y="30" class="lbl">A</text><text x="5" y="45" class="lbl">D'</text>
+                            <use href="#gate-or" x="35" y="15"/><path d="M80,35 L115,35 L115,75 L135,75" class="wire"/>
+                            <text x="5" y="80" class="lbl">A</text><text x="5" y="95" class="lbl">C'</text>
+                            <use href="#gate-or" x="35" y="65"/><path d="M80,85 L135,85" class="wire"/>
+                            <text x="5" y="120" class="lbl">A'</text><text x="5" y="132" class="lbl">B</text><text x="5" y="145" class="lbl">D</text>
+                            <use href="#gate-or" x="35" y="115"/><path d="M80,135 L115,135 L115,95 L135,95" class="wire"/>
+                            <use href="#gate-nand" x="135" y="65"/><text x="200" y="90" class="out">F</text>
+                        </svg>
+                    </div>
+
+                    <div class="circuit-card">
+                        <h6>(h) AND-NOR</h6>
+                        <svg width="250" height="180" class="circuit-svg">
+                            <text x="5" y="20" class="lbl">A'</text><text x="5" y="35" class="lbl">C'</text><text x="5" y="50" class="lbl">D'</text>
+                            <use href="#gate-and" x="35" y="15"/><path d="M85,35 L115,35 L115,75 L135,75" class="wire"/>
+                            <text x="5" y="80" class="lbl">A</text><text x="5" y="95" class="lbl">B</text>
+                            <use href="#gate-and" x="35" y="65"/><path d="M85,85 L135,85" class="wire"/>
+                            <text x="5" y="130" class="lbl">A</text><text x="5" y="145" class="lbl">D</text>
+                            <use href="#gate-and" x="35" y="115"/><path d="M85,135 L115,135 L115,95 L135,95" class="wire"/>
+                            <use href="#gate-nor" x="135" y="65"/><text x="195" y="90" class="out">F</text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2 data-i18n="q4_title">第四題：布林代數化簡 (20%)</h2>
+        <div class="question-block">
+            
+            <p>(a) $F(A,B,C)=\Sigma(0,1,3,4,6)$</p>
+            <div class="solution">
+                <span class="step-title" data-i18n="q4_kmap3">卡諾圖化簡 (3-variable)：</span>
+                <svg class="kmap-svg" width="350" height="200" viewBox="0 0 350 200" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="80" y1="40" x2="320" y2="40" stroke="#333" stroke-width="2"/>
+                    <line x1="80" y1="90" x2="320" y2="90" stroke="#333" stroke-width="1"/>
+                    <line x1="80" y1="140" x2="320" y2="140" stroke="#333" stroke-width="2"/>
+                    <line x1="80" y1="40" x2="80" y2="140" stroke="#333" stroke-width="2"/>
+                    <line x1="140" y1="40" x2="140" y2="140" stroke="#333" stroke-width="1"/>
+                    <line x1="200" y1="40" x2="200" y2="140" stroke="#333" stroke-width="1"/>
+                    <line x1="260" y1="40" x2="260" y2="140" stroke="#333" stroke-width="1"/>
+                    <line x1="320" y1="40" x2="320" y2="140" stroke="#333" stroke-width="2"/>
+                    
+                    <text x="40" y="30" font-size="16">A\BC</text>
+                    <text x="100" y="30" font-size="14">00</text><text x="160" y="30" font-size="14">01</text><text x="220" y="30" font-size="14">11</text><text x="280" y="30" font-size="14">10</text>
+                    <text x="50" y="70" font-size="14">0</text><text x="50" y="120" font-size="14">1</text>
+                    
+                    <rect x="85" y="45" width="110" height="40" rx="10" class="hl-blue"/> <rect x="145" y="45" width="110" height="40" rx="10" class="hl-green"/> <path d="M 85,95 L 125,95 Q 135,95 135,105 L 135,125 Q 135,135 125,135 L 85,135 Z" class="hl-red"/>
+                    <path d="M 315,95 L 275,95 Q 265,95 265,105 L 265,125 Q 265,135 275,135 L 315,135 Z" class="hl-red"/>
+
+                    <text x="105" y="70" class="kmap-cell-text">1</text><text x="165" y="70" class="kmap-cell-text">1</text><text x="225" y="70" class="kmap-cell-text">1</text><text x="285" y="70" class="kmap-cell-text">0</text>
+                    <text x="105" y="120" class="kmap-cell-text">1</text><text x="165" y="120" class="kmap-cell-text">0</text><text x="225" y="120" class="kmap-cell-text">0</text><text x="285" y="120" class="kmap-cell-text">1</text>
+                </svg>
+                <div class="theory-box mb-3">
+                    <strong data-i18n="q4_grouping">卡諾圖圈選推導：</strong><br>
+                    - <span style="color:#2ecc71;font-weight:bold;">●</span> <span class="text-success">$m_1, m_3$</span> $\rightarrow A'C$<br>
+                    - <span style="color:#e74c3c;font-weight:bold;">●</span> <span class="text-danger">$m_4, m_6$</span> $\rightarrow AC'$<br>
+                    - <span style="color:#3498db;font-weight:bold;">●</span> $m_0$ 可與 $m_1$ 合併為 $A'B'$，或與 $m_4$ 合併為 $B'C'$
+                </div>
+                <p class="font-weight-bold highlight"><span data-i18n="ans">答案：</span><br>
+                   SOP: <span data-i18n="any_of_following">(以下任一皆可)</span><br>
+                   1. $F = A'C + AC' + A'B'$<br>
+                   2. $F = A'C + AC' + B'C'$<br>
+                   POS: $F = (A'+C')(A+B'+C)$
+                </p>
+            </div>
+
+            <p class="mt-4">(b) $F(A,B,C,D)=\Sigma(0,1,2,3,7,8,9,11,12)$</p>
+            <div class="solution">
+                <span class="step-title" data-i18n="q4_kmap4">卡諾圖化簡 (4-variable)：</span>
+                <svg class="kmap-svg" width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="80" y1="40" x2="320" y2="40" stroke="#333" stroke-width="2"/>
+                    <line x1="80" y1="90" x2="320" y2="90" stroke="#333" stroke-width="1"/>
+                    <line x1="80" y1="140" x2="320" y2="140" stroke="#333" stroke-width="1"/>
+                    <line x1="80" y1="190" x2="320" y2="190" stroke="#333" stroke-width="1"/>
+                    <line x1="80" y1="240" x2="320" y2="240" stroke="#333" stroke-width="2"/>
+                    <line x1="80" y1="40" x2="80" y2="240" stroke="#333" stroke-width="2"/>
+                    <line x1="140" y1="40" x2="140" y2="240" stroke="#333" stroke-width="1"/>
+                    <line x1="200" y1="40" x2="200" y2="240" stroke="#333" stroke-width="1"/>
+                    <line x1="260" y1="40" x2="260" y2="240" stroke="#333" stroke-width="1"/>
+                    <line x1="320" y1="40" x2="320" y2="240" stroke="#333" stroke-width="2"/>
+                    
+                    <text x="35" y="30" font-size="16">AB\CD</text>
+                    <text x="100" y="30" font-size="14">00</text><text x="160" y="30" font-size="14">01</text><text x="220" y="30" font-size="14">11</text><text x="280" y="30" font-size="14">10</text>
+                    <text x="50" y="70" font-size="14">00</text><text x="50" y="120" font-size="14">01</text><text x="50" y="170" font-size="14">11</text><text x="50" y="220" font-size="14">10</text>
+                    
+                    <rect x="85" y="45" width="230" height="40" rx="10" class="hl-blue"/> 
+                    <rect x="205" y="45" width="50" height="90" rx="10" class="hl-red"/> 
+                    <rect x="85" y="145" width="50" height="90" rx="10" class="hl-green"/> 
+                    <rect x="145" y="195" width="110" height="40" rx="10" class="hl-purple"/> 
+                    
+                    <text x="105" y="70" class="kmap-cell-text">1</text><text x="165" y="70" class="kmap-cell-text">1</text><text x="225" y="70" class="kmap-cell-text">1</text><text x="285" y="70" class="kmap-cell-text">1</text>
+                    <text x="105" y="120" class="kmap-cell-text">0</text><text x="165" y="120" class="kmap-cell-text">0</text><text x="225" y="120" class="kmap-cell-text">1</text><text x="285" y="120" class="kmap-cell-text">0</text>
+                    <text x="105" y="170" class="kmap-cell-text">1</text><text x="165" y="170" class="kmap-cell-text">0</text><text x="225" y="170" class="kmap-cell-text">0</text><text x="285" y="170" class="kmap-cell-text">0</text>
+                    <text x="105" y="220" class="kmap-cell-text">1</text><text x="165" y="220" class="kmap-cell-text">1</text><text x="225" y="220" class="kmap-cell-text">1</text><text x="285" y="220" class="kmap-cell-text">0</text>
+                </svg>
+                <div class="theory-box mb-3">
+                    <strong data-i18n="q4_grouping">卡諾圖圈選推導：</strong><br>
+                    - <span style="color:#3498db;font-weight:bold;">●</span> <span class="text-primary">$m_0, m_1, m_3, m_2$</span> $\rightarrow A'B'$<br>
+                    - <span style="color:#e74c3c;font-weight:bold;">●</span> <span class="text-danger">$m_3, m_7$</span> $\rightarrow A'CD$<br>
+                    - <span style="color:#2ecc71;font-weight:bold;">●</span> <span class="text-success">$m_8, m_{12}$</span> $\rightarrow AC'D'$<br>
+                    - <span style="color:#9b59b6;font-weight:bold;">●</span> <span style="color:#9b59b6;">$m_9, m_{11}$</span> $\rightarrow AB'D$
+                </div>
+                <p class="font-weight-bold highlight"><span data-i18n="ans">答案：</span><br>
+                   SOP: $F = A'B' + A'CD + AC'D' + AB'D$ <br>
+                   POS: <span data-i18n="any_of_following">(以下任一皆可)</span><br>
+                   1. $F = (A+B'+C)(A'+B'+D')(B'+C'+D)(A'+C'+D)$<br>
+                   2. $F = (A+B'+D)(B'+C+D')(A'+B'+C')(A'+C'+D)$<br>
+                   3. $F = (A+B'+C)(A+B'+D)(A'+C'+D)(A'+B'+D')$
+                </p>
+            </div>
+
+            <p class="mt-4" data-i18n="q4c1_title">(c)第一組 (4-variable)：$F(A,B,C,D)=\Sigma(0,1,2,3,7,8,10,12,13)$</p>
+            <div class="solution">
+                <span class="step-title" data-i18n="q4_kmap4">卡諾圖化簡 (4-variable)：</span>
+                <svg class="kmap-svg" width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="80" y1="40" x2="320" y2="40" stroke="#333" stroke-width="2"/>
+                    <line x1="80" y1="90" x2="320" y2="90" stroke="#333" stroke-width="1"/>
+                    <line x1="80" y1="140" x2="320" y2="140" stroke="#333" stroke-width="1"/>
+                    <line x1="80" y1="190" x2="320" y2="190" stroke="#333" stroke-width="1"/>
+                    <line x1="80" y1="240" x2="320" y2="240" stroke="#333" stroke-width="2"/>
+                    <line x1="80" y1="40" x2="80" y2="240" stroke="#333" stroke-width="2"/>
+                    <line x1="140" y1="40" x2="140" y2="240" stroke="#333" stroke-width="1"/>
+                    <line x1="200" y1="40" x2="200" y2="240" stroke="#333" stroke-width="1"/>
+                    <line x1="260" y1="40" x2="260" y2="240" stroke="#333" stroke-width="1"/>
+                    <line x1="320" y1="40" x2="320" y2="240" stroke="#333" stroke-width="2"/>
+                    
+                    <text x="35" y="30" font-size="16">AB\CD</text>
+                    <text x="100" y="30" font-size="14">00</text><text x="160" y="30" font-size="14">01</text><text x="220" y="30" font-size="14">11</text><text x="280" y="30" font-size="14">10</text>
+                    <text x="50" y="70" font-size="14">00</text><text x="50" y="120" font-size="14">01</text><text x="50" y="170" font-size="14">11</text><text x="50" y="220" font-size="14">10</text>
+                    
+                    <rect x="85" y="45" width="230" height="40" rx="10" class="hl-blue"/>
+                    <rect x="85" y="145" width="110" height="40" rx="10" class="hl-green"/>
+                    <rect x="205" y="45" width="50" height="90" rx="10" class="hl-orange"/>
+                    <path d="M 85,45 L 125,45 Q 135,45 135,55 L 135,85 L 85,85 Z" class="hl-red"/>
+                    <path d="M 315,45 L 275,45 Q 265,45 265,55 L 265,85 L 315,85 Z" class="hl-red"/>
+                    <path d="M 85,235 L 125,235 Q 135,235 135,225 L 135,195 L 85,195 Z" class="hl-red"/>
+                    <path d="M 315,235 L 275,235 Q 265,235 265,225 L 265,195 L 315,195 Z" class="hl-red"/>
+
+                    <text x="105" y="70" class="kmap-cell-text">1</text><text x="165" y="70" class="kmap-cell-text">1</text><text x="225" y="70" class="kmap-cell-text">1</text><text x="285" y="70" class="kmap-cell-text">1</text>
+                    <text x="105" y="120" class="kmap-cell-text">0</text><text x="165" y="120" class="kmap-cell-text">0</text><text x="225" y="120" class="kmap-cell-text">1</text><text x="285" y="120" class="kmap-cell-text">0</text>
+                    <text x="105" y="170" class="kmap-cell-text">1</text><text x="165" y="170" class="kmap-cell-text">1</text><text x="225" y="170" class="kmap-cell-text">0</text><text x="285" y="170" class="kmap-cell-text">0</text>
+                    <text x="105" y="220" class="kmap-cell-text">1</text><text x="165" y="220" class="kmap-cell-text">0</text><text x="225" y="220" class="kmap-cell-text">0</text><text x="285" y="220" class="kmap-cell-text">1</text>
+                </svg>
+                <div class="theory-box mb-3">
+                    <strong data-i18n="q4_grouping">卡諾圖圈選推導：</strong><br>
+                    - <span style="color:#3498db;font-weight:bold;">●</span> <span class="text-primary">$m_0, m_1, m_3, m_2$</span> $\rightarrow A'B'$<br>
+                    - <span style="color:#2ecc71;font-weight:bold;">●</span> <span class="text-success">$m_{12}, m_{13}$</span> $\rightarrow ABC'$<br>
+                    - <span style="color:#e74c3c;font-weight:bold;">●</span> <span class="text-danger">$m_0, m_2, m_8, m_{10}$</span> $\rightarrow B'D'$ (Corners)<br>
+                    - <span style="color:#f39c12;font-weight:bold;">●</span> <span style="color:#f39c12;">$m_3, m_7$</span> $\rightarrow A'CD$
+                </div>
+                <p class="font-weight-bold highlight"><span data-i18n="ans">答案：</span><br>
+                   SOP: $F = A'B' + ABC' + B'D' + A'CD$<br>
+                   POS: <span data-i18n="any_of_following">(以下任一皆可)</span><br>
+                   1. $F = (A+B'+C)(A'+B+D')(B'+C'+D)(A'+B'+C')$<br>
+                   2. $F = (A+B'+C)(A'+B+D')(B'+C'+D)(A'+C'+D')$<br>
+                   3. $F = (A+B'+C)(A'+B+D')(A+B'+D)(A'+B'+C')$
+                </p>
+            </div>
+
+            <p class="mt-4" data-i18n="q4c2_title">(c)第二組 (5-variable)：$F(A,B,C,D,E)=\Sigma(1,3,6,7,8,9,14,15,16,17,18,20,24,25,28)$</p>
+            <div class="solution">
+                <span class="step-title" data-i18n="q4c2_kmap5">雙層卡諾圖 (5-variable 3D展開)：</span>
+                <div class="theory-box">
+                    <span data-i18n="q4c2_theory">五變數卡諾圖拆分為 $A=0$ 與 $A=1$ 兩層平面。</span><br>
+                    <strong data-i18n="q4c2_group">重點圈選說明：</strong><br>
+                    - <span style="color:#e67e22;font-weight:bold;">●</span> <span data-i18n="q4c2_orange">橘色群：</span>跨層 $m_8,m_9,m_{24},m_{25} \rightarrow BC'D'$ (Essential)<br>
+                    - <span style="color:#9b59b6;font-weight:bold;">●</span> <span data-i18n="q4c2_purple">紫色群：</span>跨層 $m_1,m_9,m_{17},m_{25} \rightarrow C'D'E$ (可用 $AC'D'$ 替換)<br>
+                    - <span style="color:#2ecc71;font-weight:bold;">●</span> <span class="text-success">青色群：</span>$A=0, m_1,m_3 \rightarrow A'B'C'E$<br>
+                    - <span style="color:#3498db;font-weight:bold;">●</span> <span class="text-primary">藍色群：</span>$A=0, m_6,m_7,m_{14},m_{15} \rightarrow A'CD$<br>
+                    - <span style="color:#e74c3c;font-weight:bold;">●</span> <span class="text-danger">紅色群：</span>$A=1, m_{16},m_{20},m_{24},m_{28} \rightarrow AD'E'$<br>
+                    - <span style="color:#f39c12;font-weight:bold;">●</span> <span style="color:#f39c12;">綠色群：</span>$A=1, m_{16},m_{18} \rightarrow AB'C'E'$
+                </div>
+                
+                <div style="overflow-x: auto;">
+                    <svg width="850" height="350" viewBox="0 0 850 350" xmlns="http://www.w3.org/2000/svg" style="min-width: 800px;">
+                        <text x="180" y="25" font-size="18" font-weight="bold" fill="#2c3e50">A = 0 平面</text>
+                        <text x="35" y="50" font-size="16">BC\DE</text>
+                        <text x="100" y="50" font-size="14">00</text><text x="160" y="50" font-size="14">01</text><text x="220" y="50" font-size="14">11</text><text x="280" y="50" font-size="14">10</text>
+                        <text x="50" y="90" font-size="14">00</text><text x="50" y="140" font-size="14">01</text><text x="50" y="190" font-size="14">11</text><text x="50" y="240" font-size="14">10</text>
+                        
+                        <g stroke="#333" stroke-width="1">
+                            <line x1="80" y1="60" x2="320" y2="60" stroke-width="2"/>
+                            <line x1="80" y1="110" x2="320" y2="110"/>
+                            <line x1="80" y1="160" x2="320" y2="160"/>
+                            <line x1="80" y1="210" x2="320" y2="210"/>
+                            <line x1="80" y1="260" x2="320" y2="260" stroke-width="2"/>
+                            <line x1="80" y1="60" x2="80" y2="260" stroke-width="2"/>
+                            <line x1="140" y1="60" x2="140" y2="260"/>
+                            <line x1="200" y1="60" x2="200" y2="260"/>
+                            <line x1="260" y1="60" x2="260" y2="260"/>
+                            <line x1="320" y1="60" x2="320" y2="260" stroke-width="2"/>
+                        </g>
+                        
+                        <rect x="145" y="65" width="110" height="40" rx="10" class="hl-teal"/> 
+                        <rect x="205" y="115" width="110" height="90" rx="10" class="hl-blue"/> 
+                        <rect x="85" y="215" width="110" height="40" rx="10" class="hl-orange"/> 
+                        <rect x="148" y="68" width="44" height="34" rx="5" fill="none" stroke="#9b59b6" stroke-width="3"/> 
+                        <rect x="148" y="218" width="44" height="34" rx="5" fill="none" stroke="#9b59b6" stroke-width="3"/> 
+
+                        <text x="105" y="90" class="kmap-cell-text">0</text><text x="165" y="90" class="kmap-cell-text">1</text><text x="225" y="90" class="kmap-cell-text">1</text><text x="285" y="90" class="kmap-cell-text">0</text>
+                        <text x="105" y="140" class="kmap-cell-text">0</text><text x="165" y="140" class="kmap-cell-text">0</text><text x="225" y="140" class="kmap-cell-text">1</text><text x="285" y="140" class="kmap-cell-text">1</text>
+                        <text x="105" y="190" class="kmap-cell-text">0</text><text x="165" y="190" class="kmap-cell-text">0</text><text x="225" y="190" class="kmap-cell-text">1</text><text x="285" y="190" class="kmap-cell-text">1</text>
+                        <text x="105" y="240" class="kmap-cell-text">1</text><text x="165" y="240" class="kmap-cell-text">1</text><text x="225" y="240" class="kmap-cell-text">0</text><text x="285" y="240" class="kmap-cell-text">0</text>
+
+                        <text x="580" y="25" font-size="18" font-weight="bold" fill="#2c3e50">A = 1 平面</text>
+                        <text x="435" y="50" font-size="16">BC\DE</text>
+                        <text x="500" y="50" font-size="14">00</text><text x="560" y="50" font-size="14">01</text><text x="620" y="50" font-size="14">11</text><text x="680" y="50" font-size="14">10</text>
+                        <text x="450" y="90" font-size="14">00</text><text x="450" y="140" font-size="14">01</text><text x="450" y="190" font-size="14">11</text><text x="450" y="240" font-size="14">10</text>
+                        
+                        <g transform="translate(400,0)">
+                            <g stroke="#333" stroke-width="1">
+                                <line x1="80" y1="60" x2="320" y2="60" stroke-width="2"/>
+                                <line x1="80" y1="110" x2="320" y2="110"/>
+                                <line x1="80" y1="160" x2="320" y2="160"/>
+                                <line x1="80" y1="210" x2="320" y2="210"/>
+                                <line x1="80" y1="260" x2="320" y2="260" stroke-width="2"/>
+                                <line x1="80" y1="60" x2="80" y2="260" stroke-width="2"/>
+                                <line x1="140" y1="60" x2="140" y2="260"/>
+                                <line x1="200" y1="60" x2="200" y2="260"/>
+                                <line x1="260" y1="60" x2="260" y2="260"/>
+                                <line x1="320" y1="60" x2="320" y2="260" stroke-width="2"/>
+                            </g>
+                            
+                            <rect x="85" y="215" width="110" height="40" rx="10" class="hl-orange"/> 
+                            <rect x="85" y="65" width="50" height="190" rx="10" class="hl-red"/> 
+                            <path d="M 85,65 L 125,65 Q 135,65 135,75 L 135,95 L 85,95 Z" class="hl-green"/>
+                            <path d="M 315,65 L 275,65 Q 265,65 265,75 L 265,95 L 315,95 Z" class="hl-green"/>
+                            <rect x="148" y="68" width="44" height="34" rx="5" fill="none" stroke="#9b59b6" stroke-width="3"/> 
+                            <rect x="148" y="218" width="44" height="34" rx="5" fill="none" stroke="#9b59b6" stroke-width="3"/> 
+
+                            <text x="105" y="90" class="kmap-cell-text">1</text><text x="165" y="90" class="kmap-cell-text">1</text><text x="225" y="90" class="kmap-cell-text">0</text><text x="285" y="90" class="kmap-cell-text">1</text>
+                            <text x="105" y="140" class="kmap-cell-text">1</text><text x="165" y="140" class="kmap-cell-text">0</text><text x="225" y="140" class="kmap-cell-text">0</text><text x="285" y="140" class="kmap-cell-text">0</text>
+                            <text x="105" y="190" class="kmap-cell-text">1</text><text x="165" y="190" class="kmap-cell-text">0</text><text x="225" y="190" class="kmap-cell-text">0</text><text x="285" y="190" class="kmap-cell-text">0</text>
+                            <text x="105" y="240" class="kmap-cell-text">1</text><text x="165" y="240" class="kmap-cell-text">1</text><text x="225" y="240" class="kmap-cell-text">0</text><text x="285" y="240" class="kmap-cell-text">0</text>
+                        </g>
+
+                        <path d="M 140,235 Q 260,330 540,235" fill="none" stroke="#e67e22" stroke-width="2" stroke-dasharray="6,4" opacity="0.6"/>
+                        <path d="M 170,85 Q 360,-20 570,85" fill="none" stroke="#9b59b6" stroke-width="2" stroke-dasharray="6,4" opacity="0.6"/>
+                    </svg>
+                </div>
+
+                <p class="font-weight-bold highlight mt-3"><span data-i18n="ans">答案：</span><br>
+                   SOP: <span data-i18n="any_of_following">(以下任一皆可)</span><br>
+                   1. $F = A'B'C'E + A'CD + BC'D' + AB'C'E' + AD'E' + C'D'E$<br>
+                   2. $F = A'B'C'E + A'CD + BC'D' + AB'C'E' + AD'E' + AC'D'$<br>
+                   POS: $F = (A+B+C+E)(A+C'+D)(B'+C+D')(A'+C'+D')(A'+C'+E')(A'+D'+E')$
+                </p>
+            </div>
+        </div>
+
+        <h2 data-i18n="q5_title">第五題：邏輯電路畫圖 (8%)</h2>
+        <div class="question-block">
+            <p data-i18n="q5_desc">$F(x,y,z)=y'+xy'+xz'$，請化至最簡並畫出 NAND 與 NOR 電路。</p>
+            <div class="solution">
+                <span class="step-title" data-i18n="derivation">化簡推導：</span>
+                <div class="theory-box mb-4">
+                    $F(x,y,z) = y' + xy' + xz' = y'(1+x) + xz' = \mathbf{y' + xz'}$
+                </div>
+
+                <span class="step-title" data-i18n="q5_kmap_title">卡諾圖分析與化簡：</span>
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <svg class="kmap-svg" width="350" height="200" viewBox="0 0 350 200" xmlns="http://www.w3.org/2000/svg">
+                            <line x1="80" y1="40" x2="320" y2="40" stroke="#333" stroke-width="2"/>
+                            <line x1="80" y1="90" x2="320" y2="90" stroke="#333" stroke-width="1"/>
+                            <line x1="80" y1="140" x2="320" y2="140" stroke="#333" stroke-width="2"/>
+                            <line x1="80" y1="40" x2="80" y2="140" stroke="#333" stroke-width="2"/>
+                            <line x1="140" y1="40" x2="140" y2="140" stroke="#333" stroke-width="1"/>
+                            <line x1="200" y1="40" x2="200" y2="140" stroke="#333" stroke-width="1"/>
+                            <line x1="260" y1="40" x2="260" y2="140" stroke="#333" stroke-width="1"/>
+                            <line x1="320" y1="40" x2="320" y2="140" stroke="#333" stroke-width="2"/>
+                            
+                            <text x="40" y="30" font-size="16">x\yz</text>
+                            <text x="100" y="30" font-size="14">00</text><text x="160" y="30" font-size="14">01</text><text x="220" y="30" font-size="14">11</text><text x="280" y="30" font-size="14">10</text>
+                            <text x="50" y="70" font-size="14">0</text><text x="50" y="120" font-size="14">1</text>
+                            
+                            <rect x="85" y="45" width="110" height="90" rx="10" class="hl-blue"/> 
+                            <rect x="85" y="95" width="50" height="40" rx="5" class="hl-red"/> 
+                            <rect x="265" y="95" width="50" height="40" rx="5" class="hl-red"/> 
+
+                            <text x="105" y="70" class="kmap-cell-text">1</text><text x="165" y="70" class="kmap-cell-text">1</text><text x="225" y="70" class="kmap-cell-text">0</text><text x="285" y="70" class="kmap-cell-text">0</text>
+                            <text x="105" y="120" class="kmap-cell-text">1</text><text x="165" y="120" class="kmap-cell-text">1</text><text x="225" y="120" class="kmap-cell-text">0</text><text x="285" y="120" class="kmap-cell-text">1</text>
+                        </svg>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="theory-box">
+                            <strong data-i18n="q5_sop_title">SOP (Sum of Products) Form:</strong><br>
+                            <span data-i18n="q5_sop_desc">Group all 1s:</span><br>
+                            - <span style="color:#3498db;font-weight:bold;">●</span> $m_0, m_1, m_4, m_5 \rightarrow y'$<br>
+                            - <span style="color:#e74c3c;font-weight:bold;">●</span> $m_4, m_6 \rightarrow xz'$<br>
+                            $\Rightarrow F = \mathbf{y' + xz'}$<br><br>
+                            <strong data-i18n="q5_pos_title">POS (Product of Sums) Form:</strong><br>
+                            <span data-i18n="q5_pos_desc">Group all 0s:</span><br>
+                            - $m_2, m_3 \rightarrow (x+y')$<br>
+                            - $m_3, m_7 \rightarrow (y'+z')$<br>
+                            $\Rightarrow F = \mathbf{(x+y')(y'+z')}$
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row text-center mt-4">
+                    <div class="col-md-6 border-right">
+                        <span class="step-title text-center" data-i18n="q5_1">(a) 兩級 NAND-NAND 電路</span>
+                        <p class="small text-muted">$F = (y \cdot (xz')')'$</p>
+                        <svg width="250" height="150" class="circuit-svg">
+                            <text x="10" y="65" class="lbl">y</text> 
+                            <path d="M 25,60 L 170,60" class="wire"/>
+                            
+                            <text x="10" y="95" class="lbl">x</text> <path d="M 25,90 L 70,90" class="wire"/>
+                            <text x="10" y="115" class="lbl">z'</text> <path d="M 25,110 L 70,110" class="wire"/>
+                            <use href="#gate-nand" x="70" y="80"/>
+                            <path d="M 123,100 L 150,100 L 150,80 L 170,80" class="wire"/>
+
+                            <use href="#gate-nand" x="170" y="50"/>
+                            <path d="M 223,70 L 240,70" class="wire-thick"/>
+                            <text x="245" y="75" class="out">F</text>
+                        </svg>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <span class="step-title text-center" data-i18n="q5_2">(b) 兩級 NOR-NOR 電路</span>
+                        <p class="small text-muted">對偶推導 $F = ((y'+x)' + (y'+z')')' = y'+xz'$</p>
+                        <svg width="250" height="150" class="circuit-svg">
+                            <text x="10" y="25" class="lbl">y'</text> <path d="M 25,20 L 70,20" class="wire"/>
+                            <text x="10" y="45" class="lbl">x</text> <path d="M 25,40 L 70,40" class="wire"/>
+                            <use href="#gate-nor" x="70" y="10"/>
+                            <path d="M 123,30 L 150,30 L 150,60 L 170,60" class="wire"/>
+
+                            <text x="10" y="95" class="lbl">y'</text> <path d="M 25,90 L 70,90" class="wire"/>
+                            <text x="10" y="115" class="lbl">z'</text> <path d="M 25,110 L 70,110" class="wire"/>
+                            <use href="#gate-nor" x="70" y="80"/>
+                            <path d="M 123,100 L 150,100 L 150,80 L 170,80" class="wire"/>
+
+                            <use href="#gate-nor" x="170" y="50"/>
+                            <path d="M 223,70 L 240,70" class="wire-thick"/>
+                            <text x="245" y="75" class="out">F</text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2 data-i18n="q6_title">第六題：Parity 系統設計 (10%)</h2>
+        <div class="question-block">
+            <p data-i18n="q6_desc">設計 4-bit 偶同位(Even Parity)傳輸系統之：同位產生器G(Parity Generator) 與 檢查器 C(Parity Checker)。</p>
+            <div class="solution">
+                <span class="step-title" data-i18n="q6_theory_title">原理說明：</span>
+                <div class="theory-box mb-4" data-i18n="q6_theory">
+                    偶同位（Even Parity）確保傳輸的 5 個位元（$A_3,A_2,A_1,A_0,G$）中 '1' 的總數恆為偶數。<br>
+                    這可以透過 XOR 運算來達成，因為 XOR 運算等同於模二加法。<br>
+                    產生器設定 $G = A_3 \oplus A_2 \oplus A_1 \oplus A_0$。<br>
+                    接收端檢查器驗證總和 $C = A_3 \oplus A_2 \oplus A_1 \oplus A_0 \oplus G$。若 $C=0$ 代表無誤。
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-5 border-right">
+                        <span class="step-title text-center" data-i18n="q6_gen">同位產生器 (Generator G)</span>
+                        <p class="font-weight-bold highlight text-center">$$ G = A_3 \oplus A_2 \oplus A_1 \oplus A_0 $$</p>
+                        <svg width="350" height="150" class="circuit-svg">
+                            <text x="10" y="35" class="lbl">A₃</text> <path d="M 35,30 L 65,30" class="wire"/>
+                            <text x="10" y="55" class="lbl">A₂</text> <path d="M 35,50 L 65,50" class="wire"/>
+                            <use href="#gate-xor" x="70" y="20"/>
+
+                            <text x="10" y="95" class="lbl">A₁</text> <path d="M 35,90 L 155,90" class="wire"/>
+                            <path d="M 115,40 L 140,40 L 140,70 L 155,70" class="wire"/>
+                            <use href="#gate-xor" x="160" y="60"/>
+
+                            <text x="10" y="135" class="lbl">A₀</text> <path d="M 35,130 L 245,130" class="wire"/>
+                            <path d="M 205,80 L 230,80 L 230,110 L 245,110" class="wire"/>
+                            <use href="#gate-xor" x="250" y="100"/>
+
+                            <path d="M 295,120 L 320,120" class="wire-thick"/>
+                            <text x="325" y="125" class="out">G</text>
+                        </svg>
+                    </div>
+                    
+                    <div class="col-md-7">
+                        <span class="step-title text-center" data-i18n="q6_chk">同位檢查器 (Checker C)</span>
+                        <p class="font-weight-bold highlight text-center">$$ C = A_3 \oplus A_2 \oplus A_1 \oplus A_0 \oplus G $$</p>
+                        <svg width="450" height="200" class="circuit-svg">
+                            <text x="10" y="35" class="lbl">A₃</text> <path d="M 35,30 L 65,30" class="wire"/>
+                            <text x="10" y="55" class="lbl">A₂</text> <path d="M 35,50 L 65,50" class="wire"/>
+                            <use href="#gate-xor" x="70" y="20"/>
+
+                            <text x="10" y="95" class="lbl">A₁</text> <path d="M 35,90 L 155,90" class="wire"/>
+                            <path d="M 115,40 L 140,40 L 140,70 L 155,70" class="wire"/>
+                            <use href="#gate-xor" x="160" y="60"/>
+
+                            <text x="10" y="135" class="lbl">A₀</text> <path d="M 35,130 L 245,130" class="wire"/>
+                            <path d="M 205,80 L 230,80 L 230,110 L 245,110" class="wire"/>
+                            <use href="#gate-xor" x="250" y="100"/>
+
+                            <text x="10" y="175" class="lbl">G</text> <path d="M 35,170 L 335,170" class="wire"/>
+                            <path d="M 295,120 L 320,120 L 320,150 L 335,150" class="wire"/>
+                            <use href="#gate-xor" x="340" y="140"/>
+
+                            <path d="M 385,160 L 410,160" class="wire-thick"/>
+                            <text x="415" y="165" class="out">C</text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-5 py-4 border-top text-center text-muted">
+        <div class="container">
+            <a href="/ans" class="btn btn-outline-secondary mb-3" data-i18n="back_to_exams">
+                <i class="fas fa-arrow-left"></i> Back to Exams
+            </a>
+            <p data-i18n="footer_text">&copy; 2026 數位邏輯設計 | Teacher: Doc.蘇慶龍 | Copyright: <a href="https://github.com/jerry850313" target="_blank">謝佳頴 TA</a></p>
+        </div>
     </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <script>
+        window.pageTranslations = {
+            'zh-TW': {
+                'page_title': '114學年度2學期 數位邏輯設計 第一次期中考',
+                'back_to_exams': '回到考試列表',
+                'q1_title': '第一題：補數之定義與計算 (18%)',
+                'q1_desc': '請依下面要求並利用補數之定義寫出十進位值 $(37)_{10}$ 之補數值：',
+                'q1_prep': '數值準備：',
+                'q1_prep_val': '十進位值 $N = 37$，位數 $n = 2$。',
+                'q1_binary_octal': '其二進位為 $(37)_{10} = (100101)_2$ (6位)，八進位為 $(45)_8$ (2位)。',
+                'q1_a': '(a) 10 進位的 9 補數：',
+                'q1_formula': '公式：',
+                'q1_b': '(b) 10 進位的 10 補數：',
+                'q1_b_alt': '(或 9 補數 + 1)',
+                'q1_c': '(c) 2 進位的 1 補數：',
+                'q1_c_rev': '將 $(100101)_2$ 反轉：',
+                'q1_d': '(d) 2 進位的 2 補數：',
+                'q1_d_add': '1 補數 + 1：',
+                'q1_e': '(e) 8 進位的 7 補數：',
+                'q1_e_alt': '之 7 補數：',
+                'q1_f': '(f) 8 進位的 8 補數：',
+                'q1_f_add': '7 補數 + 1：',
+                'q2_title': '第二題：Canonical and Standard Forms (12%)',
+                'q2a_desc': '(a) $F(x,y,z)=y\'+x\'y+x\'z\'$，請寫出 $F$ 之 Canonical Sum of Minterm 形式。',
+                'q2a_step1': '1. 補齊變數：',
+                'q2a_step2': '2. 合併重複項並排序：',
+                'q2b_desc': '(b) $F(x,y,z)= xyz+yz\'+x\'z\'$，請寫出函數 $F\'$ 之 Canonical Product of Maxterm 形式。',
+                'q2b_step1': '1. 先找 $F$ 的 Minterm：',
+                'q2b_step2': '2. $F\'$ 的 Minterm 為 $F$ 沒出現的項：',
+                'q2b_step3': '3. 將 $F\'$ 的 Minterm 轉為 Maxterm 形式：',
+                'q2b_step3_desc': 'Minterm index $i$ 對應的 Maxterm 為 $M_i$',
+                'q2_kmap_title': '卡諾圖輔助說明：',
+                'q3_title': '第三題：兩級邏輯電路實現 (32%)',
+                'q3_desc': '請將 $F(A,B,C,D)=\Sigma(1,2,3,5,6,7,8,10)$ 用最簡化兩級邏輯電路實現。',
+                'q3_kmap': '卡諾圖化簡 (4-variable)：',
+                'q3_theory': '推導基礎式：',
+                'q3_sop': 'SOP 最簡式：',
+                'q3_pos': 'POS 最簡式：',
+                'q3_subtitle': '兩級邏輯實現：',
+                'q4_grouping': '卡諾圖圈選推導：',
+                'q4_title': '第四題：布林代數化簡 (20%)',
+                'q4_kmap3': '卡諾圖化簡 (3-variable)：',
+                'q4_kmap4': '卡諾圖化簡 (4-variable)：',
+                'q4c1_title': '(c)第一組 (4-variable)：$F(A,B,C,D)=\Sigma(0,1,2,3,7,8,10,12,13)$',
+                'q4c2_title': '(c)第二組 (5-variable)：$F(A,B,C,D,E)=\Sigma(1,3,6,7,8,9,14,15,16,17,18,20,24,25,28)$',
+                'q4c2_kmap5': '雙層卡諾圖 (5-variable 3D展開)：',
+                'q4c2_theory': '五變數卡諾圖拆分為 $A=0$ 與 $A=1$ 兩層平面，需同時觀察上下兩層的相鄰性。',
+                'q4c2_group': '跨層群組 (跨越 A=0 與 A=1)：',
+                'q4c2_orange': '橘色群：',
+                'q4c2_purple': '紫色群：',
+                'q4c2_note': '(註：C\'D\'E 亦可替換為 AC\'D\'，兩者皆為最簡化結果)',
+                'q5_title': '第五題：邏輯電路畫圖 (8%)',
+                'q5_desc': '$F(x,y,z)=y\'+xy\'+xz\'$，請化至最簡並畫出 NAND 與 NOR 電路。',
+                'q5_kmap_title': '卡諾圖分析與化簡：',
+                'q5_sop_title': 'SOP (積之和) 形式：',
+                'q5_sop_desc': '圈選所有的 1：',
+                'q5_pos_title': 'POS (和之積) 形式：',
+                'q5_pos_desc': '圈選所有的 0：',
+                'q5_1': '(a) 兩級 NAND-NAND 電路',
+                'q5_2': '(b) 兩級 NOR-NOR 電路',
+                'q6_title': '第六題：Parity 系統設計 (10%)',
+                'q6_desc': '設計 4-bit 偶同位(Even Parity)傳輸系統之：同位產生器G(Parity Generator) 與 檢查器 C(Parity Checker)。',
+                'q6_theory_title': '原理說明：',
+                'q6_theory': '偶同位（Even Parity）確保傳輸的 5 個位元（$A_3,A_2,A_1,A_0,G$）中 \'1\' 的總數恆為偶數。<br>這可以透過 XOR 運算來達成，因為 XOR 運算等同於模二加法。<br>產生器設定 $G = A_3 \\oplus A_2 \\oplus A_1 \\oplus A_0$。<br>接收端檢查器驗證總和 $C = A_3 \\oplus A_2 \\oplus A_1 \\oplus A_0 \\oplus G$。若 $C=0$ 代表無誤。',
+                'q6_gen': '同位產生器 (Generator G)',
+                'q6_chk': '同位檢查器 (Checker C)',
+                'footer_text': '&copy; 2026 數位邏輯設計 | Teacher: Doc.蘇慶龍 | Copyright: 謝佳頴 TA',
+                'derivation': '推導過程：',
+                'ans': '答案：',
+                'any_of_following': '(以下任一皆可)'
+            },
+            'en': {
+                'page_title': 'Digital Logic Design - Midterm Exam 1',
+                'back_to_exams': 'Back to Exams',
+                'q1_title': 'Q1: Complements Definition & Calculation (18%)',
+                'q1_desc': 'Please use the definition of complements to find the complement values of decimal $(37)_{10}$ based on the requirements:',
+                'q1_prep': 'Value Preparation:',
+                'q1_prep_val': 'Decimal $N = 37$, digits $n = 2$.',
+                'q1_binary_octal': 'Binary: $(37)_{10} = (100101)_2$ (6 bits), Octal: $(45)_8$ (2 digits).',
+                'q1_a': '(a) 9\'s complement (Decimal):',
+                'q1_formula': 'Formula: ',
+                'q1_b': '(b) 10\'s complement (Decimal):',
+                'q1_b_alt': '(or 9\'s comp + 1)',
+                'q1_c': '(c) 1\'s complement (Binary):',
+                'q1_c_rev': 'Invert $(100101)_2$: ',
+                'q1_d': '(d) 2\'s complement (Binary):',
+                'q1_d_add': '1\'s comp + 1: ',
+                'q1_e': '(e) 7\'s complement (Octal):',
+                'q1_e_alt': ' 7\'s complement: ',
+                'q1_f': '(f) 8\'s complement (Octal):',
+                'q1_f_add': '7\'s comp + 1: ',
+                'q2_title': 'Q2: Canonical and Standard Forms (12%)',
+                'q2a_desc': '(a) $F(x,y,z)=y\'+x\'y+x\'z\'$, find the Canonical Sum of Minterms form for $F$.',
+                'q2a_step1': '1. Complete the variables:',
+                'q2a_step2': '2. Combine duplicates and sort:',
+                'q2b_desc': '(b) $F(x,y,z)= xyz+yz\'+x\'z\'$, find the Canonical Product of Maxterms form for $F\'.',
+                'q2b_step1': '1. Find minterms of $F$ first:',
+                'q2b_step2': '2. Minterms of $F\'$ are missing terms from $F$:',
+                'q2b_step3': '3. Convert minterms of $F\'$ to Maxterm form:',
+                'q2b_step3_desc': 'Minterm index $i$ corresponds to Maxterm $M_i$',
+                'q2_kmap_title': 'K-Map Auxiliary Explanation:',
+                'q3_title': 'Q3: Two-Level Logic Implementation (32%)',
+                'q3_desc': 'Implement $F(A,B,C,D)=\Sigma(1,2,3,5,6,7,8,10)$ using simplified two-level logic circuits.',
+                'q3_kmap': 'K-Map Simplification (4-variable):',
+                'q3_theory': 'Derived Base Expressions:',
+                'q3_sop': 'Minimum SOP Form:',
+                'q3_pos': 'Minimum POS Form:',
+                'q3_subtitle': 'Two-Level Realizations:',
+                'q4_grouping': 'K-Map Grouping Derivation:',
+                'q4_title': 'Q4: Boolean Algebra Simplification (20%)',
+                'q4_kmap3': 'K-Map Simplification (3-variable):',
+                'q4_kmap4': 'K-Map Simplification (4-variable):',
+                'q4c1_title': '(c) Group 1 (4-variable): $F(A,B,C,D)=\Sigma(0,1,2,3,7,8,10,12,13)$',
+                'q4c2_title': '(c) Group 2 (5-variable): $F(A,B,C,D,E)=\Sigma(1,3,6,7,8,9,14,15,16,17,18,20,24,25,28)$',
+                'q4c2_kmap5': '3D K-Map (5-variable):',
+                'q4c2_theory': 'Split 5-variable K-map into $A=0$ and $A=1$ planes. Observe adjacency across layers.',
+                'q4c2_group': 'Cross-layer groups (Across A=0 and A=1):',
+                'q4c2_orange': 'Orange group:',
+                'q4c2_purple': 'Purple group:',
+                'q4c2_note': '(Note: C\'D\'E can be replaced by AC\'D\'; both are minimal)',
+                'q5_title': 'Q5: Logic Circuit Drawing (8%)',
+                'q5_desc': '$F(x,y,z)=y\'+xy\'+xz\'$, simplify and draw NAND and NOR circuits.',
+                'q5_kmap_title': 'K-Map Analysis & Simplification:',
+                'q5_sop_title': 'SOP (Sum of Products) Form:',
+                'q5_sop_desc': 'Group all 1s:',
+                'q5_pos_title': 'POS (Product of Sums) Form:',
+                'q5_pos_desc': 'Group all 0s:',
+                'q5_1': '(a) 2-Level NAND-NAND Circuit',
+                'q5_2': '(b) 2-Level NOR-NOR Circuit',
+                'q6_title': 'Q6: Parity System Design (10%)',
+                'q6_desc': 'Design a 4-bit Even Parity transmission system: Parity Generator G and Parity Checker C.',
+                'q6_theory_title': 'Principle:',
+                'q6_theory': 'Even Parity ensures the total number of \'1\'s in the 5 transmitted bits ($A_3,A_2,A_1,A_0,G$) is always even.<br>This is achieved using XOR operations (modulo-2 addition).<br>Generator: $G = A_3 \\oplus A_2 \\oplus A_1 \\oplus A_0$.<br>Checker verifies sum: $C = A_3 \\oplus A_2 \\oplus A_1 \\oplus A_0 \\oplus G$. $C=0$ means no error.',
+                'q6_gen': 'Parity Generator (Generator G)',
+                'q6_chk': 'Parity Checker (Checker C)',
+                'footer_text': '&copy; 2026 Digital Logic Design | Teacher: Doc. Su | Copyright: Chia-Ying Hsieh TA',
+                'derivation': 'Derivation:',
+                'ans': 'Answer:',
+                'any_of_following': '(Any of the following is acceptable)'
+            },
+            'ja': {
+                'page_title': 'デジタル論理設計 - 第1回中間試験',
+                'back_to_exams': '試験一覧に戻る',
+                'q1_title': '第1問：補数の定義と計算 (18%)',
+                'q1_desc': '補数の定義に基づき、以下の要求に従って10進数 $(37)_{10}$ の補数値を求めなさい：',
+                'q1_prep': '数値の準備：',
+                'q1_prep_val': '10進数 $N = 37$、桁数 $n = 2$。',
+                'q1_binary_octal': '2進数: $(37)_{10} = (100101)_2$ (6桁)、8進数: $(45)_8$ (2桁)。',
+                'q1_a': '(a) 10進数の9の補数：',
+                'q1_formula': '公式：',
+                'q1_b': '(b) 10進数の10の補数：',
+                'q1_b_alt': '(または 9の補数 + 1)',
+                'q1_c': '(c) 2進数の1の補数：',
+                'q1_c_rev': '$(100101)_2$ を反転：',
+                'q1_d': '(d) 2進数の2の補数：',
+                'q1_d_add': '1の補数 + 1：',
+                'q1_e': '(e) 8進数の7の補数：',
+                'q1_e_alt': 'の7の補数：',
+                'q1_f': '(f) 8進数の8の補数：',
+                'q1_f_add': '7の補数 + 1：',
+                'q2_title': '第2問：正準形と標準形 (12%)',
+                'q2a_desc': '(a) $F(x,y,z)=y\'+x\'y+x\'z\'$、関数 $F$ の最小項の正準和形式を求めなさい。',
+                'q2a_step1': '1. 変数を補完：',
+                'q2a_step2': '2. 重複項を結合してソート：',
+                'q2b_desc': '(b) $F(x,y,z)= xyz+yz\'+x\'z\'$、関数 $F\'$ の最大項の正準積形式を求めなさい。',
+                'q2b_step1': '1. まず $F$ の最小項を求める：',
+                'q2b_step2': '2. $F\'$ の最小項は $F$ に現れない項：',
+                'q2b_step3': '3. $F\'$ の最小項を最大項形式に変換：',
+                'q2b_step3_desc': '最小項インデックス $i$ は最大項 $M_i$ に対応',
+                'q2_kmap_title': 'カルノー図による補助説明：',
+                'q3_title': '第3問：2段論理回路の実現 (32%)',
+                'q3_desc': '$F(A,B,C,D)=\Sigma(1,2,3,5,6,7,8,10)$ を簡略化された2段論理回路で実現しなさい。',
+                'q3_kmap': 'カルノー図による簡略化 (4変数)：',
+                'q3_theory': '導出基礎式：',
+                'q3_sop': '最小SOP形式：',
+                'q3_pos': '最小POS形式：',
+                'q3_subtitle': '2段論理の実現：',
+                'q4_grouping': 'カルノー図によるグループ化の導出：',
+                'q4_title': '第4問：ブール代数の簡略化 (20%)',
+                'q4_kmap3': 'カルノー図による簡略化 (3変数)：',
+                'q4_kmap4': 'カルノー図による簡略化 (4変数)：',
+                'q4c1_title': '(c) 第1グループ (4変数)：$F(A,B,C,D)=\Sigma(0,1,2,3,7,8,10,12,13)$',
+                'q4c2_title': '(c) 第2グループ (5変数)：$F(A,B,C,D,E)=\Sigma(1,3,6,7,8,9,14,15,16,17,18,20,24,25,28)$',
+                'q4c2_kmap5': '3Dカルノー図 (5変数)：',
+                'q4c2_theory': '5変数カルノー図を $A=0$ と $A=1$ の2つの平面に分割し、レイヤー間の隣接性を観察します。',
+                'q4c2_group': 'レイヤー間グループ (A=0 と A=1 にまたがる)：',
+                'q4c2_orange': 'オレンジ色のグループ：',
+                'q4c2_purple': '紫色のグループ：',
+                'q4c2_note': '(注：C\'D\'E は AC\'D\' に置き換え可能。どちらも最小化結果)',
+                'q5_title': '第5問：論理回路の作図 (8%)',
+                'q5_desc': '$F(x,y,z)=y\'+xy\'+xz\'$ を簡略化し、NANDおよびNOR回路を作図しなさい。',
+                'q5_kmap_title': 'カルノー図による分析と簡略化：',
+                'q5_sop_title': 'SOP (積の和) 形式：',
+                'q5_sop_desc': 'すべての 1 をグループ化：',
+                'q5_pos_title': 'POS (和の積) 形式：',
+                'q5_pos_desc': 'すべての 0 をグループ化：',
+                'q5_1': '(a) 2段 NAND-NAND 回路',
+                'q5_2': '(b) 2段 NOR-NOR 回路',
+                'q6_title': '第6問：パリティシステムの設計 (10%)',
+                'q6_desc': '4ビット偶数パリティ伝送システムの設計：パリティジェネレータ G とパリティチェッカー C。',
+                'q6_theory_title': '原理の説明：',
+                'q6_theory': '偶数パリティは、伝送される5ビット（$A_3,A_2,A_1,A_0,G$）内の「1」の総数が常に偶数になるようにします。<br>これは XOR 演算（モジュロ2加算）によって実現されます。<br>ジェネレータ：$G = A_3 \\oplus A_2 \\oplus A_1 \\oplus A_0$。<br>チェッカーは総和を検証：$C = A_3 \\oplus A_2 \\oplus A_1 \\oplus A_0 \\oplus G$。$C=0$ ならエラーなし。',
+                'q6_gen': 'パリティジェネレータ (Generator G)',
+                'q6_chk': 'パリティチェッカー (Checker C)',
+                'footer_text': '&copy; 2026 デジタル論理設計 | 担当講師: 蘇慶龍 博士 | 著作権: 謝佳頴 TA',
+                'derivation': '導出プロセス：',
+                'ans': '答え：',
+                'any_of_following': '(以下のいずれでも可)'
+            },
+            'it': {
+                'page_title': 'Progettazione Logica Digitale - Esame 1',
+                'back_to_exams': 'Torna all\'elenco degli esami',
+                'q1_title': 'D1: Definizione e Calcolo dei Complementi (18%)',
+                'q1_desc': 'Utilizzare la definizione di complemento per trovare i valori del decimale $(37)_{10}$ in base ai requisiti:',
+                'q1_prep': 'Preparazione Valori:',
+                'q1_prep_val': 'Decimale $N = 37$, cifre $n = 2$.',
+                'q1_binary_octal': 'Binario: $(37)_{10} = (100101)_2$ (6 bit), Ottale: $(45)_8$ (2 cifre).',
+                'q1_a': '(a) Complemento a 9 (Decimale):',
+                'q1_formula': 'Formula: ',
+                'q1_b': '(b) Complemento a 10 (Decimale):',
+                'q1_b_alt': '(o comp. a 9 + 1)',
+                'q1_c': '(c) Complemento a 1 (Binario):',
+                'q1_c_rev': 'Invertire $(100101)_2$: ',
+                'q1_d': '(d) Complemento a 2 (Binario):',
+                'q1_d_add': 'Comp. a 1 + 1: ',
+                'q1_e': '(e) Complemento a 7 (Ottale):',
+                'q1_e_alt': ' comp. a 7: ',
+                'q1_f': '(f) Complemento a 8 (Ottale):',
+                'q1_f_add': 'Comp. a 7 + 1: ',
+                'q2_title': 'D2: Forme Canoniche e Standard (12%)',
+                'q2a_desc': '(a) $F(x,y,z)=y\'+x\'y+x\'z\'$, trovare la Somma Canonica dei Mintermini per $F$.',
+                'q2a_step1': '1. Completare le variabili:',
+                'q2a_step2': '2. Combinare i duplicati e ordinare:',
+                'q2b_desc': '(b) $F(x,y,z)= xyz+yz\'+x\'z\'$, trovare il Prodotto Canonico dei Maxtermini per $F\'.',
+                'q2b_step1': '1. Trovare prima i mintermini di $F$:',
+                'q2b_step2': '2. I mintermini di $F\'$ sono i termini mancanti in $F$:',
+                'q2b_step3': '3. Convertire i mintermini di $F\'$ in forma Maxterm:',
+                'q2b_step3_desc': 'L\'indice del mintermine $i$ corrisponde al Maxtermine $M_i$',
+                'q2_kmap_title': 'Spiegazione Ausiliaria con Mappa di Karnaugh:',
+                'q3_title': 'D3: Implementazione Logica a Due Livelli (32%)',
+                'q3_desc': 'Implementare $F(A,B,C,D)=\Sigma(1,2,3,5,6,7,8,10)$ usando circuiti logici a due livelli semplificati.',
+                'q3_kmap': 'Semplificazione con Mappa di Karnaugh (4 variabili):',
+                'q3_theory': 'Espressioni di Base Derivate:',
+                'q3_sop': 'Forma SOP Minima:',
+                'q3_pos': 'Forma POS Minima:',
+                'q3_subtitle': 'Realizzazioni a Due Livelli:',
+                'q4_grouping': 'Derivazione del Raggruppamento K-Map:',
+                'q4_title': 'D4: Semplificazione dell\'Algebra Booleana (20%)',
+                'q4_kmap3': 'Semplificazione con K-Map (3 variabili):',
+                'q4_kmap4': 'Semplificazione con K-Map (4 variabili):',
+                'q4c1_title': '(c) Gruppo 1 (4 variabili): $F(A,B,C,D)=\Sigma(0,1,2,3,7,8,10,12,13)$',
+                'q4c2_title': '(c) Gruppo 2 (5 variabili): $F(A,B,C,D,E)=\Sigma(1,3,6,7,8,9,14,15,16,17,18,20,24,25,28)$',
+                'q4c2_kmap5': 'K-Map 3D (5 variabili):',
+                'q4c2_theory': 'Dividere la mappa K a 5 variabili nei piani $A=0$ e $A=1$. Osservare l\'adiacenza tra i livelli.',
+                'q4c2_group': 'Gruppi tra livelli (tra A=0 e A=1):',
+                'q4c2_orange': 'Gruppo arancione:',
+                'q4c2_purple': 'Gruppo viola:',
+                'q4c2_note': '(Nota: C\'D\'E può essere sostituito da AC\'D\'; entrambi sono minimi)',
+                'q5_title': 'D5: Disegno di Circuiti Logici (8%)',
+                'q5_desc': '$F(x,y,z)=y\'+xy\'+xz\'$, semplificare e disegnare i circuiti NAND e NOR.',
+                'q5_kmap_title': 'Analisi e Semplificazione con Mappa di Karnaugh:',
+                'q5_sop_title': 'Forma SOP (Somma di Prodotti):',
+                'q5_sop_desc': 'Raggruppa tutti gli 1:',
+                'q5_pos_title': 'Forma POS (Prodotto di Somme):',
+                'q5_pos_desc': 'Raggruppa tutti gli 0:',
+                'q5_1': '(a) Circuito NAND-NAND a 2 livelli',
+                'q5_2': '(b) Circuito NOR-NOR a 2 livelli',
+                'q6_title': 'D6: Progettazione del Sistema di Parità (10%)',
+                'q6_desc': 'Progettare un sistema di trasmissione a parità pari a 4 bit: Generatore di parità G e Correttore di parità C.',
+                'q6_theory_title': 'Principio:',
+                'q6_theory': 'La parità pari assicura che il numero totale di \'1\' nei 5 bit trasmessi ($A_3,A_2,A_1,A_0,G$) sia sempre pari.<br>Questo si ottiene usando operazioni XOR (addizione modulo-2).<br>Generatore: $G = A_3 \\oplus A_2 \\oplus A_1 \\oplus A_0$.<br>Il controllore verifica la somma: $C = A_3 \\oplus A_2 \\oplus A_1 \\oplus A_0 \\oplus G$. $C=0$ significa nessun errore.',
+                'q6_gen': 'Generatore di parità (Generator G)',
+                'q6_chk': 'Controllore di parità (Checker C)',
+                'footer_text': '&copy; 2026 Progettazione Logica Digitale | Docente: Doc. Su | Copyright: Chia-Ying Hsieh TA',
+                'derivation': 'Derivazione:',
+                'ans': 'Risposta:',
+                'any_of_following': '(Una qualsiasi delle seguenti è accettabile)'
+            },
+            'vi': {
+                'page_title': 'Thiết kế Logic Kỹ thuật số - Kỳ thi giữa kỳ 1',
+                'back_to_exams': 'Quay lại danh sách kỳ thi',
+                'q1_title': 'Câu 1: Định nghĩa và Tính toán Phần bù (18%)',
+                'q1_desc': 'Vui lòng sử dụng định nghĩa về phần bù để tìm giá trị phần bù của số thập phân $(37)_{10}$ theo yêu cầu:',
+                'q1_prep': 'Chuẩn bị giá trị:',
+                'q1_prep_val': 'Số thập phân $N = 37$, số chữ số $n = 2$.',
+                'q1_binary_octal': 'Nhị phân: $(37)_{10} = (100101)_2$ (6 bit), Bát phân: $(45)_8$ (2 chữ số).',
+                'q1_a': '(a) Phần bù 9 (Thập phân):',
+                'q1_formula': 'Công thức: ',
+                'q1_b': '(b) Phần bù 10 (Thập phân):',
+                'q1_b_alt': '(hoặc phần bù 9 + 1)',
+                'q1_c': '(c) Phần bù 1 (Nhị phân):',
+                'q1_c_rev': 'Đảo ngược $(100101)_2$: ',
+                'q1_d': '(d) Phần bù 2 (Nhị phân):',
+                'q1_d_add': 'Phần bù 1 + 1: ',
+                'q1_e': '(e) Phần bù 7 (Bát phân):',
+                'q1_e_alt': ' phần bù 7: ',
+                'q1_f': '(f) Phần bù 8 (Bát phân):',
+                'q1_f_add': 'Phần bù 7 + 1: ',
+                'q2_title': 'Câu 2: Các dạng Chính tắc và Tiêu chuẩn (12%)',
+                'q2a_desc': '(a) $F(x,y,z)=y\'+x\'y+x\'z\'$, tìm dạng Tổng chính tắc của các Minterm cho $F$.',
+                'q2a_step1': '1. Bổ sung các biến:',
+                'q2a_step2': '2. Kết hợp các phần tử trùng lặp và sắp xếp:',
+                'q2b_desc': '(b) $F(x,y,z)= xyz+yz\'+x\'z\'$, tìm dạng Tích chính tắc của các Maxterm cho $F\'.',
+                'q2b_step1': '1. Tìm các minterm của $F$ trước:',
+                'q2b_step2': '2. Các minterm của $F\'$ là các số hạng còn thiếu từ $F$:',
+                'q2b_step3': '3. Chuyển đổi minterm của $F\'$ sang dạng Maxterm:',
+                'q2b_step3_desc': 'Chỉ số minterm $i$ tương ứng với Maxterm $M_i$',
+                'q2_kmap_title': 'Giải thích bổ trợ bằng bản đồ Karnaugh:',
+                'q3_title': 'Câu 3: Thực hiện Logic hai cấp (32%)',
+                'q3_desc': 'Thực hiện $F(A,B,C,D)=\Sigma(1,2,3,5,6,7,8,10)$ bằng mạch logic hai cấp được tối giản.',
+                'q3_kmap': 'Tối giản bằng bản đồ Karnaugh (4 biến):',
+                'q3_theory': 'Các biểu thức cơ sở:',
+                'q3_sop': 'Dạng SOP tối giản:',
+                'q3_pos': 'Dạng POS tối giản:',
+                'q3_subtitle': 'Thực hiện Logic hai cấp:',
+                'q4_grouping': 'Suy luận nhóm bản đồ K:',
+                'q4_title': 'Câu 4: Đơn giản hóa Đại số Boolean (20%)',
+                'q4_kmap3': 'Tối giản bằng bản đồ K (3 biến):',
+                'q4_kmap4': 'Tối giản bằng bản đồ K (4 biến):',
+                'q4c1_title': '(c) Nhóm 1 (4 biến): $F(A,B,C,D)=\Sigma(0,1,2,3,7,8,10,12,13)$',
+                'q4c2_title': '(c) Nhóm 2 (5 biến): $F(A,B,C,D,E)=\Sigma(1,3,6,7,8,9,14,15,16,17,18,20,24,25,28)$',
+                'q4c2_kmap5': 'Bản đồ K 3D (5 biến):',
+                'q4c2_theory': 'Chia bản đồ K 5 biến thành các mặt phẳng $A=0$ và $A=1$. Quan sát tính kề nhau giữa các lớp.',
+                'q4c2_group': 'Các nhóm xuyên lớp (Xuyên qua A=0 và A=1):',
+                'q4c2_orange': 'Nhóm màu cam:',
+                'q4c2_purple': 'Nhóm màu tím:',
+                'q4c2_note': '(Lưu ý: C\'D\'E có thể được thay thế bằng AC\'D\'; cả hai đều là tối giản)',
+                'q5_title': 'Câu 5: Vẽ Sơ đồ Mạch Logic (8%)',
+                'q5_desc': '$F(x,y,z)=y\'+xy\'+xz\'$, tối giản và vẽ mạch NAND và NOR.',
+                'q5_kmap_title': 'Phân tích và Tối giản bằng bản đồ Karnaugh:',
+                'q5_sop_title': 'Dạng SOP (Tổng các Tích):',
+                'q5_sop_desc': 'Nhóm tất cả các số 1:',
+                'q5_pos_title': 'Dạng POS (Tích các Tổng):',
+                'q5_pos_desc': 'Nhóm tất cả các số 0:',
+                'q5_1': '(a) Mạch NAND-NAND 2 cấp',
+                'q5_2': '(b) Mạch NOR-NOR 2 cấp',
+                'q6_title': 'Câu 6: Thiết kế Hệ thống Parity (10%)',
+                'q6_desc': 'Thiết kế hệ thống truyền tin Parity chẵn 4-bit: Bộ tạo Parity G và Bộ kiểm tra Parity C.',
+                'q6_theory_title': 'Nguyên lý:',
+                'q6_theory': 'Parity chẵn đảm bảo tổng số bit \'1\' trong 5 bit được truyền ($A_3,A_2,A_1,A_0,G$) luôn là số chẵn.<br>Điều này đạt được bằng các phép toán XOR (cộng modulo-2).<br>Bộ tạo: $G = A_3 \\oplus A_2 \\oplus A_1 \\oplus A_0$.<br>Bộ kiểm tra xác minh tổng: $C = A_3 \\oplus A_2 \\oplus A_1 \\oplus A_0 \\oplus G$. $C=0$ nghĩa là không có lỗi.',
+                'q6_gen': 'Bộ tạo Parity (Generator G)',
+                'q6_chk': 'Bộ kiểm tra Parity (Checker C)',
+                'footer_text': '&copy; 2026 Thiết kế Logic Kỹ thuật số | Giảng viên: Tiến sĩ Tô | Bản quyền: Tạ Giai Dĩnh TA',
+                'derivation': 'Quá trình suy luận:',
+                'ans': 'Đáp án:',
+                'any_of_following': '(Bất kỳ kết quả nào sau đây đều được chấp nhận)'
+            }
+        };
+    </script>
 </body>
 </html>
